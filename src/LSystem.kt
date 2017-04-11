@@ -8,7 +8,7 @@ fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>
 
     val intructions = translate(lSystem.getAxiom(), lSystem.getRules(), iterations)
 
-    val xyList = convertToXY(intructions)
+    val xyList = convertToXY(intructions, lSystem.getAngle())
 
     val scaleXYList = scaleXYList(xyList)
 
@@ -28,7 +28,7 @@ private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int):
     return next.replace("A", "").replace("B", "")
 }
 
-private fun convertToXY(intructions: String): List<Pair<Double, Double>> {
+private fun convertToXY(intructions: String, systemAngle: Double): List<Pair<Double, Double>> {
     val list: MutableList<Pair<Double, Double>> = mutableListOf()
 
     var x: Double = 0.0
@@ -39,8 +39,8 @@ private fun convertToXY(intructions: String): List<Pair<Double, Double>> {
     list.add(Pair(x, y))
     for (c in intructions) {
         when (c) {
-            '-' -> angle -= PI / 3
-            '+' -> angle += PI / 3
+            '-' -> angle -= systemAngle
+            '+' -> angle += systemAngle
             'F' -> {
                 x += sin(angle)
                 y += cos(angle)
@@ -48,6 +48,7 @@ private fun convertToXY(intructions: String): List<Pair<Double, Double>> {
             }
         }
     }
+    list.add(Pair(x, y))
     return list
 }
 

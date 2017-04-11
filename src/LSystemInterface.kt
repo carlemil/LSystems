@@ -6,4 +6,5 @@ interface LSystem {
     fun getAxiom(): String
     fun getName(): String
     fun getRules(): Map<Char, String>
+    fun getAngle(): Double
 }
