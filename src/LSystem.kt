@@ -6,7 +6,7 @@ import java.lang.Math.*
 
 fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>> {
 
-    val intructions = translate(lSystem.getAxiom(), lSystem.getRules(), iterations)
+    val intructions = translate(lSystem.getAxiom(), lSystem.getRules(), iterations, lSystem.getForwardChars())
 
     val xyList = convertToXY(intructions, lSystem.getAngle())
 
@@ -15,17 +15,20 @@ fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>
     return scaleXYList
 }
 
-private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int): String {
+private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int, forwardChars: Set<Char>): String {
     var tmp: String = axiom
-    var next: String = ""
+    var intructions: String = ""
     for (i in 1..iterations) {
-        next = ""
+        intructions = ""
         for (c in tmp) {
-            next += rules.get(c)
+            intructions += rules.get(c)
         }
-        tmp = next
+        tmp = intructions
     }
-    return next.replace("A", "").replace("B", "")
+    for (c in forwardChars) {
+        intructions = intructions.replace(c, 'F')
+    }
+    return intructions
 }
 
 private fun convertToXY(intructions: String, systemAngle: Double): List<Pair<Double, Double>> {

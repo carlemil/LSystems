@@ -7,4 +7,5 @@ interface LSystem {
     fun getName(): String
     fun getRules(): Map<Char, String>
     fun getAngle(): Double
+    fun getForwardChars(): Set<Char>
 }

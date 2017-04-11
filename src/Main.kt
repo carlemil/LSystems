@@ -8,17 +8,18 @@ import java.lang.Math.round
 
 fun main(args: Array<String>) {
     println("Start")
-    val system = dragonLSystem()
+    val system = snowFlake1LSystem()
     println("Generate fractal")
-    val complexity = 16
-    val coordList = computeLSystem(system, complexity)
+    val steps = 5
+    val coordList = computeLSystem(system, steps)
 
-    val scale = 300.0
+    val scale = 3000.0
     val sidePadding = scale / 50
-    val strokeWidth: Double = 0.2
+    val strokeWidth: Double = 2.0
 
     println("Write to file")
-    writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + complexity, true, strokeWidth)
+    writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps, false, strokeWidth)
+    writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps, true, strokeWidth)
     println("Done")
 }
 
@@ -64,6 +65,10 @@ private fun getCoord(p: Pair<Double, Double>, scale: Double, sidePadding: Double
 fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)
 
 class sierpinskiLSystem : LSystem {
+    override fun getForwardChars(): Set<Char> {
+        return setOf('F')
+    }
+
     override fun getAngle(): Double {
         return PI / 3
     }
@@ -87,6 +92,10 @@ class sierpinskiLSystem : LSystem {
 }
 
 class hilbertLSystem : LSystem {
+    override fun getForwardChars(): Set<Char> {
+        return setOf('F')
+    }
+
     override fun getAngle(): Double {
         return PI / 2
     }
@@ -110,6 +119,10 @@ class hilbertLSystem : LSystem {
 }
 
 class dragonLSystem : LSystem {
+    override fun getForwardChars(): Set<Char> {
+        return setOf('F')
+    }
+
     override fun getAngle(): Double {
         return PI / 2.0
     }
@@ -129,5 +142,31 @@ class dragonLSystem : LSystem {
 
     override fun getAxiom(): String {
         return "FA"
+    }
+}
+
+class snowFlake1LSystem : LSystem {
+    override fun getForwardChars(): Set<Char> {
+        return setOf('A', 'B')
+    }
+
+    override fun getAngle(): Double {
+        return PI / 3.0
+    }
+
+    override fun getName(): String {
+        return "SnowFlake1Curve"
+    }
+
+    override fun getRules(): Map<Char, String> {
+        return mapOf(
+                'A' to "A-B--B+A++AA+B-",
+                'B' to "+A-BB--B-A++A+B",
+                '+' to "+",
+                '-' to "-")
+    }
+
+    override fun getAxiom(): String {
+        return "A"
     }
 }
