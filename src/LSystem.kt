@@ -15,7 +15,7 @@ fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>
     return scaleXYList
 }
 
-fun translate(axiom: String, rules: Map<Char, String>, iterations: Int): String {
+private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int): String {
     var tmp: String = axiom
     var next: String = ""
     for (i in 1..iterations) {
@@ -28,7 +28,7 @@ fun translate(axiom: String, rules: Map<Char, String>, iterations: Int): String 
     return next.replace("A", "").replace("B", "")
 }
 
-fun convertToXY(intructions: String): List<Pair<Double, Double>> {
+private fun convertToXY(intructions: String): List<Pair<Double, Double>> {
     val list: MutableList<Pair<Double, Double>> = mutableListOf()
 
     var x: Double = 0.0
@@ -51,7 +51,7 @@ fun convertToXY(intructions: String): List<Pair<Double, Double>> {
     return list
 }
 
-fun scaleXYList(list: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
+private fun scaleXYList(list: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
     var minX = Double.MAX_VALUE
     var maxX = Double.MIN_VALUE
     var minY = Double.MAX_VALUE
