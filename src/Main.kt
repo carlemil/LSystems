@@ -8,14 +8,14 @@ import java.lang.Math.round
 
 fun main(args: Array<String>) {
     println("Start")
-    val system = snowFlake1LSystem()
+    val system = kochSnowFlakeLSystem()
     println("Generate fractal")
-    val steps = 5
+    val steps = 4
     val coordList = computeLSystem(system, steps)
 
-    val scale = 3000.0
+    val scale = 2000.0
     val sidePadding = scale / 50
-    val strokeWidth: Double = 2.0
+    val strokeWidth: Double = 1.0
 
     println("Write to file")
     writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps, false, strokeWidth)
@@ -168,5 +168,29 @@ class snowFlake1LSystem : LSystem {
 
     override fun getAxiom(): String {
         return "A"
+    }
+}
+class kochSnowFlakeLSystem : LSystem {
+    override fun getForwardChars(): Set<Char> {
+        return setOf('F')
+    }
+
+    override fun getAngle(): Double {
+        return PI / 2.0
+    }
+
+    override fun getName(): String {
+        return "KochSnowFlakeLSystem"
+    }
+
+    override fun getRules(): Map<Char, String> {
+        return mapOf(
+                'F' to "F-F+F+FF-F-F+F",
+                '+' to "+",
+                '-' to "-")
+    }
+
+    override fun getAxiom(): String {
+        return "F"
     }
 }
