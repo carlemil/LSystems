@@ -13,19 +13,19 @@ fun main(args: Array<String>) {
     println("Start")
     val system = hilbertLSystem()
     println("Generate fractal")
-    val steps = 9
+    val steps = 8
     val coordList = computeLSystem(system, steps)
 
     println("Read image file")
     val image = readImageFile("arthur.png")
 
-    val scale = 2000.0
+    val scale = 4000.0
     val sidePadding = scale / 50
     val strokeWidth: Double = 1500.0 * (1.0 / 2.0.pow(steps)) // 2^steps
 
     println("Write to file")
     writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps,
-            true, false, strokeWidth, image)
+            false, false, strokeWidth, image)
     println("Done")
 }
 
@@ -55,10 +55,14 @@ private fun writeCoordListToSVGFile(scale: Double, sidePadding: Double, xyList: 
             stringBuffer.append("\" stroke=\"#" + getColor(p1, image) + "\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
         }
     } else {
-        for (p in xyList) {
+        for (i in 0..xyList.size - 2) {
+            val p0 = xyList.get(i)
+            val p1 = xyList.get(i + 1)
             stringBuffer.append("\n<polyline points=\"")
-            stringBuffer.append(getCoord(p, scale, sidePadding, ",") + " ")
-            stringBuffer.append("\" stroke=\"#" + getColor(p, image) + "\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
+            stringBuffer.append(getCoord(p0, scale, sidePadding, ","))
+            stringBuffer.append(" ")
+            stringBuffer.append(getCoord(p1, scale, sidePadding, ","))
+            stringBuffer.append("\" stroke=\"#" + getColor(p0, image) + "\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
         }
     }
     stringBuffer.append("</svg>\n")
