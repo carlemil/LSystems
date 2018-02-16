@@ -1,6 +1,7 @@
+import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.Math.PI
-import java.lang.Math.round
+import javax.imageio.ImageIO
 
 /**
  * Created by carlemil on 4/10/17.
@@ -8,50 +9,71 @@ import java.lang.Math.round
 
 fun main(args: Array<String>) {
     println("Start")
-    val system = kochSnowFlakeLSystem()
+    val system = dragonLSystem()
     println("Generate fractal")
-    val steps = 4
+    val steps = 10
     val coordList = computeLSystem(system, steps)
+
+    println("Read image file")
+    val image = readImageFile("arthur.png")
 
     val scale = 2000.0
     val sidePadding = scale / 50
-    val strokeWidth: Double = 1.0
+    val strokeWidth: Double = 100.0 * (1.0 / (steps * 2)) // 2^steps
 
     println("Write to file")
-    writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps, false, strokeWidth)
-    writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps, true, strokeWidth)
+    writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps,
+            false, strokeWidth, image)
+    writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps,
+            true, strokeWidth, image)
     println("Done")
 }
 
+private fun readImageFile(file: String): BufferedImage {
+    return ImageIO.read(File(file))
+}
+
 private fun writeCoordListToSVGFile(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
-                                    name: String, useBezierCurves: Boolean, strokeWidth: Double) {
-    var stringBuffer: StringBuffer = StringBuffer()
-    stringBuffer.append("<svg width=\"" + (sidePadding * 2 + scale) + "px\" height=\"" + (sidePadding * 2 + scale) + "px\">")
+                                    name: String, useBezierCurves: Boolean, strokeWidth: Double, image: BufferedImage) {
+    var stringBuffer = StringBuffer()
+    stringBuffer.append(
+            "<!DOCTYPE html>\n" +
+                    "<html>\n" +
+                    "<body>\n" +
+                    "<svg width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">")
     if (useBezierCurves) {
-        val separator: String = " "
-        stringBuffer.append("\n<path d=\"")
+        val separator = " "
         for (i in 1..xyList.size - 2) {
+            stringBuffer.append("\n<path d=\"")
             val p0 = xyList.get(i - 1)
             val p1 = xyList.get(i)
             val p2 = xyList.get(i + 1)
             stringBuffer.append("M " + getCoord(getCenter(p0, p1), scale, sidePadding, separator) +
                     " Q " + getCoord(p1, scale, sidePadding, separator) +
                     " " + getCoord(getCenter(p1, p2), scale, sidePadding, separator) + ", ")
+            stringBuffer.append("\" stroke=\"#"+getColor(i)+"\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
         }
-        stringBuffer.append("\" stroke=\"#000000\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>")
     } else {
         stringBuffer.append("\n<polyline points=\"")
         for (p in xyList) {
             stringBuffer.append(getCoord(p, scale, sidePadding, ",") + " ")
         }
-        stringBuffer.append("\" stroke=\"#000000\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>")
+        stringBuffer.append("\" stroke=\"#000000\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
     }
-    stringBuffer.append("\n</svg>")
+    stringBuffer.append(
+            "</svg>\n" +
+                    "</body>\n" +
+                    "</html>")
     fileWriter(stringBuffer.toString(), name + (if (useBezierCurves) "_bezier" else ""))
 }
 
+fun getColor(i: Int): Int {
+
+    return i
+}
+
 private fun fileWriter(text: String, name: String) {
-    File(name + ".svg").writeText(text)
+    File(name + ".html").writeText(text)
 }
 
 private fun getCenter(p0: Pair<Double, Double>, p1: Pair<Double, Double>): Pair<Double, Double> {
@@ -170,6 +192,7 @@ class snowFlake1LSystem : LSystem {
         return "A"
     }
 }
+
 class kochSnowFlakeLSystem : LSystem {
     override fun getForwardChars(): Set<Char> {
         return setOf('F')
