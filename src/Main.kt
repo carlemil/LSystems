@@ -2,6 +2,8 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.Math.PI
 import javax.imageio.ImageIO
+import kotlin.math.absoluteValue
+import kotlin.math.pow
 
 /**
  * Created by carlemil on 4/10/17.
@@ -9,9 +11,9 @@ import javax.imageio.ImageIO
 
 fun main(args: Array<String>) {
     println("Start")
-    val system = dragonLSystem()
+    val system = hilbertLSystem()
     println("Generate fractal")
-    val steps = 10
+    val steps = 9
     val coordList = computeLSystem(system, steps)
 
     println("Read image file")
@@ -19,13 +21,11 @@ fun main(args: Array<String>) {
 
     val scale = 2000.0
     val sidePadding = scale / 50
-    val strokeWidth: Double = 100.0 * (1.0 / (steps * 2)) // 2^steps
+    val strokeWidth: Double = 1500.0 * (1.0 / 2.0.pow(steps)) // 2^steps
 
     println("Write to file")
     writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps,
-            false, strokeWidth, image)
-    writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps,
-            true, strokeWidth, image)
+            true, false, strokeWidth, image)
     println("Done")
 }
 
@@ -34,13 +34,14 @@ private fun readImageFile(file: String): BufferedImage {
 }
 
 private fun writeCoordListToSVGFile(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
-                                    name: String, useBezierCurves: Boolean, strokeWidth: Double, image: BufferedImage) {
+                                    name: String, useBezierCurves: Boolean, wrapWithHtml: Boolean,
+                                    strokeWidth: Double, image: BufferedImage) {
     var stringBuffer = StringBuffer()
+    if (wrapWithHtml) {
+        stringBuffer.append("<!DOCTYPE html>\n<html>\n<body>\n")
+    }
     stringBuffer.append(
-            "<!DOCTYPE html>\n" +
-                    "<html>\n" +
-                    "<body>\n" +
-                    "<svg width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">")
+            "<svg width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">")
     if (useBezierCurves) {
         val separator = " "
         for (i in 1..xyList.size - 2) {
@@ -51,29 +52,34 @@ private fun writeCoordListToSVGFile(scale: Double, sidePadding: Double, xyList: 
             stringBuffer.append("M " + getCoord(getCenter(p0, p1), scale, sidePadding, separator) +
                     " Q " + getCoord(p1, scale, sidePadding, separator) +
                     " " + getCoord(getCenter(p1, p2), scale, sidePadding, separator) + ", ")
-            stringBuffer.append("\" stroke=\"#"+getColor(i)+"\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
+            stringBuffer.append("\" stroke=\"#" + getColor(p1, image) + "\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
         }
     } else {
-        stringBuffer.append("\n<polyline points=\"")
         for (p in xyList) {
+            stringBuffer.append("\n<polyline points=\"")
             stringBuffer.append(getCoord(p, scale, sidePadding, ",") + " ")
+            stringBuffer.append("\" stroke=\"#" + getColor(p, image) + "\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
         }
-        stringBuffer.append("\" stroke=\"#000000\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
     }
-    stringBuffer.append(
-            "</svg>\n" +
-                    "</body>\n" +
-                    "</html>")
-    fileWriter(stringBuffer.toString(), name + (if (useBezierCurves) "_bezier" else ""))
+    stringBuffer.append("</svg>\n")
+    if (wrapWithHtml) {
+        stringBuffer.append("</body>\n</html>\n")
+    }
+    fileWriter(stringBuffer.toString(), name +
+            (if (useBezierCurves) "_bezier" else "") +
+            (if (wrapWithHtml) ".html" else ".svg"))
 }
 
-fun getColor(i: Int): Int {
-
-    return i
+fun getColor(p: Pair<Double, Double>, image: BufferedImage): String {
+    val x = (p.first * (image.width - 1)).toInt()
+    val y = (p.second * (image.height - 1)).toInt()
+    //print("x: " + x + ", y: " + y + "  " + image.width.toString() + " - " + image.height.toString() + " P " + p + "\n")
+    return (image.getRGB(x, y) and 0xffffff).toString(16)
+    // return "ff00ff"
 }
 
 private fun fileWriter(text: String, name: String) {
-    File(name + ".html").writeText(text)
+    File(name).writeText(text)
 }
 
 private fun getCenter(p0: Pair<Double, Double>, p1: Pair<Double, Double>): Pair<Double, Double> {
