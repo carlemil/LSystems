@@ -1,6 +1,6 @@
 package LSystem
 
-class kochSnowFlakeLSystem : LSystem.LSystem.LSystem {
+class kochSnowFlakeLSystem : LSystem {
     override fun getForwardChars(): Set<Char> {
         return setOf('F')
     }

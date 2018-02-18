@@ -1,6 +1,6 @@
 package LSystem
 
-class snowFlake1LSystem : LSystem.LSystem.LSystem {
+class snowFlake1LSystem : LSystem {
     override fun getForwardChars(): Set<Char> {
         return setOf('A', 'B')
     }

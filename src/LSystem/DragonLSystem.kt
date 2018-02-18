@@ -1,6 +1,6 @@
 package LSystem
 
-class dragonLSystem : LSystem.LSystem.LSystem {
+class dragonLSystem : LSystem {
     override fun getForwardChars(): Set<Char> {
         return setOf('F')
     }

@@ -1,6 +1,6 @@
 package LSystem
 
-class hilbertLSystem : LSystem.LSystem.LSystem {
+class hilbertLSystem : LSystem {
     override fun getForwardChars(): Set<Char> {
         return setOf('F')
     }

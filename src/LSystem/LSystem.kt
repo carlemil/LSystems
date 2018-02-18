@@ -6,13 +6,13 @@ import java.lang.Math.*
  * Created by carlemil on 4/10/17.
  */
 
-fun computeLSystem(lSystem: LSystem.LSystem.LSystem, iterations: Int): List<Pair<Double, Double>> {
+fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>> {
 
-    val intructions = LSystem.translate(lSystem.getAxiom(), lSystem.getRules(), iterations, lSystem.getForwardChars())
+    val intructions = translate(lSystem.getAxiom(), lSystem.getRules(), iterations, lSystem.getForwardChars())
 
-    val xyList = LSystem.convertToXY(intructions, lSystem.getAngle())
+    val xyList = convertToXY(intructions, lSystem.getAngle())
 
-    val scaleXYList = LSystem.scaleXYList(xyList)
+    val scaleXYList = scaleXYList(xyList)
 
     return scaleXYList
 }

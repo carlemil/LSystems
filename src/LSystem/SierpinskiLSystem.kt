@@ -1,6 +1,6 @@
 package LSystem
 
-class sierpinskiLSystem : LSystem.LSystem.LSystem {
+class sierpinskiLSystem : LSystem {
     override fun getForwardChars(): Set<Char> {
         return setOf('F')
     }
