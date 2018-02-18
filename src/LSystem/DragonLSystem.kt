@@ -1,27 +1,28 @@
-class sierpinskiLSystem : LSystem {
+package LSystem
+
+class dragonLSystem : LSystem.LSystem.LSystem {
     override fun getForwardChars(): Set<Char> {
         return setOf('F')
     }
 
     override fun getAngle(): Double {
-        return Math.PI / 3
+        return Math.PI / 2.0
     }
 
     override fun getName(): String {
-        return "SierpinskiCurve"
+        return "DragonCurve"
     }
 
     override fun getRules(): Map<Char, String> {
         return mapOf(
-                'A' to "BF-AF-B",
-                'B' to "AF+BF+A",
+                'A' to "A+BF",
+                'B' to "FA-B",
                 '+' to "+",
                 '-' to "-",
                 'F' to "F")
     }
 
     override fun getAxiom(): String {
-        return "A"
+        return "FA"
     }
 }
-

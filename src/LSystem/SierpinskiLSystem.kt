@@ -1,25 +1,29 @@
-class snowFlake1LSystem : LSystem {
+package LSystem
+
+class sierpinskiLSystem : LSystem.LSystem.LSystem {
     override fun getForwardChars(): Set<Char> {
-        return setOf('A', 'B')
+        return setOf('F')
     }
 
     override fun getAngle(): Double {
-        return Math.PI / 3.0
+        return Math.PI / 3
     }
 
     override fun getName(): String {
-        return "SnowFlake1Curve"
+        return "SierpinskiCurve"
     }
 
     override fun getRules(): Map<Char, String> {
         return mapOf(
-                'A' to "A-B--B+A++AA+B-",
-                'B' to "+A-BB--B-A++A+B",
+                'A' to "BF-AF-B",
+                'B' to "AF+BF+A",
                 '+' to "+",
-                '-' to "-")
+                '-' to "-",
+                'F' to "F")
     }
 
     override fun getAxiom(): String {
         return "A"
     }
 }
+

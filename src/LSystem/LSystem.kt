@@ -1,16 +1,18 @@
+package LSystem
+
 import java.lang.Math.*
 
 /**
  * Created by carlemil on 4/10/17.
  */
 
-fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>> {
+fun computeLSystem(lSystem: LSystem.LSystem.LSystem, iterations: Int): List<Pair<Double, Double>> {
 
-    val intructions = translate(lSystem.getAxiom(), lSystem.getRules(), iterations, lSystem.getForwardChars())
+    val intructions = LSystem.translate(lSystem.getAxiom(), lSystem.getRules(), iterations, lSystem.getForwardChars())
 
-    val xyList = convertToXY(intructions, lSystem.getAngle())
+    val xyList = LSystem.convertToXY(intructions, lSystem.getAngle())
 
-    val scaleXYList = scaleXYList(xyList)
+    val scaleXYList = LSystem.scaleXYList(xyList)
 
     return scaleXYList
 }

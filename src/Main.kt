@@ -1,7 +1,8 @@
+import LSystem.computeLSystem
+import LSystem.hilbertLSystem
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
-import java.lang.Math.PI
 import javax.imageio.ImageIO
 import kotlin.math.pow
 

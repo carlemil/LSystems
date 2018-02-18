@@ -1,4 +1,6 @@
-class dragonLSystem : LSystem {
+package LSystem
+
+class kochSnowFlakeLSystem : LSystem.LSystem.LSystem {
     override fun getForwardChars(): Set<Char> {
         return setOf('F')
     }
@@ -8,19 +10,17 @@ class dragonLSystem : LSystem {
     }
 
     override fun getName(): String {
-        return "DragonCurve"
+        return "KochSnowFlakeLSystem"
     }
 
     override fun getRules(): Map<Char, String> {
         return mapOf(
-                'A' to "A+BF",
-                'B' to "FA-B",
+                'F' to "F-F+F+FF-F-F+F",
                 '+' to "+",
-                '-' to "-",
-                'F' to "F")
+                '-' to "-")
     }
 
     override fun getAxiom(): String {
-        return "FA"
+        return "F"
     }
 }
