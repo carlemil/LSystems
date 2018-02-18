@@ -2,30 +2,42 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.Math.PI
 import javax.imageio.ImageIO
-import kotlin.math.absoluteValue
 import kotlin.math.pow
 
 /**
  * Created by carlemil on 4/10/17.
+ *
+ * Conver output to png with image magic
+ * C:\Program Files\ImageMagick-7.0.7-Q16>magick.exe -size 20000x20000 C:\Users\CarlEmil\IdeaProjects\LSystem2.0\HilbertCurve_10.svg C:\Users\CarlEmil\IdeaProjects\LSystem2.0\HilbertCurve_10.png
  */
 
 fun main(args: Array<String>) {
     println("Start")
-    val system = hilbertLSystem()
-    println("Generate fractal")
     val steps = 8
+    val scale = 4000.0
+    val sidePadding = scale / 50
+    val strokeWidth: Double = 2500.0 * (1.0 / 2.0.pow(steps)) // 2^steps
+    val useBezierCurves = false
+    val system = hilbertLSystem()
+
+    println("Generate fractal")
     val coordList = computeLSystem(system, steps)
 
     println("Read image file")
     val image = readImageFile("arthur.png")
 
-    val scale = 4000.0
-    val sidePadding = scale / 50
-    val strokeWidth: Double = 1500.0 * (1.0 / 2.0.pow(steps)) // 2^steps
+    println("Get coord list as svg")
+    val coordListSVG = getCoordListAsSVG(scale, sidePadding, coordList, system.getName() + "_" + steps,
+            useBezierCurves, strokeWidth, image)
 
-    println("Write to file")
-    writeCoordListToSVGFile(scale, sidePadding, coordList, system.getName() + "_" + steps,
-            false, false, strokeWidth, image)
+    println("Write SVG to file")
+    writeToFil(coordListSVG, system.getName() +
+            (if (useBezierCurves) "_bezier" else ""), ".svg")
+
+    println("Write HTML to file")
+    writeToFil(wrapWithHTML(coordListSVG), system.getName() +
+            (if (useBezierCurves) "_bezier" else ""), ".html")
+
     println("Done")
 }
 
@@ -33,13 +45,10 @@ private fun readImageFile(file: String): BufferedImage {
     return ImageIO.read(File(file))
 }
 
-private fun writeCoordListToSVGFile(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
-                                    name: String, useBezierCurves: Boolean, wrapWithHtml: Boolean,
-                                    strokeWidth: Double, image: BufferedImage) {
+private fun getCoordListAsSVG(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
+                              name: String, useBezierCurves: Boolean, strokeWidth: Double, image: BufferedImage): StringBuffer {
     var stringBuffer = StringBuffer()
-    if (wrapWithHtml) {
-        stringBuffer.append("<!DOCTYPE html>\n<html>\n<body>\n")
-    }
+
     stringBuffer.append(
             "<svg width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">")
     if (useBezierCurves) {
@@ -65,20 +74,26 @@ private fun writeCoordListToSVGFile(scale: Double, sidePadding: Double, xyList: 
             stringBuffer.append("\" stroke=\"#" + getColor(p0, image) + "\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
         }
     }
-    stringBuffer.append("</svg>\n")
-    if (wrapWithHtml) {
-        stringBuffer.append("</body>\n</html>\n")
-    }
-    fileWriter(stringBuffer.toString(), name +
-            (if (useBezierCurves) "_bezier" else "") +
-            (if (wrapWithHtml) ".html" else ".svg"))
+    return stringBuffer
+}
+
+fun wrapWithHTML(stringBuffer: StringBuffer): StringBuffer {
+    stringBuffer.append("<!DOCTYPE html>\n<html>\n<body>\n")
+    stringBuffer.append("</body>\n</html>\n")
+    return stringBuffer
+}
+
+fun writeToFil(stringBuffer: StringBuffer, fileName: String, fileEnding: String) {
+    fileWriter(stringBuffer.toString(), fileName + fileEnding)
 }
 
 fun getColor(p: Pair<Double, Double>, image: BufferedImage): String {
     val x = (p.first * (image.width - 1)).toInt()
     val y = (p.second * (image.height - 1)).toInt()
     //print("x: " + x + ", y: " + y + "  " + image.width.toString() + " - " + image.height.toString() + " P " + p + "\n")
-    return (image.getRGB(x, y) and 0xffffff).toString(16)
+    val color = image.getRGB(x, y)
+//    val mixedColor = Color.
+    return (color and 0xffffff).toString(16)
     // return "ff00ff"
 }
 
