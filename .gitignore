@@ -2,3 +2,4 @@ out/
 *.html
 *.svg
 *.png
+.idea*

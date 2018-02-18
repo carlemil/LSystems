@@ -21,22 +21,25 @@ fun main(args: Array<String>) {
     val useBezierCurves = false
     val colorRatio = 0.8
     val system = hilbertLSystem()
-    val fileName = system.getName() + "_" + steps + "_" + (if (useBezierCurves) "_bezier" else "")
+    val imageName = "cekj.png"
+    val fileName = system.getName() + "_" + steps +
+            (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
+            (if (useBezierCurves) "_bezier" else "")
 
     println("Generate fractal")
     val coordList = computeLSystem(system, steps)
 
     println("Read image file")
-    val image = readImageFile("arthur.png")
+    val image = readImageFile(imageName)
 
     println("Get coord list as svg")
     val coordListSVG = getCoordListAsSVG(scale, sidePadding, coordList, system.getName() + "_" + steps,
             useBezierCurves, strokeWidth, image, colorRatio)
 
-    println("Write SVG to file")
+    println("Write SVG to file: " + fileName + ".svg")
     writeToFil(coordListSVG, fileName, ".svg")
 
-    println("Write HTML to file")
+    println("Write HTML to file: " + fileName + ".html")
     writeToFil(wrapWithHTML(coordListSVG), fileName, ".html")
 
     println("Done")
@@ -99,9 +102,9 @@ fun getColorFromImage(p: Pair<Double, Double>, image: BufferedImage): Color {
 
 fun getColorByIndex(i: Double): Color {
     val a = 127
-    val r = ((Math.sin(i / 7) + 1) * 127).toInt();
-    val g = ((Math.sin(i / 3) + 1) * 127).toInt();
-    val b = 127
+    val r = ((Math.sin(i / 701) + 1) * 127).toInt();
+    val g = ((Math.sin(i / 71) + 1) * 127).toInt();
+    val b = ((Math.sin(i / 7001) + 1) * 127).toInt();
     val color = Color(a, r, g, b)
     return color
 }
