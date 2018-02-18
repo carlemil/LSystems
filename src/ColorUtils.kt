@@ -2,22 +2,20 @@ import java.awt.*
 
 object ColorUtils {
 
-    fun blend(i0: Int, i1: Int): Color {
-        val c0 = Color(i0)
-        val c1 = Color(i1)
-        return blend(c0, c1)
-    }
+    fun blend(c0: Color, c1: Color, ratio0: Double): Color {
+        val ratio1 = 1.0 - ratio0
 
-    fun blend(c0: Color, c1: Color): Color {
-        val totalAlpha = (c0.alpha + c1.alpha).toDouble()
-        val weight0 = c0.alpha / totalAlpha
-        val weight1 = c1.alpha / totalAlpha
-
-        val r = weight0 * c0.red + weight1 * c1.red
-        val g = weight0 * c0.green + weight1 * c1.green
-        val b = weight0 * c0.blue + weight1 * c1.blue
+        val r = ratio0 * c0.red + ratio1 * c1.red
+        val g = ratio0 * c0.green + ratio1 * c1.green
+        val b = ratio0 * c0.blue + ratio1 * c1.blue
         val a = Math.max(c0.alpha, c1.alpha).toDouble()
 
         return Color(r.toInt(), g.toInt(), b.toInt(), a.toInt())
+    }
+
+    fun getHexString(c: Color): String {
+        val double = c.rgb//+ c.alpha * Math.pow(2.0, 24.0)
+        val string = (double.toInt() and 0xFFFFFF).toString(16)
+        return string
     }
 }
