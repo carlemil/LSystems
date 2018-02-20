@@ -15,10 +15,10 @@ import kotlin.math.pow
 
 fun main(args: Array<String>) {
     println("Init")
-    val steps = 9
-    val scale = 4000.0
+    val steps = 8
+    val scale = 800.0
     val sidePadding = scale / 50
-    val strokeWidth: Double = 2500.0 * (1.0 / 2.0.pow(steps)) // 2^steps
+    val strokeWidth: Double = scale * (0.6 / 2.0.pow(steps)) // 2^steps
     val useBezierCurves = false
     val colorRatio = 0.8
     val system = hilbertLSystem()
