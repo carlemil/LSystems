@@ -35,8 +35,7 @@ fun main(args: Array<String>) {
     val image = readImageFile(imageName)
 
     println("Get coord list as svg")
-    val coordListSVG = getCoordListAsSVG(scale, sidePadding, coordList, system.getName() + "_" + steps,
-            useBezierCurves, strokeWidth, image, colorRatio)
+    val coordListSVG = getCoordListAsSVG(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, colorRatio)
 
     println("Write SVG to file: " + fileName + ".svg")
     writeToFil(coordListSVG, fileName, ".svg")
@@ -52,7 +51,7 @@ private fun readImageFile(file: String): BufferedImage {
 }
 
 private fun getCoordListAsSVG(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
-                              name: String, useBezierCurves: Boolean, strokeWidth: Double, image: BufferedImage,
+                              useBezierCurves: Boolean, strokeWidth: Double, image: BufferedImage,
                               colorRatio: Double): StringBuffer {
     var stringBuffer = StringBuffer()
 
