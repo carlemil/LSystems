@@ -7,16 +7,17 @@ import java.lang.Math.*
  */
 
 fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>> {
-
     val t0 = System.currentTimeMillis()
     val instructions = translate(lSystem.getAxiom(), lSystem.getRules(), iterations, lSystem.getForwardChars())
     val t1 = System.currentTimeMillis()
-
     print("Generated fractal in: " + (t1 - t0) + "ms\n")
-
     val xyList = convertToXY(instructions.toString(), lSystem.getAngle())
-
-    return scaleXYList(xyList)
+    val t2 = System.currentTimeMillis()
+    print("Convert to XY in: " + (t2 - t1) + "ms\n")
+    val svg = scaleXYList(xyList)
+    val t3 = System.currentTimeMillis()
+    print("Scale XY list in: " + (t3 - t2) + "ms\n")
+    return svg
 }
 
 private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int, forwardChars: Set<Char>): StringBuilder {
