@@ -4,6 +4,7 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import javax.swing.plaf.basic.BasicSplitPaneDivider
 import kotlin.math.pow
 
 /**
@@ -98,17 +99,19 @@ fun getColorFromImage(p: Pair<Double, Double>, image: BufferedImage): Color {
     val x = (p.first * (image.width - 1)).toInt()
     val y = (p.second * (image.height - 1)).toInt()
     val color = image.getRGB(x, y)
-    return Color(color)// and 0xffffff).toString(16)
+    return Color(color)
 }
 
 fun getColorByIndex(i: Double): Color {
-    val a = 127
-    val r = ((Math.sin(i / 701) + 1) * 127).toInt();
-    val g = ((Math.sin(i / 71) + 1) * 127).toInt();
-    val b = ((Math.sin(i / 7001) + 1) * 127).toInt();
-    val color = Color(a, r, g, b)
+    val a = 255
+    val r = (getSinFactor(i, 1111F) + getSinFactor(i, 191F) + getSinFactor(i, 2711F)) / 3F
+    val g = (getSinFactor(i, 1711F) + getSinFactor(i, 151F) + getSinFactor(i, 3971F)) / 3F
+    val b = (getSinFactor(i, 2311F) + getSinFactor(i, 171F) + getSinFactor(i, 1711F)) / 3F
+    val color = Color(a, (r * 255).toInt(), (g * 255).toInt(), (b * 255).toInt())
     return color
 }
+
+private fun getSinFactor(i: Double, divider: Float) = (Math.sin(i / divider) + 1.0) / 2.0
 
 private fun fileWriter(text: String, name: String) {
     File(name).writeText(text)
