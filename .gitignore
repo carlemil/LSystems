@@ -1,5 +1,6 @@
 out/
 *.html
 *.svg
-*.png
-.idea*
+.idea
+lib/*
+*.iml

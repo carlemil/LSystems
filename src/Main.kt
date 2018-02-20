@@ -15,14 +15,14 @@ import kotlin.math.pow
 
 fun main(args: Array<String>) {
     println("Init")
-    val steps = 8
+    val steps = 9
     val scale = 4000.0
     val sidePadding = scale / 50
     val strokeWidth: Double = 2500.0 * (1.0 / 2.0.pow(steps)) // 2^steps
     val useBezierCurves = false
     val colorRatio = 0.8
     val system = hilbertLSystem()
-    val imageName = "cekj.png"
+    val imageName = "jw_people_1046.png"
     val fileName = system.getName() + "_" + steps +
             (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
             (if (useBezierCurves) "_bezier" else "")
