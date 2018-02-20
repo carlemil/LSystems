@@ -9,49 +9,33 @@ import java.lang.Math.*
 fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>> {
 
     val t0 = System.currentTimeMillis()
-    val intructions = translate(lSystem.getAxiom(), lSystem.getRules(), iterations, lSystem.getForwardChars())
+    val instructions = translate(lSystem.getAxiom(), lSystem.getRules(), iterations, lSystem.getForwardChars())
     val t1 = System.currentTimeMillis()
 
-    print("" + (t1 - t0) + "\n")
+    print("Generated fractal in: " + (t1 - t0) + "ms\n")
 
-    val xyList = convertToXY(intructions, lSystem.getAngle())
+    val xyList = convertToXY(instructions.toString(), lSystem.getAngle())
 
-    val scaleXYList = scaleXYList(xyList)
-
-    return scaleXYList
+    return scaleXYList(xyList)
 }
 
-private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int, forwardChars: Set<Char>): String {
-    var tmp: String = axiom
-    var intructions: String = "" // TODO Change to stringbuffer or other less memory intensive alt.
+private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int, forwardChars: Set<Char>): StringBuilder {
+    var tmp = StringBuilder()
+    tmp.append(axiom)
+    var instructions = StringBuilder()
     for (i in 1..iterations) {
-        intructions = ""
+        instructions.setLength(0)
         for (c in tmp) {
-            intructions += rules.get(c)
+            instructions.append(rules.get(c))
         }
-        tmp = intructions
+        tmp.setLength(0)
+        tmp.append(instructions)
     }
     for (c in forwardChars) {
-        intructions = intructions.replace(c, 'F')
+        instructions.replace(Regex(c.toString()), "F")
     }
-    return intructions
+    return instructions
 }
-
-//private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int, forwardChars: Set<Char>): String {
-//    var tmp: String = axiom
-//    var intructions: String = "" // TODO Change to stringbuffer or other less memory intensive alt.
-//    for (i in 1..iterations) {
-//        intructions = ""
-//        for (c in tmp) {
-//            intructions += rules.get(c)
-//        }
-//        tmp = intructions
-//    }
-//    for (c in forwardChars) {
-//        intructions = intructions.replace(c, 'F')
-//    }
-//    return intructions
-//}
 
 private fun convertToXY(intructions: String, systemAngle: Double): List<Pair<Double, Double>> {
     val list: MutableList<Pair<Double, Double>> = mutableListOf()

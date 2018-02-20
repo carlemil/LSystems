@@ -16,7 +16,7 @@ import kotlin.math.pow
 
 fun main(args: Array<String>) {
     println("Init")
-    val steps = 8
+    val steps = 10
     val scale = 800.0
     val sidePadding = scale / 50
     val strokeWidth: Double = scale * (0.6 / 2.0.pow(steps)) // 2^steps
