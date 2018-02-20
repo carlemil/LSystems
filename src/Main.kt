@@ -23,7 +23,7 @@ fun main(args: Array<String>) {
     val useBezierCurves = false
     val colorRatio = 0.8
     val system = hilbertLSystem()
-    val imageName = "jw_people_1046.png"
+    val imageName = "asd.jpeg" //https://www.fotojet.com https://ipiccy.com/
     val fileName = system.getName() + "_" + steps +
             (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
             (if (useBezierCurves) "_bezier" else "")
