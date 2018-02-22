@@ -12,21 +12,31 @@ import kotlin.math.pow
  *
  * Conver output to png with image magic
  * C:\Program Files\ImageMagick-7.0.7-Q16>magick.exe -size 20000x20000 C:\Users\CarlEmil\IdeaProjects\LSystem2.0\HilbertCurve_10.svg C:\Users\CarlEmil\IdeaProjects\LSystem2.0\HilbertCurve_10.png
+ *
+ *
+ * starting with 132 photos of my collegues in high res (5120x3413)
+ *
+for f in *.jpg; do magick convert "$f" -crop 3413x3413+853+0 +repage -scale 30% "$f"; done
+
+magick montage -tile x12 -background #aaaaaa *.jpg ../montage.jpg
+
+magick HilbertCurve_11_asd.svg HilbertCurve_11_asd.svg.png
+
  */
 
 fun main(args: Array<String>) {
     println("Init")
-    val steps = 3
-    val scale = 800.0
+    val steps = 11
+    val scale = 30000.0
     val sidePadding = scale / 50
     val strokeWidth: Double = scale * (0.6 / 2.0.pow(steps)) // 2^steps
     val useBezierCurves = false
     val colorRatio = 0.8
     val system = hilbertLSystem()
-    val imageName = "asd.jpeg" //https://www.fotojet.com https://ipiccy.com/
+    val imageName = "mont.jpg" //https://www.fotojet.com https://ipiccy.com/
     val fileName = system.getName() + "_" + steps +
             (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
-            (if (useBezierCurves) "_bezier" else "") + ".svg"
+            (if (useBezierCurves) "_bezier" else "") + "_scale_" + scale.toInt() + ".svg"
 
     val coordList = computeLSystem(system, steps)
 
@@ -39,10 +49,11 @@ fun main(args: Array<String>) {
     svgBufferedWriter.append("")
     writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, colorRatio, svgBufferedWriter)
 
-    val htmlFileName = fileName + ".html"
-    println("Write HTML wrapper file: " + htmlFileName)
-    writeSVGToHtmlFile(htmlFileName, scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, colorRatio)
-
+    if (steps < 10) {
+        val htmlFileName = fileName + ".html"
+        println("Write HTML wrapper file: " + htmlFileName)
+        writeSVGToHtmlFile(htmlFileName, scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, colorRatio)
+    }
     println("Done")
 }
 
