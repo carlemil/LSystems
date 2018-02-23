@@ -43,7 +43,7 @@ private fun convertToXY(intructions: String, systemAngle: Double): List<Pair<Dou
 
     var x: Double = 0.0
     var y: Double = 0.0
-    var angle: Double = 0.0
+    var angle: Double = Math.PI/2
 
     list.add(Pair(x, y))
     list.add(Pair(x, y))

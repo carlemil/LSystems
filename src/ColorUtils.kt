@@ -16,6 +16,6 @@ object ColorUtils {
     fun getHexString(c: Color): String {
         val double = c.rgb//+ c.alpha * Math.pow(2.0, 24.0)
         val string = (double.toInt() and 0xFFFFFF).toString(16)
-        return string
+        return string.padStart(6,'0')
     }
 }

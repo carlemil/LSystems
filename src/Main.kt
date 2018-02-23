@@ -26,44 +26,41 @@ magick HilbertCurve_11_asd.svg HilbertCurve_11_asd.svg.png
 
 fun main(args: Array<String>) {
     println("Init")
-    val steps = 11
-    val scale = 30000.0
+    val steps = 8
+    val scale = 800.0
     val sidePadding = scale / 50
     val strokeWidth: Double = scale * (0.6 / 2.0.pow(steps)) // 2^steps
     val useBezierCurves = false
-    val colorRatio = 0.8
     val system = hilbertLSystem()
     val imageName = "mont.jpg" //https://www.fotojet.com https://ipiccy.com/
+    val image = readImageFile(imageName)
     val fileName = system.getName() + "_" + steps +
             (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
             (if (useBezierCurves) "_bezier" else "") + "_scale_" + scale.toInt() + ".svg"
 
     val coordList = computeLSystem(system, steps)
 
-    println("Read image file")
-    val image = readImageFile(imageName)
-
     println("Write SVG to file: " + fileName)
     File(fileName).delete()
     val svgBufferedWriter = File(fileName).bufferedWriter()
     svgBufferedWriter.append("")
-    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, colorRatio, svgBufferedWriter)
+    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, svgBufferedWriter)
 
     if (steps < 10) {
         val htmlFileName = fileName + ".html"
         println("Write HTML wrapper file: " + htmlFileName)
-        writeSVGToHtmlFile(htmlFileName, scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, colorRatio)
+        writeSVGToHtmlFile(htmlFileName, scale, sidePadding, coordList, useBezierCurves, strokeWidth, image)
     }
     println("Done")
 }
 
 private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,
                                coordList: List<Pair<Double, Double>>, useBezierCurves: Boolean,
-                               strokeWidth: Double, image: BufferedImage, colorRatio: Double) {
+                               strokeWidth: Double, image: BufferedImage) {
     File(htmlFileName).delete()
     val htmlBufferedWriter = File(htmlFileName).bufferedWriter()
     htmlBufferedWriter.append("<!DOCTYPE html>\n<html>\n<body>\n")
-    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, colorRatio, htmlBufferedWriter)
+    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, htmlBufferedWriter)
     htmlBufferedWriter.append("</body>\n</html>\n")
     htmlBufferedWriter.flush()
 }
@@ -71,7 +68,7 @@ private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding:
 
 private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
                            useBezierCurves: Boolean, strokeWidth: Double, image: BufferedImage,
-                           colorRatio: Double, file: BufferedWriter) {
+                           file: BufferedWriter) {
     file.append("<svg width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">\n")
     if (useBezierCurves) {
         val separator = " "
@@ -89,7 +86,8 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
         for (i in 0..xyList.size - 2) {
             val p0 = xyList.get(i)
             val p1 = xyList.get(i + 1)
-            val color = ColorUtils.getHexString(ColorUtils.blend(getColorFromImage(p0, image), getColorByIndex(i.toDouble()), colorRatio))
+            val color = ColorUtils.getHexString(
+                    getColorByLinePosition(i.toDouble() / xyList.size * Math.PI, getColorFromImage(p0, image).blue.toDouble()))
             file.append("\n<polyline points=\"")
             file.append(getCoord(p0, scale, sidePadding, ","))
             file.append(" ")
@@ -112,15 +110,15 @@ fun getColorFromImage(p: Pair<Double, Double>, image: BufferedImage): Color {
     return Color(color)
 }
 
-fun getColorByIndex(i: Double): Color {
-    val a = 255
-    val r = (getSinFactor(i, 1111F) + getSinFactor(i, 191F) + getSinFactor(i, 2711F)) / 3F
-    val g = (getSinFactor(i, 1711F) + getSinFactor(i, 151F) + getSinFactor(i, 3971F)) / 3F
-    val b = (getSinFactor(i, 2311F) + getSinFactor(i, 171F) + getSinFactor(i, 1711F)) / 3F
-    return Color(a, (r * 255).toInt(), (g * 255).toInt(), (b * 255).toInt())
+fun getColorByLinePosition(linePosition: Double, imagePressure: Double): Color {
+    val a = imagePressure.toInt()
+    val r = (getSinFactor(linePosition * 7F) * imagePressure).toInt()
+    val g = (getSinFactor(linePosition * 13F) * imagePressure).toInt()
+    val b = (getSinFactor(linePosition * 3F) * imagePressure).toInt()
+    return Color(a, r, g, b)
 }
 
-private fun getSinFactor(i: Double, divider: Float) = (Math.sin(i / divider) + 1.0) / 2.0
+private fun getSinFactor(value: Double) = (Math.sin(value) + 1.0) / 2.0
 
 private fun getCenter(p0: Pair<Double, Double>, p1: Pair<Double, Double>): Pair<Double, Double> {
     return Pair((p0.first + p1.first) / 2.0, (p0.second + p1.second) / 2.0)
