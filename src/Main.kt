@@ -87,7 +87,7 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
             val p0 = xyList.get(i)
             val p1 = xyList.get(i + 1)
             val color = ColorUtils.getHexString(
-                    getColorByLinePosition(i.toDouble() / xyList.size * Math.PI, getColorFromImage(p0, image).blue.toDouble()))
+                    getColorByLinePosition(i.toDouble() / xyList.size, getColorFromImage(p0, image).blue.toDouble()))
             file.append("\n<polyline points=\"")
             file.append(getCoord(p0, scale, sidePadding, ","))
             file.append(" ")
@@ -112,10 +112,10 @@ fun getColorFromImage(p: Pair<Double, Double>, image: BufferedImage): Color {
 
 fun getColorByLinePosition(linePosition: Double, imagePressure: Double): Color {
     val a = imagePressure.toInt()
-    val r = (getSinFactor(linePosition * 7F) * imagePressure).toInt()
-    val g = (getSinFactor(linePosition * 13F) * imagePressure).toInt()
-    val b = (getSinFactor(linePosition * 3F) * imagePressure).toInt()
-    return Color(a, r, g, b)
+    val r = (getSinFactor((linePosition + 0.33) * Math.PI*2) * imagePressure).toInt()
+    val g = (getSinFactor((linePosition + 0.00) * Math.PI*2) * imagePressure).toInt()
+    val b = (getSinFactor((linePosition + 0.66) * Math.PI*2) * imagePressure).toInt()
+    return Color(r, g, b, a)
 }
 
 private fun getSinFactor(value: Double) = (Math.sin(value) + 1.0) / 2.0
