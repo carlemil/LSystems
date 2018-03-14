@@ -1,3 +1,5 @@
+import LSystem.color.Palette
+import LSystem.color.Theme
 import LSystem.computeLSystem
 import LSystem.hilbertLSystem
 import java.awt.Color
@@ -32,11 +34,13 @@ fun main(args: Array<String>) {
     val strokeWidth: Double = scale * (0.6 / 2.0.pow(steps)) // 2^steps
     val useBezierCurves = false
     val system = hilbertLSystem()
-    val imageName = "mont.jpg" //https://www.fotojet.com https://ipiccy.com/
+    val imageName = "xmas_card.jpg" //https://www.fotojet.com https://ipiccy.com/
     val image = readImageFile(imageName)
     val fileName = system.getName() + "_" + steps +
             (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
             (if (useBezierCurves) "_bezier" else "") + "_scale_" + scale.toInt() + ".svg"
+
+    val palette = Palette.getPalette(Theme("shiny_scales"), 256, 255)
 
     val coordList = computeLSystem(system, steps)
 
@@ -44,23 +48,23 @@ fun main(args: Array<String>) {
     File(fileName).delete()
     val svgBufferedWriter = File(fileName).bufferedWriter()
     svgBufferedWriter.append("")
-    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, svgBufferedWriter)
+    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, svgBufferedWriter)
 
     if (steps < 10) {
         val htmlFileName = fileName + ".html"
         println("Write HTML wrapper file: " + htmlFileName)
-        writeSVGToHtmlFile(htmlFileName, scale, sidePadding, coordList, useBezierCurves, strokeWidth, image)
+        writeSVGToHtmlFile(htmlFileName, scale, sidePadding, coordList, useBezierCurves, strokeWidth, palette, image)
     }
     println("Done")
 }
 
 private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,
                                coordList: List<Pair<Double, Double>>, useBezierCurves: Boolean,
-                               strokeWidth: Double, image: BufferedImage) {
+                               strokeWidth: Double, palette: ByteArray, image: BufferedImage) {
     File(htmlFileName).delete()
     val htmlBufferedWriter = File(htmlFileName).bufferedWriter()
     htmlBufferedWriter.append("<!DOCTYPE html>\n<html>\n<body>\n")
-    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, htmlBufferedWriter)
+    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, htmlBufferedWriter)
     htmlBufferedWriter.append("</body>\n</html>\n")
     htmlBufferedWriter.flush()
 }
@@ -68,7 +72,7 @@ private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding:
 
 private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
                            useBezierCurves: Boolean, strokeWidth: Double, image: BufferedImage,
-                           file: BufferedWriter) {
+                           palette: ByteArray, file: BufferedWriter) {
     file.append("<svg width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">\n")
     if (useBezierCurves) {
         val separator = " "
@@ -87,7 +91,7 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
             val p0 = xyList.get(i)
             val p1 = xyList.get(i + 1)
             val color = ColorUtils.getHexString(
-                    getColorByLinePosition(i.toDouble() / xyList.size, getColorFromImage(p0, image).blue.toDouble()))
+                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, getColorFromImage(p0, image).blue.toDouble(), palette))
             file.append("\n<polyline points=\"")
             file.append(getCoord(p0, scale, sidePadding, ","))
             file.append(" ")
@@ -112,9 +116,17 @@ fun getColorFromImage(p: Pair<Double, Double>, image: BufferedImage): Color {
 
 fun getColorByLinePosition(linePosition: Double, imagePressure: Double): Color {
     val a = imagePressure.toInt()
-    val r = (getSinFactor((linePosition + 0.33) * Math.PI*2) * imagePressure).toInt()
-    val g = (getSinFactor((linePosition + 0.00) * Math.PI*2) * imagePressure).toInt()
-    val b = (getSinFactor((linePosition + 0.66) * Math.PI*2) * imagePressure).toInt()
+    val r = (getSinFactor((linePosition + 0.33) * Math.PI * 2) * imagePressure).toInt()
+    val g = (getSinFactor((linePosition + 0.00) * Math.PI * 2) * imagePressure).toInt()
+    val b = (getSinFactor((linePosition + 0.66) * Math.PI * 2) * imagePressure).toInt()
+    return Color(r, g, b, a)
+}
+
+fun getPaletteColorByLinePosition(linePosition: Double, imagePressure: Double, palette: ByteArray): Color {
+    val a = imagePressure.toInt()
+    val r = ((palette[(linePosition * palette.size/3).toInt() * 3 + 0] + 127)/256 * imagePressure).toInt()
+    val g = ((palette[(linePosition * palette.size/3).toInt() * 3 + 1] + 127)/256 * imagePressure).toInt()
+    val b = ((palette[(linePosition * palette.size/3).toInt() * 3 + 2] + 127)/256 * imagePressure).toInt()
     return Color(r, g, b, a)
 }
 
