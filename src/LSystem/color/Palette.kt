@@ -2,7 +2,7 @@ package LSystem.color
 
 object Palette {
 
-    fun getPalette(theme: Theme, length: Int, brightness: Int): ByteArray {
+    fun getPalette(theme: Theme, length: Int, brightness: Int): IntArray {
 
         adjustBrightness(theme.palette, brightness)
 
@@ -17,12 +17,7 @@ object Palette {
             setGradient(palette, theme.palette, theme.blendMode)
         }
 
-        if (theme.centerMode == CenterMode.BLACK) {
-            palette[palette.size - 1] = 0x000000
-        } else if (theme.centerMode == CenterMode.WHITE) {
-            palette[palette.size - 1] = 0xffffff
-        }
-        return byteify(palette)
+        return palette
     }
 
     private fun adjustBrightness(colors: IntArray, brightness: Int) {
@@ -107,7 +102,7 @@ object Palette {
         return f3[0].toInt() + (f3[1].toInt() shl 8) + (f3[2].toInt() shl 16)
     }
 
-    private fun rgbToFloat3(color: Int): FloatArray {
+    fun rgbToFloat3(color: Int): FloatArray {
         val f3 = FloatArray(3)
         f3[0] = (color and 255).toFloat()
         f3[1] = (color shr 8 and 255).toFloat()

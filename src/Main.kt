@@ -28,19 +28,20 @@ magick HilbertCurve_11_asd.svg HilbertCurve_11_asd.svg.png
 
 fun main(args: Array<String>) {
     println("Init")
-    val steps = 8
-    val scale = 800.0
+
+    val steps = 6
+    val scale = 500.0
     val sidePadding = scale / 50
     val strokeWidth: Double = scale * (0.6 / 2.0.pow(steps)) // 2^steps
     val useBezierCurves = false
     val system = hilbertLSystem()
-    val imageName = "xmas_card.jpg" //https://www.fotojet.com https://ipiccy.com/
+    val imageName = "montage.jpg" //https://www.fotojet.com https://ipiccy.com/
     val image = readImageFile(imageName)
     val fileName = system.getName() + "_" + steps +
             (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
             (if (useBezierCurves) "_bezier" else "") + "_scale_" + scale.toInt() + ".svg"
 
-    val palette = Palette.getPalette(Theme("shiny_scales"), 256, 255)
+    val palette = Palette.getPalette(Theme("shiny_scales"), Math.pow(4.0, 2.0).toInt(), 100)
 
     val coordList = computeLSystem(system, steps)
 
@@ -60,7 +61,7 @@ fun main(args: Array<String>) {
 
 private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,
                                coordList: List<Pair<Double, Double>>, useBezierCurves: Boolean,
-                               strokeWidth: Double, palette: ByteArray, image: BufferedImage) {
+                               strokeWidth: Double, palette: IntArray, image: BufferedImage) {
     File(htmlFileName).delete()
     val htmlBufferedWriter = File(htmlFileName).bufferedWriter()
     htmlBufferedWriter.append("<!DOCTYPE html>\n<html>\n<body>\n")
@@ -72,7 +73,7 @@ private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding:
 
 private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
                            useBezierCurves: Boolean, strokeWidth: Double, image: BufferedImage,
-                           palette: ByteArray, file: BufferedWriter) {
+                           palette: IntArray, file: BufferedWriter) {
     file.append("<svg width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">\n")
     if (useBezierCurves) {
         val separator = " "
@@ -90,8 +91,9 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
         for (i in 0..xyList.size - 2) {
             val p0 = xyList.get(i)
             val p1 = xyList.get(i + 1)
+            val imageColorComponent = getColorFromImage(p0, image).blue.toDouble()
             val color = ColorUtils.getHexString(
-                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, getColorFromImage(p0, image).blue.toDouble(), palette))
+                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, imageColorComponent, palette))
             file.append("\n<polyline points=\"")
             file.append(getCoord(p0, scale, sidePadding, ","))
             file.append(" ")
@@ -115,18 +117,19 @@ fun getColorFromImage(p: Pair<Double, Double>, image: BufferedImage): Color {
 }
 
 fun getColorByLinePosition(linePosition: Double, imagePressure: Double): Color {
-    val a = imagePressure.toInt()
+    val a = 255
     val r = (getSinFactor((linePosition + 0.33) * Math.PI * 2) * imagePressure).toInt()
     val g = (getSinFactor((linePosition + 0.00) * Math.PI * 2) * imagePressure).toInt()
     val b = (getSinFactor((linePosition + 0.66) * Math.PI * 2) * imagePressure).toInt()
     return Color(r, g, b, a)
 }
 
-fun getPaletteColorByLinePosition(linePosition: Double, imagePressure: Double, palette: ByteArray): Color {
-    val a = imagePressure.toInt()
-    val r = ((palette[(linePosition * palette.size/3).toInt() * 3 + 0] + 127)/256 * imagePressure).toInt()
-    val g = ((palette[(linePosition * palette.size/3).toInt() * 3 + 1] + 127)/256 * imagePressure).toInt()
-    val b = ((palette[(linePosition * palette.size/3).toInt() * 3 + 2] + 127)/256 * imagePressure).toInt()
+fun getPaletteColorByLinePosition(linePosition: Double, imagePressure: Double, palette: IntArray): Color {
+    val a = 255
+    val f3 = Palette.rgbToFloat3(palette[(linePosition * palette.size).toInt()])
+    val r = (f3[2] * imagePressure / 256).toInt()
+    val g = (f3[1] * imagePressure / 256).toInt()
+    val b = (f3[0] * imagePressure / 256).toInt()
     return Color(r, g, b, a)
 }
 

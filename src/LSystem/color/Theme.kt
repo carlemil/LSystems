@@ -5,8 +5,6 @@ class Theme(themeName: String) {
 
     var drawMode = DrawMode.ZEBRA
 
-    var centerMode = CenterMode.DEFAULT
-
     var palette = intArrayOf(0xffffff, 0x000000)
 
     init {
@@ -14,7 +12,6 @@ class Theme(themeName: String) {
             "black_n_white" -> drawMode = DrawMode.GRADIENT
             "bee_stripes" -> {
                 drawMode = DrawMode.ZEBRA_GRADIENT
-                centerMode = CenterMode.BLACK
                 palette = intArrayOf(0xffff00, 0x222200)
             }
             "blue_hole" -> {
@@ -42,8 +39,7 @@ class Theme(themeName: String) {
             }
             "shiny_scales" -> {
                 drawMode = DrawMode.ZEBRA_GRADIENT
-                centerMode = CenterMode.BLACK
-                palette = intArrayOf(0x00f0ba, 0xd1857e, 0x502065, 0x17b4c7, 0x7315b7, 0x000000)
+                palette = intArrayOf(0x00f0ba, 0xd1857e, 0x502065, 0x17b4c7, 0x7315b7)
             }
             "slime_green" -> {
                 blendMode = BlendMode.HSV
@@ -85,7 +81,6 @@ class Theme(themeName: String) {
             }
             "forest" -> {
                 drawMode = DrawMode.ZEBRA_GRADIENT
-                centerMode = CenterMode.BLACK
                 palette = intArrayOf(0x266A2E, 0x4F4F2F, 0x228b22, 0x855E42, 0x347235, 0x8B864E, 0x254117, 0x8B7355)
             }
             "heavy_rain" -> {
