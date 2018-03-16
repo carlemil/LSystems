@@ -3,12 +3,17 @@ package LSystem.color
 class Theme(themeName: String) {
     var blendMode = BlendMode.RGB
 
-    var drawMode = DrawMode.ZEBRA
+    var drawMode = DrawMode.GRADIENT
 
     var palette = intArrayOf(0xffffff, 0x000000)
 
     init {
         when (themeName) {
+            "montage" -> {
+                palette = intArrayOf(0xF8E8D5, 0xB1DDF3, 0xFFDE89, 0xC2D985,0xE9EBF0, 0xF1B2E1)
+                blendMode = BlendMode.HSV
+                drawMode = DrawMode.ZEBRA_GRADIENT
+            }
             "black_n_white" -> drawMode = DrawMode.GRADIENT
             "bee_stripes" -> {
                 drawMode = DrawMode.ZEBRA_GRADIENT

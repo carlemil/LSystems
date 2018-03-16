@@ -29,10 +29,10 @@ magick HilbertCurve_11_asd.svg HilbertCurve_11_asd.svg.png
 fun main(args: Array<String>) {
     println("Init")
 
-    val steps = 6
-    val scale = 500.0
-    val sidePadding = scale / 50
+    val steps = 10
+    val scale = 7200.0
     val strokeWidth: Double = scale * (0.6 / 2.0.pow(steps)) // 2^steps
+    val sidePadding = strokeWidth * 2
     val useBezierCurves = false
     val system = hilbertLSystem()
     val imageName = "montage.jpg" //https://www.fotojet.com https://ipiccy.com/
@@ -41,7 +41,7 @@ fun main(args: Array<String>) {
             (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
             (if (useBezierCurves) "_bezier" else "") + "_scale_" + scale.toInt() + ".svg"
 
-    val palette = Palette.getPalette(Theme("shiny_scales"), Math.pow(4.0, 2.0).toInt(), 100)
+    val palette = Palette.getPalette(Theme("montage"), Math.pow(4.0, 6.0).toInt(), 100)
 
     val coordList = computeLSystem(system, steps)
 
