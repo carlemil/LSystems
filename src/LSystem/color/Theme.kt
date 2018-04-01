@@ -9,10 +9,18 @@ class Theme(themeName: String) {
 
     init {
         when (themeName) {
+            "black" -> {
+                palette = intArrayOf(0x000000)
+                blendMode = BlendMode.HSV
+            }
             "montage" -> {
-                palette = intArrayOf(0xF8E8D5, 0xB1DDF3, 0xFFDE89, 0xC2D985,0xE9EBF0, 0xF1B2E1)
+                palette = intArrayOf(0xF8E8D5, 0xB1DDF3, 0xFFDE89, 0xC2D985, 0xE9EBF0, 0xF1B2E1)
                 blendMode = BlendMode.HSV
                 drawMode = DrawMode.ZEBRA_GRADIENT
+            }
+            "fullbrights" -> {
+                palette = intArrayOf(0xffff00, 0xff0000, 0xff00ff, 0x00ff00, 0x0000FF, 0x00ffff)
+                blendMode = BlendMode.HSV
             }
             "black_n_white" -> drawMode = DrawMode.GRADIENT
             "bee_stripes" -> {
