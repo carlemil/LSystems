@@ -13,8 +13,12 @@ class Theme(themeName: String) {
                 palette = intArrayOf(0x000000)
                 blendMode = BlendMode.HSV
             }
+            "white" -> {
+                palette = intArrayOf(0xffffff, 0xffffff)
+                blendMode = BlendMode.HSV
+            }
             "montage" -> {
-                palette = intArrayOf(0xF8E8D5, 0xB1DDF3, 0xFFDE89, 0xC2D985, 0xE9EBF0, 0xF1B2E1)
+                palette = intArrayOf(0xffb2b2, 0xffe5b2, 0xe5ffb2, 0xb2ffb2, 0xb2ffe5, 0xb2e5ff, 0xb2b2ff, 0xffb2ff)
                 blendMode = BlendMode.HSV
                 drawMode = DrawMode.ZEBRA_GRADIENT
             }

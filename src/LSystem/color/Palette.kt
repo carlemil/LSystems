@@ -14,7 +14,7 @@ object Palette {
             setFlagBands(palette, theme.palette)
         } else if (theme.drawMode == DrawMode.ZEBRA_GRADIENT) {
             setGradient(palette, theme.palette, theme.blendMode)
-            zebraify(palette, 0.85f)
+            zebraify(palette, 0.9f, theme.blendMode)
         } else if (theme.drawMode == DrawMode.GRADIENT) {
             setGradient(palette, theme.palette, theme.blendMode)
         }
@@ -46,14 +46,25 @@ object Palette {
         }
     }
 
-    private fun zebraify(palette: IntArray, strength: Float) {
+    private fun zebraify(palette: IntArray, strength: Float, blendMode: BlendMode) {
         for (i in palette.indices) {
             if (i % 2 == 1) {
                 val c = palette[i]
-                val r = ((c and 0xff0000) * strength).toInt() and 0xff0000
-                val g = ((c and 0x00ff00) * strength).toInt() and 0x00ff00
-                val b = ((c and 0x0000ff) * strength).toInt() and 0x0000ff
-                palette[i] = r + g + b
+                if (blendMode == BlendMode.HSV) {
+                    var cout = FloatArray(3)
+                    Color.RGBtoHSB(
+                            c shr 16 and 255,
+                            c shr 8 and 255,
+                            c and 255,
+                            cout)
+                    cout[2] = cout[2] * strength
+                    palette[i] = Color.HSBtoRGB(cout[0], cout[1], cout[2])
+                } else {
+                    val r = ((c and 0xff0000) * strength).toInt() and 0xff0000
+                    val g = ((c and 0x00ff00) * strength).toInt() and 0x00ff00
+                    val b = ((c and 0x0000ff) * strength).toInt() and 0x0000ff
+                    palette[i] = r + g + b
+                }
             }
         }
     }

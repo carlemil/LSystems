@@ -3,6 +3,7 @@ import LSystem.color.Theme
 import LSystem.computeLSystem
 import LSystem.dragonLSystem
 import LSystem.hilbertLSystem
+import LSystem.lineLSystem
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.BufferedWriter
@@ -30,9 +31,9 @@ import kotlin.math.pow
 fun main(args: Array<String>) {
     println("Init")
 
-    val steps = 9
+    val steps = 8
     val scale = 800.0
-    val strokeWidth: Double = scale * (0.4 / 2.0.pow(steps)) // 2^steps
+    val strokeWidth: Double = scale * (0.6 / 2.0.pow(steps)) // 2^steps
     val sidePadding = strokeWidth * 2
     val useBezierCurves = false
     val themeName = "montage"

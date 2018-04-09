@@ -41,8 +41,8 @@ private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int, 
 private fun convertToXY(intructions: String, systemAngle: Double): List<Pair<Double, Double>> {
     val list: MutableList<Pair<Double, Double>> = mutableListOf()
 
-    var x: Double = 0.0
-    var y: Double = 0.0
+    var x = 0.0
+    var y = 0.0
     var angle: Double = Math.PI/2
 
     list.add(Pair(x, y))
