@@ -31,20 +31,20 @@ import kotlin.math.pow
 fun main(args: Array<String>) {
     println("Init")
 
-    val steps = 8
-    val scale = 800.0
+    val steps = 6
+    val scale = 400.0
     val strokeWidth: Double = scale * (0.6 / 2.0.pow(steps)) // 2^steps
     val sidePadding = strokeWidth * 2
     val useBezierCurves = false
     val themeName = "montage"
     val system = hilbertLSystem()
-    val imageName = "montage.jpg" //https://www.fotojet.com https://ipiccy.com/
+    val imageName = "cekj2.jpg" //https://www.fotojet.com https://ipiccy.com/
     val image = if (!imageName.isEmpty()) readImageFile(imageName) else null
     val fileName = system.getName() + "_" + steps +
             (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
             "_" + themeName + (if (useBezierCurves) "_bezier" else "") + "_scale_" + scale.toInt() + ".svg"
 
-    val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 6.0).toInt(), 100)
+    val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 4.0).toInt(), 100)
 
     val coordList = computeLSystem(system, steps)
 
@@ -84,9 +84,9 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
             val p0 = xyList.get(i - 1)
             val p1 = xyList.get(i)
             val p2 = xyList.get(i + 1)
-            val imageColorComponent = getColorFromImage(p0, image).blue.toDouble()
+            val brightness = getBrightnessFromImage(p0, image)
             val color = ColorUtils.getHexString(
-                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, imageColorComponent, palette))
+                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette))
             file.append("M " + getCoord(getCenter(p0, p1), scale, sidePadding, separator) +
                     " Q " + getCoord(p1, scale, sidePadding, separator) +
                     " " + getCoord(getCenter(p1, p2), scale, sidePadding, separator) + ", ")
@@ -96,9 +96,9 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
         for (i in 0..xyList.size - 2) {
             val p0 = xyList.get(i)
             val p1 = xyList.get(i + 1)
-            val imageColorComponent = getColorFromImage(p0, image).blue.toDouble()
+            val brightness = getBrightnessFromImage(p0, image)
             val color = ColorUtils.getHexString(
-                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, imageColorComponent, palette))
+                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette))
             file.append("\n<polyline points=\"")
             file.append(getCoord(p0, scale, sidePadding, ","))
             file.append(" ")
@@ -114,22 +114,28 @@ private fun readImageFile(file: String): BufferedImage {
     return ImageIO.read(File(file))
 }
 
-fun getColorFromImage(p: Pair<Double, Double>, image: BufferedImage?): Color {
+fun getBrightnessFromImage(p: Pair<Double, Double>, image: BufferedImage?): Double {
     var color = 0xffffff
     if (image != null) {
         val x = (p.first * (image.width - 1)).toInt()
         val y = (p.second * (image.height - 1)).toInt()
         color = image.getRGB(x, y)
     }
-    return Color(color)
+    var c = FloatArray(3)
+    Color.RGBtoHSB(
+            color shr 16 and 255,
+            color shr 8 and 255,
+            color and 255,
+            c)
+    return c[2].toDouble()
 }
 
-fun getPaletteColorByLinePosition(linePosition: Double, imagePressure: Double, palette: IntArray): Color {
+fun getPaletteColorByLinePosition(linePosition: Double, brightness: Double, palette: IntArray): Color {
     val a = 255
     val f3 = Palette.rgbToFloat3(palette[(linePosition * palette.size).toInt()])
-    val r = (f3[2] * imagePressure / 256).toInt()
-    val g = (f3[1] * imagePressure / 256).toInt()
-    val b = (f3[0] * imagePressure / 256).toInt()
+    val r = (f3[2] * brightness).toInt()
+    val g = (f3[1] * brightness).toInt()
+    val b = (f3[0] * brightness).toInt()
     return Color(r, g, b, a)
 }
 
