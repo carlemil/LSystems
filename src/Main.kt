@@ -21,7 +21,9 @@ import kotlin.math.pow
  * starting with 132 photos of my colleagues  in high res (5120x3413)
  *
  * for f in *.jpg; do magick convert "$f" -crop 3413x3413+853+0 +repage -scale 30% "$f"; done
- *
+ */
+ // for f in *.jpg; do mv -n "$f" "${f/*/$RANDOM.jpg}"; done
+ /**
  * magick montage -tile x12 -background #aaaaaa *.jpg ../montage.jpg
  *
  * magick HilbertCurve_11_asd.svg HilbertCurve_11_asd.svg.png
