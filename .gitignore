@@ -6,3 +6,6 @@ out/
 .idea
 lib/*
 *.iml
+.gradle/
+build/
+gradle/
