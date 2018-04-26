@@ -11,7 +11,7 @@ fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>
     val instructions = translate(lSystem.getAxiom(), lSystem.getRules(), iterations, lSystem.getForwardChars())
     val t1 = System.currentTimeMillis()
     print("Generated fractal in: " + (t1 - t0) + "ms\n")
-    val xyList = convertToXY(instructions.toString(), lSystem.getAngle())
+    val xyList = convertToXY(instructions.toString(), lSystem.getAngle(), lSystem.getForwardChars())
     val t2 = System.currentTimeMillis()
     print("Convert to XY in: " + (t2 - t1) + "ms\n")
     val svg = scaleXYList(xyList)
@@ -38,12 +38,12 @@ private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int, 
     return instructions
 }
 
-private fun convertToXY(intructions: String, systemAngle: Double): List<Pair<Double, Double>> {
+private fun convertToXY(intructions: String, systemAngle: Double, forwardChars: Set<Char>): List<Pair<Double, Double>> {
     val list: MutableList<Pair<Double, Double>> = mutableListOf()
 
     var x = 0.0
     var y = 0.0
-    var angle: Double = Math.PI/2
+    var angle: Double = Math.PI / 2
 
     list.add(Pair(x, y))
     list.add(Pair(x, y))
@@ -51,7 +51,7 @@ private fun convertToXY(intructions: String, systemAngle: Double): List<Pair<Dou
         when (c) {
             '-' -> angle -= systemAngle
             '+' -> angle += systemAngle
-            'F' -> {
+            in forwardChars -> {
                 x += sin(angle)
                 y += cos(angle)
                 list.add(Pair(x, y))

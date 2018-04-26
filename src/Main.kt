@@ -2,8 +2,8 @@ import LSystem.color.Palette
 import LSystem.color.Theme
 import LSystem.computeLSystem
 import LSystem.dragonLSystem
-import LSystem.hilbertLSystem
-import LSystem.lineLSystem
+import LSystem.kochSnowFlakeLSystem
+import LSystem.snowFlake1LSystem
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.BufferedWriter
@@ -33,20 +33,21 @@ import kotlin.math.pow
 fun main(args: Array<String>) {
     println("Init")
 
-    val steps = 6
-    val scale = 400.0
-    val strokeWidth: Double = scale * (0.6 / 2.0.pow(steps)) // 2^steps
+    val steps = 7
+    val scale = 20000.0
+    val strokeWidth: Double = scale * (0.05 / 2.0.pow(steps)) // 2^steps
     val sidePadding = strokeWidth * 2
-    val useBezierCurves = false
+    val useBezierCurves = true
     val themeName = "montage"
-    val system = hilbertLSystem()
-    val imageName = "cekj2.jpg" //https://www.fotojet.com https://ipiccy.com/
+    val system = snowFlake1LSystem()
+    val imageName = "a1.jpg" //cekj2.jpg" //https://www.fotojet.com https://ipiccy.com/
     val image = if (!imageName.isEmpty()) readImageFile(imageName) else null
     val fileName = system.getName() + "_" + steps +
             (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
             "_" + themeName + (if (useBezierCurves) "_bezier" else "") + "_scale_" + scale.toInt() + ".svg"
 
-    val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 4.0).toInt(), 100)
+    val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 6.0).toInt(), 100)
+    val paletteRepeat = 18.0
 
     val coordList = computeLSystem(system, steps)
 
@@ -54,22 +55,22 @@ fun main(args: Array<String>) {
     File(fileName).delete()
     val svgBufferedWriter = File(fileName).bufferedWriter()
     svgBufferedWriter.append("")
-    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, svgBufferedWriter)
+    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
 
     val htmlFileName = fileName + ".html"
     println("Write HTML wrapper file: " + htmlFileName)
-    writeSVGToHtmlFile(htmlFileName, scale, sidePadding, coordList, useBezierCurves, strokeWidth, palette, image)
+    writeSVGToHtmlFile(htmlFileName, scale, sidePadding, coordList, useBezierCurves, strokeWidth, palette, image, paletteRepeat)
 
     println("Done")
 }
 
 private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,
                                coordList: List<Pair<Double, Double>>, useBezierCurves: Boolean,
-                               strokeWidth: Double, palette: IntArray, image: BufferedImage?) {
+                               strokeWidth: Double, palette: IntArray, image: BufferedImage?, paletteRepeat: Double) {
     File(htmlFileName).delete()
     val htmlBufferedWriter = File(htmlFileName).bufferedWriter()
     htmlBufferedWriter.append("<!DOCTYPE html>\n<html>\n<body>\n")
-    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, htmlBufferedWriter)
+    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, htmlBufferedWriter, paletteRepeat)
     htmlBufferedWriter.append("</body>\n</html>\n")
     htmlBufferedWriter.flush()
 }
@@ -77,7 +78,7 @@ private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding:
 
 private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
                            useBezierCurves: Boolean, strokeWidth: Double, image: BufferedImage?,
-                           palette: IntArray, file: BufferedWriter) {
+                           palette: IntArray, file: BufferedWriter, paletteRepeat: Double) {
     file.append("<svg width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">\n")
     if (useBezierCurves) {
         val separator = " "
@@ -88,7 +89,7 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
             val p2 = xyList.get(i + 1)
             val brightness = getBrightnessFromImage(p0, image)
             val color = ColorUtils.getHexString(
-                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette))
+                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette, paletteRepeat))
             file.append("M " + getCoord(getCenter(p0, p1), scale, sidePadding, separator) +
                     " Q " + getCoord(p1, scale, sidePadding, separator) +
                     " " + getCoord(getCenter(p1, p2), scale, sidePadding, separator) + ", ")
@@ -100,7 +101,7 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
             val p1 = xyList.get(i + 1)
             val brightness = getBrightnessFromImage(p0, image)
             val color = ColorUtils.getHexString(
-                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette))
+                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette, paletteRepeat))
             file.append("\n<polyline points=\"")
             file.append(getCoord(p0, scale, sidePadding, ","))
             file.append(" ")
@@ -132,9 +133,9 @@ fun getBrightnessFromImage(p: Pair<Double, Double>, image: BufferedImage?): Doub
     return c[2].toDouble()
 }
 
-fun getPaletteColorByLinePosition(linePosition: Double, brightness: Double, palette: IntArray): Color {
+fun getPaletteColorByLinePosition(linePosition: Double, brightness: Double, palette: IntArray, paletteRepeat: Double): Color {
     val a = 255
-    val f3 = Palette.rgbToFloat3(palette[(linePosition * palette.size).toInt()])
+    val f3 = Palette.rgbToFloat3(palette[((linePosition * palette.size) * paletteRepeat).toInt() % palette.size])
     val r = (f3[2] * brightness).toInt()
     val g = (f3[1] * brightness).toInt()
     val b = (f3[0] * brightness).toInt()
