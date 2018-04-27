@@ -21,12 +21,12 @@ class Theme(themeName: String) {
                 palette = intArrayOf(0xeeeeee, 0xeeeeee)
                 blendMode = BlendMode.HSV
             }
-            "montage" -> {
+            "hsv_gradient" -> {
                 palette = intArrayOf(0xffb2b2, 0xffe5b2, 0xe5ffb2, 0xb2ffb2, 0xb2ffe5, 0xb2e5ff, 0xb2b2ff, 0xffb2ff)
                 blendMode = BlendMode.HSV
                 drawMode = DrawMode.GRADIENT
             }
-            "montage_checker" -> {
+            "hsv_gradient_checkered" -> {
                 palette = intArrayOf(0xffb2b2, 0xffe5b2, 0xe5ffb2, 0xb2ffb2, 0xb2ffe5, 0xb2e5ff, 0xb2b2ff, 0xffb2ff)
                 blendMode = BlendMode.HSV
                 drawMode = DrawMode.ZEBRA_GRADIENT

@@ -1,9 +1,8 @@
+import LSystem.*
 import LSystem.color.Palette
 import LSystem.color.Theme
-import LSystem.computeLSystem
-import LSystem.dragonLSystem
-import LSystem.kochSnowFlakeLSystem
-import LSystem.snowFlake1LSystem
+import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.mainBody
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.BufferedWriter
@@ -22,46 +21,53 @@ import kotlin.math.pow
  *
  * for f in *.jpg; do magick convert "$f" -crop 3413x3413+853+0 +repage -scale 30% "$f"; done
  */
- // for f in *.jpg; do mv -n "$f" "${f/*/$RANDOM.jpg}"; done
- /**
+// for f in *.jpg; do mv -n "$f" "${f/*/$RANDOM.jpg}"; done
+/**
  * magick montage -tile x12 -background #aaaaaa *.jpg ../montage.jpg
  *
  * magick HilbertCurve_11_asd.svg HilbertCurve_11_asd.svg.png
  *
+ * [10:17][:~/source/LSystems(master)]$ gradle run -PlsArgs="['--verbose']"
+
  */
 
-fun main(args: Array<String>) {
+fun main(args: Array<String>) = mainBody {
     println("Init")
 
-    val steps = 7
-    val scale = 20000.0
-    val strokeWidth: Double = scale * (0.05 / 2.0.pow(steps)) // 2^steps
-    val sidePadding = strokeWidth * 2
-    val useBezierCurves = true
-    val themeName = "montage"
-    val system = snowFlake1LSystem()
-    val imageName = "a1.jpg" //cekj2.jpg" //https://www.fotojet.com https://ipiccy.com/
-    val image = if (!imageName.isEmpty()) readImageFile(imageName) else null
-    val fileName = system.getName() + "_" + steps +
-            (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
-            "_" + themeName + (if (useBezierCurves) "_bezier" else "") + "_scale_" + scale.toInt() + ".svg"
+    ArgParser(args).parseInto(::LSArgParser).run {
 
-    val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 6.0).toInt(), 100)
-    val paletteRepeat = 18.0
+        val strokeWidth: Double = outputImageSize * (0.05 / 2.0.pow(iterations)) // 2^steps
+        val sidePadding = strokeWidth * 2
+        val system = when (lsystem) {
+            kochSnowFlakeLSystem().getName() -> kochSnowFlakeLSystem()
+            hilbertLSystem().getName() -> hilbertLSystem()
+            lineLSystem().getName() -> lineLSystem()
+            sierpinskiLSystem().getName() -> sierpinskiLSystem()
+            snowFlake1LSystem().getName() -> snowFlake1LSystem()
+            else -> dragonLSystem()
+        }
 
-    val coordList = computeLSystem(system, steps)
+        val image = if (!imageName.isEmpty()) readImageFile(imageName) else null
+        val fileName = system.getName() + "_" + iterations +
+                (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
+                "_" + themeName + (if (useBezierCurves) "_bezier" else "") + "_scale_" + outputImageSize.toInt() + ".svg"
 
-    println("Write SVG to file: " + fileName)
-    File(fileName).delete()
-    val svgBufferedWriter = File(fileName).bufferedWriter()
-    svgBufferedWriter.append("")
-    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
+        val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 6.0).toInt(), 100)
 
-    val htmlFileName = fileName + ".html"
-    println("Write HTML wrapper file: " + htmlFileName)
-    writeSVGToHtmlFile(htmlFileName, scale, sidePadding, coordList, useBezierCurves, strokeWidth, palette, image, paletteRepeat)
+        val coordList = computeLSystem(system, iterations)
 
-    println("Done")
+        println("Write SVG to file: " + fileName)
+        File(fileName).delete()
+        val svgBufferedWriter = File(fileName).bufferedWriter()
+        svgBufferedWriter.append("")
+        writeSVGToFile(outputImageSize, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
+
+        val htmlFileName = fileName + ".html"
+        println("Write HTML wrapper file: " + htmlFileName)
+        writeSVGToHtmlFile(htmlFileName, outputImageSize, sidePadding, coordList, useBezierCurves, strokeWidth, palette, image, paletteRepeat)
+
+        println("Done")
+    }
 }
 
 private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,

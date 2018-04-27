@@ -22,6 +22,12 @@ mainClassName = 'MainKt'
 
 sourceCompatibility = 1.8
 
+run {
+    if (project.hasProperty("lsArgs")) {
+        args Eval.me(lsArgs)
+    }
+}
+
 repositories {
     mavenCentral()
 }
