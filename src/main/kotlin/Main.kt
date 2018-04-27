@@ -36,8 +36,7 @@ fun main(args: Array<String>) = mainBody {
 
     ArgParser(args).parseInto(::LSArgParser).run {
 
-        val strokeWidth: Double = outputImageSize * (0.05 / 2.0.pow(iterations)) // 2^steps
-        val sidePadding = strokeWidth * 2
+
         val system = when (lsystem) {
             kochSnowFlakeLSystem().getName() -> kochSnowFlakeLSystem()
             hilbertLSystem().getName() -> hilbertLSystem()
@@ -60,6 +59,13 @@ fun main(args: Array<String>) = mainBody {
         File(fileName).delete()
         val svgBufferedWriter = File(fileName).bufferedWriter()
         svgBufferedWriter.append("")
+
+        val c0 = coordList[1]
+        val c1 = coordList[2]
+        val strokeWidth: Double = Math.sqrt(Math.pow(c0.first - c1.first, 2.0) + Math.pow(c0.second - c1.second, 2.0)) * outputImageSize * lineWidth / 4.0
+        println("sa " + c0 + "  " + c1 + "  " + lineWidth)
+        val sidePadding = strokeWidth * 2
+
         writeSVGToFile(outputImageSize, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
 
         val htmlFileName = fileName + ".html"

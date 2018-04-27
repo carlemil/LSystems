@@ -18,7 +18,7 @@ class LSArgParser(parser: ArgParser) {
 
     val themeName by parser.storing(
             "-t", "--themeName",
-            help = "The name of the theme, default \"hsv_gradient_checkered\"") { toString() }.default("hsv_gradient_checkered")
+            help = "The name of the theme, default \"hsv_gradient_checkered\", look in Themes.kt for more themes") { toString() }.default("hsv_gradient_checkered")
 
     val imageName by parser.storing(
             "-p", "--imageName",
@@ -32,6 +32,11 @@ class LSArgParser(parser: ArgParser) {
     val paletteRepeat by parser.storing(
             "-r", "--paletteRepeat",
             help = "The repeat frequency of the palette (1)") { toDouble() }.default(1.0)
+
+    val lineWidth by parser.storing(
+            "-w", "--lineWidth",
+            help = "The width of the line") { toDouble() }.default(1.0)
+
 
     private fun getLSystemNames(): String {
         return kochSnowFlakeLSystem().getName() + ", " + hilbertLSystem().getName() + ", " +
