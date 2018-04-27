@@ -63,7 +63,6 @@ fun main(args: Array<String>) = mainBody {
         val c0 = coordList[1]
         val c1 = coordList[2]
         val strokeWidth: Double = Math.sqrt(Math.pow(c0.first - c1.first, 2.0) + Math.pow(c0.second - c1.second, 2.0)) * outputImageSize * lineWidth / 4.0
-        println("sa " + c0 + "  " + c1 + "  " + lineWidth)
         val sidePadding = strokeWidth * 2
 
         writeSVGToFile(outputImageSize, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
