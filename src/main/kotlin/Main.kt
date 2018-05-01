@@ -36,7 +36,6 @@ fun main(args: Array<String>) = mainBody {
 
     ArgParser(args).parseInto(::LSArgParser).run {
 
-
         val system = when (lsystem) {
             kochSnowFlakeLSystem().getName() -> kochSnowFlakeLSystem()
             hilbertLSystem().getName() -> hilbertLSystem()
