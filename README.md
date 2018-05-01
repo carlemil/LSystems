@@ -1,4 +1,6 @@
 # LSystems
 kotlin code for rendering LSystems to SVG files
 
-gradle run -PlsArgs="['-i', '5']"
+example run:
+gradle run -PlsArgs="['-i 12','-S 400','-b true','-t fullbrights']"
+
