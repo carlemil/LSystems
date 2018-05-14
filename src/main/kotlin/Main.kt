@@ -64,30 +64,30 @@ fun main(args: Array<String>) = mainBody {
         val strokeWidth: Double = Math.sqrt(Math.pow(c0.first - c1.first, 2.0) + Math.pow(c0.second - c1.second, 2.0)) * outputImageSize * lineWidth / 4.0
         val sidePadding = strokeWidth * 2
 
-        writeSVGToFile(outputImageSize, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
+        writeSVGToFile(outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
 
         val htmlFileName = fileName + ".html"
         println("Write HTML wrapper file: " + htmlFileName)
-        writeSVGToHtmlFile(htmlFileName, outputImageSize, sidePadding, coordList, useBezierCurves, strokeWidth, palette, image, paletteRepeat)
+        writeSVGToHtmlFile(htmlFileName, outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, palette, image, paletteRepeat)
 
         println("Done")
     }
 }
 
 private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,
-                               coordList: List<Pair<Double, Double>>, useBezierCurves: Boolean,
+                               coordList: List<Pair<Double, Double>>, useBezierCurves: Boolean, useVariableLineWidth: Boolean,
                                strokeWidth: Double, palette: IntArray, image: BufferedImage?, paletteRepeat: Double) {
     File(htmlFileName).delete()
     val htmlBufferedWriter = File(htmlFileName).bufferedWriter()
     htmlBufferedWriter.append("<!DOCTYPE html>\n<html>\n<body>\n")
-    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, strokeWidth, image, palette, htmlBufferedWriter, paletteRepeat)
+    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, image, palette, htmlBufferedWriter, paletteRepeat)
     htmlBufferedWriter.append("</body>\n</html>\n")
     htmlBufferedWriter.flush()
 }
 
 
 private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
-                           useBezierCurves: Boolean, strokeWidth: Double, image: BufferedImage?,
+                           useBezierCurves: Boolean, useVariableLineWidth: Boolean, strokeWidth: Double, image: BufferedImage?,
                            palette: IntArray, file: BufferedWriter, paletteRepeat: Double) {
     file.append("<svg width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">\n")
     if (useBezierCurves) {
@@ -98,29 +98,46 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
             val p1 = xyList.get(i)
             val p2 = xyList.get(i + 1)
             val brightness = getBrightnessFromImage(p0, image)
-            val color = ColorUtils.getHexString(
-                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette, paletteRepeat))
+            val segmentStrokeWidth = getVariableLineWidth(useVariableLineWidth, strokeWidth, brightness)
+            val color = getLineSegmentColor(useVariableLineWidth, i, brightness, palette, paletteRepeat, xyList)
             file.append("M " + getCoord(getCenter(p0, p1), scale, sidePadding, separator) +
                     " Q " + getCoord(p1, scale, sidePadding, separator) +
                     " " + getCoord(getCenter(p1, p2), scale, sidePadding, separator) + ", ")
-            file.append("\" stroke=\"#" + color + "\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
+            file.append("\" stroke=\"#" + color + "\" stroke-width=\"" + segmentStrokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
         }
     } else {
         for (i in 0..xyList.size - 2) {
             val p0 = xyList.get(i)
             val p1 = xyList.get(i + 1)
             val brightness = getBrightnessFromImage(p0, image)
-            val color = ColorUtils.getHexString(
-                    getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette, paletteRepeat))
+            val segmentStrokeWidth = getVariableLineWidth(useVariableLineWidth, strokeWidth, brightness)
+            val color = getLineSegmentColor(useVariableLineWidth, i, brightness, palette, paletteRepeat, xyList)
             file.append("\n<polyline points=\"")
             file.append(getCoord(p0, scale, sidePadding, ","))
             file.append(" ")
             file.append(getCoord(p1, scale, sidePadding, ","))
-            file.append("\" stroke=\"#" + color + "\" stroke-width=\"" + strokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
+            file.append("\" stroke=\"#" + color + "\" stroke-width=\"" + segmentStrokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
         }
     }
     file.append("\n</svg>")
     file.flush()
+}
+
+private fun getLineSegmentColor(useVariableLineWidth: Boolean, i: Int, brightness: Double, palette: IntArray,
+                                paletteRepeat: Double, xyList: List<Pair<Double, Double>>): String {
+    return if (useVariableLineWidth) {
+        ColorUtils.getHexString(getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette, paletteRepeat))
+    } else {
+        "#FF000000"
+    }
+}
+
+private fun getVariableLineWidth(useVariableLineWidth: Boolean, strokeWidth: Double, brightness: Double): Double {
+    return if (useVariableLineWidth) {
+        strokeWidth * (0.3 + (1.0 - brightness))
+    } else {
+        strokeWidth
+    }
 }
 
 private fun readImageFile(file: String): BufferedImage {

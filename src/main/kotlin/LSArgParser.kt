@@ -16,6 +16,10 @@ class LSArgParser(parser: ArgParser) {
             "-b", "--useBezierCurves",
             help = "Draw the L system using bezier curves, not straight lines") { trim().toBoolean() }.default(false)
 
+    val useVariableLineWidth by parser.storing(
+            "-v", "--useVariableLineWidth",
+            help = "Draw the L system using variable line thickness, darker pixels from the image results in a wider line") { trim().toBoolean() }.default(false)
+
     val themeName by parser.storing(
             "-t", "--themeName",
             help = "The name of the theme, default \"hsv_gradient_checkered\", look in Themes.kt for more themes") { trim() }.default("hsv_gradient_checkered")
