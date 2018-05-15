@@ -103,7 +103,7 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
             file.append("M " + getCoord(getCenter(p0, p1), scale, sidePadding, separator) +
                     " Q " + getCoord(p1, scale, sidePadding, separator) +
                     " " + getCoord(getCenter(p1, p2), scale, sidePadding, separator) + ", ")
-            file.append("\" stroke=\"#" + color + "\" stroke-width=\"" + segmentStrokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
+            file.append("\" stroke=\"#" + color + "\" stroke-width=\"" + "%.2f".format(segmentStrokeWidth) + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
         }
     } else {
         for (i in 0..xyList.size - 2) {
@@ -116,7 +116,7 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
             file.append(getCoord(p0, scale, sidePadding, ","))
             file.append(" ")
             file.append(getCoord(p1, scale, sidePadding, ","))
-            file.append("\" stroke=\"#" + color + "\" stroke-width=\"" + segmentStrokeWidth + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
+            file.append("\" stroke=\"#" + color + "\" stroke-width=\"" + "%.2f".format(segmentStrokeWidth) + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
         }
     }
     file.append("\n</svg>")
@@ -134,7 +134,7 @@ private fun getLineSegmentColor(useVariableLineWidth: Boolean, i: Int, brightnes
 
 private fun getVariableLineWidth(useVariableLineWidth: Boolean, strokeWidth: Double, brightness: Double): Double {
     return if (useVariableLineWidth) {
-        strokeWidth * (0.3 + (1.0 - brightness))
+        strokeWidth * (0.1 + (1.0 - brightness))
     } else {
         strokeWidth
     }
