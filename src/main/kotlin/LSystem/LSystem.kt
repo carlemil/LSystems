@@ -1,6 +1,7 @@
 package LSystem
 
 import java.lang.Math.*
+import java.util.*
 
 /**
  * Created by carlemil on 4/10/17.
@@ -50,12 +51,21 @@ private fun convertToXY(intructions: String, systemAngle: Double, forwardChars: 
     var y = 0.0
     var angle: Double = Math.PI / 2
 
+    val stack: Stack<Pair<Double, Double>> = Stack()
+
     list.add(Pair(x, y))
     list.add(Pair(x, y))
     for (c in intructions) {
         when (c.toString()) {
             "-" -> angle -= systemAngle
             "+" -> angle += systemAngle
+            "[" -> stack.push(Pair(x, y))
+            "]" -> {
+                val p = stack.pop()
+                x = p.first
+                y = p.second
+                // Start a new list in list here to denote a new polyline
+            }
             in forwardChars -> {
                 x += sin(angle)
                 y += cos(angle)

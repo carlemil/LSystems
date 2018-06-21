@@ -58,6 +58,17 @@
         "A", "B"
       ],
       "axiom": "A"
+    },
+    {
+      "name": "fff",
+      "angle": 0.1471975512,
+      "rules": {
+        "B": "F[-B]F[+B][B]"
+      },
+      "forwardChars": [
+        "B", "F"
+      ],
+      "axiom": "B"
     }
   ]
 }
