@@ -1,9 +1,10 @@
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.31'
     ext.kotlin_argparser_version = '2.0.6'
 
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -30,9 +31,12 @@ run {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
+    compile 'com.beust:klaxon:+'
+
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     compile "com.xenomachina:kotlin-argparser:$kotlin_argparser_version"

@@ -1,0 +1,46 @@
+{
+  "globalRules": {
+    "+": "+",
+    "-": "-",
+    "F": "F",
+    "[": "[",
+    "]": "]"
+  },
+  "systems": [
+    {
+      "name": "KochSnowFlake",
+      "angle": 1.57079632679,
+      "rules": {
+        "F": "F-F+F+FF-F-F+F"
+      },
+      "forwardChars": [
+        "F"
+      ],
+      "axiom": "F"
+    },
+    {
+      "name": "Dragon",
+      "angle": 1.57079632679,
+      "rules": {
+        "A": "A+BF",
+        "B": "FA-B"
+      },
+      "forwardChars": [
+        "F"
+      ],
+      "axiom": "FA"
+    },
+    {
+      "name": "Hilbert",
+      "angle": 1.57079632679,
+      "rules": {
+        "A": "-BF+AFA+FB-",
+        "B": "+AF-BFB-FA+"
+      },
+      "forwardChars": [
+        "F"
+      ],
+      "axiom": "A"
+    }
+  ]
+}

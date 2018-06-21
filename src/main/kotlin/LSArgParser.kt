@@ -1,6 +1,8 @@
 import LSystem.*
+import com.beust.klaxon.Klaxon
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
+import java.io.File
 
 class LSArgParser(parser: ArgParser) {
 
@@ -30,8 +32,7 @@ class LSArgParser(parser: ArgParser) {
 
     val lsystem by parser.storing(
             "-s", "--system",
-            help = "What L system to use, default: \"" + dragonLSystem().getName() + "\"" +
-                    " other curves: " + getLSystemNames()) { trim() }.default(dragonLSystem().getName())
+            help = "What L system to use: " + getLSystemNames()) { trim() }
 
     val paletteRepeat by parser.storing(
             "-r", "--paletteRepeat",
@@ -42,10 +43,10 @@ class LSArgParser(parser: ArgParser) {
             help = "The width of the line") { trim().toDouble() }.default(1.0)
 
 
-    private fun getLSystemNames(): String {
-        return kochSnowFlakeLSystem().getName() + ", " + hilbertLSystem().getName() + ", " +
-                lineLSystem().getName() + ", " + sierpinskiLSystem().getName() + ", " +
-                snowFlake1LSystem().getName()
+    private fun getLSystemNames(): String? {
+        val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())
+        val systems = lSystemInfo?.systems
+        return systems?.map{it -> it.name}?.joinToString { "" }
     }
 
 }

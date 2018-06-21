@@ -6,12 +6,12 @@ import java.lang.Math.*
  * Created by carlemil on 4/10/17.
  */
 
-fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>> {
+fun computeLSystem(lSystem: LSystemDefinition, iterations: Int): List<Pair<Double, Double>> {
     val t0 = System.currentTimeMillis()
-    val instructions = translate(lSystem.getAxiom(), lSystem.getRules(), iterations, lSystem.getForwardChars())
+    val instructions = translate(lSystem.axiom, lSystem.rules, iterations, lSystem.forwardChars)
     val t1 = System.currentTimeMillis()
     print("Generated fractal in: " + (t1 - t0) + "ms\n")
-    val xyList = convertToXY(instructions.toString(), lSystem.getAngle(), lSystem.getForwardChars())
+    val xyList = convertToXY(instructions.toString(), lSystem.angle, lSystem.forwardChars)
     val t2 = System.currentTimeMillis()
     print("Convert to XY in: " + (t2 - t1) + "ms\n")
     val svg = scaleXYList(xyList)
@@ -20,14 +20,14 @@ fun computeLSystem(lSystem: LSystem, iterations: Int): List<Pair<Double, Double>
     return svg
 }
 
-private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int, forwardChars: Set<Char>): StringBuilder {
+private fun translate(axiom: String, rules: Map<String, String>, iterations: Int, forwardChars: Set<String>): StringBuilder {
     var tmp = StringBuilder()
     tmp.append(axiom)
     var instructions = StringBuilder()
     for (i in 1..iterations) {
         instructions.setLength(0)
         for (c in tmp) {
-            instructions.append(rules.get(c))
+            instructions.append(rules[c.toString()])
         }
         tmp.setLength(0)
         tmp.append(instructions)
@@ -38,7 +38,7 @@ private fun translate(axiom: String, rules: Map<Char, String>, iterations: Int, 
     return instructions
 }
 
-private fun convertToXY(intructions: String, systemAngle: Double, forwardChars: Set<Char>): List<Pair<Double, Double>> {
+private fun convertToXY(intructions: String, systemAngle: Double, forwardChars: Set<String>): List<Pair<Double, Double>> {
     val list: MutableList<Pair<Double, Double>> = mutableListOf()
 
     var x = 0.0
@@ -48,9 +48,9 @@ private fun convertToXY(intructions: String, systemAngle: Double, forwardChars: 
     list.add(Pair(x, y))
     list.add(Pair(x, y))
     for (c in intructions) {
-        when (c) {
-            '-' -> angle -= systemAngle
-            '+' -> angle += systemAngle
+        when (c.toString()) {
+            "-" -> angle -= systemAngle
+            "+" -> angle += systemAngle
             in forwardChars -> {
                 x += sin(angle)
                 y += cos(angle)

@@ -1,6 +1,7 @@
 import LSystem.*
 import LSystem.color.Palette
 import LSystem.color.Theme
+import com.beust.klaxon.Klaxon
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import java.awt.Color
@@ -8,7 +9,6 @@ import java.awt.image.BufferedImage
 import java.io.BufferedWriter
 import java.io.File
 import javax.imageio.ImageIO
-import kotlin.math.pow
 
 /**
  * Created by carlemil on 4/10/17.
@@ -28,7 +28,9 @@ import kotlin.math.pow
  * magick HilbertCurve_11_asd.svg HilbertCurve_11_asd.svg.png
  *
  * [10:17][:~/source/LSystems(master)]$ gradle run -PlsArgs="['--verbose']"
-
+ *
+ * gradle run -PlsArgs="['-v true', '-t black', '-p wlm.jpg', '-s HilbertCurve', '-i 5', '-w 1.5' ]"
+ *
  */
 
 fun main(args: Array<String>) = mainBody {
@@ -36,23 +38,26 @@ fun main(args: Array<String>) = mainBody {
 
     ArgParser(args).parseInto(::LSArgParser).run {
 
-        val system = when (lsystem) {
-            kochSnowFlakeLSystem().getName() -> kochSnowFlakeLSystem()
-            hilbertLSystem().getName() -> hilbertLSystem()
-            lineLSystem().getName() -> lineLSystem()
-            sierpinskiLSystem().getName() -> sierpinskiLSystem()
-            snowFlake1LSystem().getName() -> snowFlake1LSystem()
-            else -> dragonLSystem()
-        }
+//        val system = when (lsystem) {
+//            kochSnowFlakeLSystem().getName() -> kochSnowFlakeLSystem()
+//            hilbertLSystem().getName() -> hilbertLSystem()
+//            lineLSystem().getName() -> lineLSystem()
+//            sierpinskiLSystem().getName() -> sierpinskiLSystem()
+//            snowFlake1LSystem().getName() -> snowFlake1LSystem()
+//            else -> dragonLSystem()
+//        }
+
+
+val system = readLSystem()
 
         val image = if (!imageName.isEmpty()) readImageFile(imageName) else null
-        val fileName = system.getName() + "_" + iterations +
+        val fileName = system?.name + "_" + iterations +
                 (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
                 "_" + themeName + (if (useBezierCurves) "_bezier" else "") + "_scale_" + outputImageSize.toInt() + ".svg"
 
         val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 6.0).toInt(), 100)
 
-        val coordList = computeLSystem(system, iterations)
+        val coordList = computeLSystem(system!!, iterations)
 
         println("Write SVG to file: " + fileName)
         File(fileName).delete()
@@ -62,7 +67,7 @@ fun main(args: Array<String>) = mainBody {
         val c0 = coordList[1]
         val c1 = coordList[2]
         val strokeWidth: Double = Math.sqrt(Math.pow(c0.first - c1.first, 2.0) + Math.pow(c0.second - c1.second, 2.0)) * outputImageSize * lineWidth / 4.0
-        val sidePadding = strokeWidth * 2
+        val sidePadding = outputImageSize / 50 //strokeWidth * 2
 
         writeSVGToFile(outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
 
@@ -72,6 +77,11 @@ fun main(args: Array<String>) = mainBody {
 
         println("Done")
     }
+}
+
+private fun readLSystem(): LSystemDefinition? {
+    val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())
+    return lSystemInfo?.systems?.get(0)
 }
 
 private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,
@@ -128,13 +138,13 @@ private fun getLineSegmentColor(useVariableLineWidth: Boolean, i: Int, brightnes
     return if (useVariableLineWidth) {
         ColorUtils.getHexString(getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette, paletteRepeat))
     } else {
-        "#FF000000"
+        "FF000000"
     }
 }
 
 private fun getVariableLineWidth(useVariableLineWidth: Boolean, strokeWidth: Double, brightness: Double): Double {
     return if (useVariableLineWidth) {
-        strokeWidth * (0.1 + (1.0 - brightness))
+        strokeWidth * (0.2 + (1.0 - brightness))
     } else {
         strokeWidth
     }
