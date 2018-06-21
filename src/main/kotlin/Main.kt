@@ -38,26 +38,16 @@ fun main(args: Array<String>) = mainBody {
 
     ArgParser(args).parseInto(::LSArgParser).run {
 
-//        val system = when (lsystem) {
-//            kochSnowFlakeLSystem().getName() -> kochSnowFlakeLSystem()
-//            hilbertLSystem().getName() -> hilbertLSystem()
-//            lineLSystem().getName() -> lineLSystem()
-//            sierpinskiLSystem().getName() -> sierpinskiLSystem()
-//            snowFlake1LSystem().getName() -> snowFlake1LSystem()
-//            else -> dragonLSystem()
-//        }
-
-
-val system = readLSystem()
+        val lSystems = readLSystemDefinitions()!!
 
         val image = if (!imageName.isEmpty()) readImageFile(imageName) else null
-        val fileName = system?.name + "_" + iterations +
+        val fileName = lSystems.name + "_" + iterations +
                 (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
                 "_" + themeName + (if (useBezierCurves) "_bezier" else "") + "_scale_" + outputImageSize.toInt() + ".svg"
 
         val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 6.0).toInt(), 100)
 
-        val coordList = computeLSystem(system!!, iterations)
+        val coordList = computeLSystem(lSystems, iterations)
 
         println("Write SVG to file: " + fileName)
         File(fileName).delete()
@@ -79,7 +69,7 @@ val system = readLSystem()
     }
 }
 
-private fun readLSystem(): LSystemDefinition? {
+private fun readLSystemDefinitions(): LSystemDefinition? {
     val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())
     return lSystemInfo?.systems?.get(0)
 }
