@@ -1,11 +1,4 @@
 {
-  "globalRules": {
-    "+": "+",
-    "-": "-",
-    "F": "F",
-    "[": "[",
-    "]": "]"
-  },
   "systems": [
     {
       "name": "KochSnowFlake",
@@ -39,6 +32,30 @@
       },
       "forwardChars": [
         "F"
+      ],
+      "axiom": "A"
+    },
+    {
+      "name": "Sierpinski",
+      "angle": 1.0471975512,
+      "rules": {
+        "A": "BF-AF-B",
+        "B": "AF+BF+A"
+      },
+      "forwardChars": [
+        "F"
+      ],
+      "axiom": "A"
+    },
+    {
+      "name": "SnowFlake",
+      "angle": 1.0471975512,
+      "rules": {
+        "A": "A-B--B+A++AA+B-",
+        "B": "+A-BB--B-A++A+B"
+      },
+      "forwardChars": [
+        "A", "B"
       ],
       "axiom": "A"
     }

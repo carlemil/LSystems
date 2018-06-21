@@ -38,16 +38,16 @@ fun main(args: Array<String>) = mainBody {
 
     ArgParser(args).parseInto(::LSArgParser).run {
 
-        val lSystems = readLSystemDefinitions()!!
+        val lSystem = readLSystemDefinitions(lsystem)!!
 
         val image = if (!imageName.isEmpty()) readImageFile(imageName) else null
-        val fileName = lSystems.name + "_" + iterations +
+        val fileName = lSystem.name + "_" + iterations +
                 (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
                 "_" + themeName + (if (useBezierCurves) "_bezier" else "") + "_scale_" + outputImageSize.toInt() + ".svg"
 
         val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 6.0).toInt(), 100)
 
-        val coordList = computeLSystem(lSystems, iterations)
+        val coordList = computeLSystem(lSystem, iterations)
 
         println("Write SVG to file: " + fileName)
         File(fileName).delete()
@@ -69,9 +69,9 @@ fun main(args: Array<String>) = mainBody {
     }
 }
 
-private fun readLSystemDefinitions(): LSystemDefinition? {
-    val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())
-    return lSystemInfo?.systems?.get(0)
+private fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
+    val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())!!
+    return lSystemInfo.systems.find { lsd -> lsd.name == lSystemName }
 }
 
 private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,

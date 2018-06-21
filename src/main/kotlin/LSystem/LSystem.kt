@@ -8,7 +8,7 @@ import java.lang.Math.*
 
 fun computeLSystem(lSystem: LSystemDefinition, iterations: Int): List<Pair<Double, Double>> {
     val t0 = System.currentTimeMillis()
-    val instructions = translate(lSystem.axiom, lSystem.rules, iterations, lSystem.forwardChars)
+    val instructions = generate(lSystem.axiom, lSystem.rules, iterations, lSystem.forwardChars)
     val t1 = System.currentTimeMillis()
     print("Generated fractal in: " + (t1 - t0) + "ms\n")
     val xyList = convertToXY(instructions.toString(), lSystem.angle, lSystem.forwardChars)
@@ -20,14 +20,19 @@ fun computeLSystem(lSystem: LSystemDefinition, iterations: Int): List<Pair<Doubl
     return svg
 }
 
-private fun translate(axiom: String, rules: Map<String, String>, iterations: Int, forwardChars: Set<String>): StringBuilder {
+private fun generate(axiom: String, rules: Map<String, String>, iterations: Int, forwardChars: Set<String>): StringBuilder {
     var tmp = StringBuilder()
     tmp.append(axiom)
     var instructions = StringBuilder()
     for (i in 1..iterations) {
         instructions.setLength(0)
         for (c in tmp) {
-            instructions.append(rules[c.toString()])
+            val cs = c.toString()
+            if (cs in rules) {
+                instructions.append(rules[c.toString()])
+            } else {
+                instructions.append(cs)
+            }
         }
         tmp.setLength(0)
         tmp.append(instructions)

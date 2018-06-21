@@ -1,6 +1,5 @@
 package LSystem
 
 class LSystemInfo(
-        val globalRules: Map<String, String>,
-        val systems: List<LSystemDefinition>
+   val systems: List<LSystemDefinition>
 )
