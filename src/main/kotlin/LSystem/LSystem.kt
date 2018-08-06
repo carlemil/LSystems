@@ -44,7 +44,7 @@ private fun generate(axiom: String, rules: Map<String, String>, iterations: Int,
     return instructions
 }
 
-private fun convertToXY(intructions: String, systemAngle: Double, forwardChars: Set<String>): List<Pair<Double, Double>> {
+private fun convertToXY(instructions: String, systemAngle: Double, forwardChars: Set<String>): List<Pair<Double, Double>> {
     val list: MutableList<Pair<Double, Double>> = mutableListOf()
 
     var x = 0.0
@@ -55,7 +55,7 @@ private fun convertToXY(intructions: String, systemAngle: Double, forwardChars: 
 
     list.add(Pair(x, y))
     list.add(Pair(x, y))
-    for (c in intructions) {
+    for (c in instructions) {
         when (c.toString()) {
             "-" -> angle -= systemAngle
             "+" -> angle += systemAngle

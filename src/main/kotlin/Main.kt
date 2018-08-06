@@ -6,9 +6,19 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import java.awt.Color
 import java.awt.image.BufferedImage
+import java.awt.image.RenderedImage
 import java.io.BufferedWriter
 import java.io.File
+import java.nio.file.Path
 import javax.imageio.ImageIO
+import com.sun.xml.internal.ws.streaming.XMLStreamReaderUtil.close
+import com.sun.deploy.trace.Trace.flush
+import org.apache.batik.transcoder.TranscoderInput
+import org.apache.batik.transcoder.TranscoderOutput
+import org.apache.batik.transcoder.image.PNGTranscoder
+import java.io.FileOutputStream
+import java.nio.file.Paths
+
 
 /**
  * Created by carlemil on 4/10/17.
@@ -29,7 +39,7 @@ import javax.imageio.ImageIO
  *
  * [10:17][:~/source/LSystems(master)]$ gradle run -PlsArgs="['--verbose']"
  *
- * gradle run -PlsArgs="['-v true', '-t black', '-p wlm.jpg', '-s HilbertCurve', '-i 5', '-w 1.5' ]"
+ * gradle run -PlsArgs="['-v true', '-t black', '-p wlm.jpg', '-s Hilbert', '-i 5', '-w 1.5' ]"
  *
  */
 
@@ -38,20 +48,24 @@ fun main(args: Array<String>) = mainBody {
 
     ArgParser(args).parseInto(::LSArgParser).run {
 
-        val lSystem = readLSystemDefinitions(lsystem)!!
+        val lSystem = readLSystemDefinitions(lsystem)
+
+        println(lsystem + "  " + lSystem?.name)
 
         val image = if (!imageName.isEmpty()) readImageFile(imageName) else null
-        val fileName = lSystem.name + "_" + iterations +
+        val fileName = lSystem?.name + "_" + iterations +
                 (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
-                "_" + themeName + (if (useBezierCurves) "_bezier" else "") + "_scale_" + outputImageSize.toInt() + ".svg"
+                "_" + themeName + (if (useBezierCurves) "_bezier" else "") + "_scale_" + outputImageSize.toInt()
+
+        val svgFileName = fileName + ".svg"
 
         val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 6.0).toInt(), 100)
 
-        val coordList = computeLSystem(lSystem, iterations)
+        val coordList = computeLSystem(lSystem!!, iterations)
 
-        println("Write SVG to file: " + fileName)
-        File(fileName).delete()
-        val svgBufferedWriter = File(fileName).bufferedWriter()
+        println("Write SVG to file: " + svgFileName)
+        File(svgFileName).delete()
+        val svgBufferedWriter = File(svgFileName).bufferedWriter()
         svgBufferedWriter.append("")
 
         val c0 = coordList[1]
@@ -61,9 +75,11 @@ fun main(args: Array<String>) = mainBody {
 
         writeSVGToFile(outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
 
-        val htmlFileName = fileName + ".html"
-        println("Write HTML wrapper file: " + htmlFileName)
-        writeSVGToHtmlFile(htmlFileName, outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, palette, image, paletteRepeat)
+        println("Write HTML wrapper file.")
+        writeSVGToHtmlFile(fileName + ".html", outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, palette, image, paletteRepeat)
+
+        println("Write PNG file.")
+        convertSVGtoPNG(svgFileName, fileName + ".png")
 
         println("Done")
     }
@@ -71,6 +87,10 @@ fun main(args: Array<String>) = mainBody {
 
 private fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
     val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())!!
+    if (lSystemInfo.systems.isEmpty()) {
+        println("Failed to read LSystem definitions.")
+        System.exit(-1)
+    }
     return lSystemInfo.systems.find { lsd -> lsd.name == lSystemName }
 }
 
@@ -89,7 +109,11 @@ private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding:
 private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
                            useBezierCurves: Boolean, useVariableLineWidth: Boolean, strokeWidth: Double, image: BufferedImage?,
                            palette: IntArray, file: BufferedWriter, paletteRepeat: Double) {
-    file.append("<svg width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">\n")
+    file.append("<?xml version=\"1.0\" standalone=\"no\"?>\n" +
+            "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20010904//EN\"\n" +
+            " \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">\n" +
+            "<svg version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\"\n ")
+    file.append(" width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">\n")
     if (useBezierCurves) {
         val separator = " "
         for (i in 1..xyList.size - 2) {
@@ -121,6 +145,17 @@ private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair
     }
     file.append("\n</svg>")
     file.flush()
+}
+
+private fun convertSVGtoPNG(svgInFile: String, pngOutFile: String) {
+    val svg_URI_input = Paths.get(svgInFile).toUri().toURL().toString()
+    val input_svg_image = TranscoderInput(svg_URI_input)
+    val png_ostream = FileOutputStream(pngOutFile)
+    val output_png_image = TranscoderOutput(png_ostream)
+    val my_converter = PNGTranscoder()
+    my_converter.transcode(input_svg_image, output_png_image)
+    png_ostream.flush()
+    png_ostream.close()
 }
 
 private fun getLineSegmentColor(useVariableLineWidth: Boolean, i: Int, brightness: Double, palette: IntArray,

@@ -32,7 +32,7 @@ class LSArgParser(parser: ArgParser) {
 
     val lsystem by parser.storing(
             "-s", "--system",
-            help = "What L system to use: " + getLSystemNames()) { trim() }
+            help = "What L system to use: " + getLSystemNames()) { trim() }.default("Hilbert")
 
     val paletteRepeat by parser.storing(
             "-r", "--paletteRepeat",
