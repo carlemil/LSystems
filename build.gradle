@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.beust:klaxon:+'
+    implementation 'com.beust:klaxon:3.0.1'
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 

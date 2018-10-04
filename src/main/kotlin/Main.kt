@@ -6,13 +6,9 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.awt.image.RenderedImage
 import java.io.BufferedWriter
 import java.io.File
-import java.nio.file.Path
 import javax.imageio.ImageIO
-import com.sun.xml.internal.ws.streaming.XMLStreamReaderUtil.close
-import com.sun.deploy.trace.Trace.flush
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.PNGTranscoder
@@ -39,7 +35,7 @@ import java.nio.file.Paths
  *
  * [10:17][:~/source/LSystems(master)]$ gradle run -PlsArgs="['--verbose']"
  *
- * gradle run -PlsArgs="['-v true', '-t black', '-p wlm.jpg', '-s Hilbert', '-i 5', '-w 1.5' ]"
+ * gradle run -PlsArgs="['-v true', '-t black', '-s Hilbert', '-i 5', '-w 1.5' ]"
  *
  */
 

@@ -9,3 +9,6 @@ lib/*
 .gradle/
 build/
 gradle/
+gradle
+*.xcf
+Process
