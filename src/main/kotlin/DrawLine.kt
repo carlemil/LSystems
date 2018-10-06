@@ -1,30 +1,38 @@
 import javax.swing.*
 import java.awt.*
 import java.awt.geom.Line2D
+import javax.imageio.ImageIO
+import java.io.File
+import java.awt.image.BufferedImage
 
-class DrawLine : JComponent() {
-    override fun paint(g: Graphics?) {
-        // Draw a simple line using the Graphics2D draw() method.
-        val g2 = g as Graphics2D?
-        g2!!.stroke = BasicStroke(2f)
-        g2.color = Color.RED
-        g2.draw(Line2D.Double(50.0, 150.0, 250.0, 350.0))
-        g2.color = Color.GREEN
-        g2.draw(Line2D.Double(250.0, 350.0, 350.0, 250.0))
-        g2.color = Color.BLUE
-        g2.draw(Line2D.Double(350.0, 250.0, 150.0, 50.0))
-        g2.color = Color.YELLOW
-        g2.draw(Line2D.Double(150.0, 50.0, 50.0, 150.0))
-        g2.color = Color.BLACK
-        g2.draw(Line2D.Double(0.0, 0.0, 400.0, 400.0))
-    }
 
-    init {
-        val frame = JFrame("Draw Line")
-        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        frame.contentPane.add(DrawLine())
-        frame.pack()
-        frame.size = Dimension(440, 440)
-        frame.isVisible = true
+class DrawLine {
+
+    companion object {
+        fun paint(coordList: List<Pair<Double, Double>>, size: Double) {
+            val bufferedImage = BufferedImage(size.toInt(), size.toInt(), BufferedImage.TYPE_INT_RGB)
+            val g2 = bufferedImage.createGraphics()
+
+            g2!!.stroke = BasicStroke(2f)
+            g2.color = Color.RED
+
+            val size = 200
+
+            for (i in 1..coordList.size - 1) {
+                val p0 = coordList.get(i - 1)
+                val p1 = coordList.get(i)
+                val x0 = p0.first * size
+                val y0 = p0.second * size
+                val x1 = p1.first * size
+                val y1 = p1.second * size
+                g2.draw(Line2D.Double(x0, y0, x1, y1))
+            }
+
+            g2.dispose()
+
+            val file = File("newimage.png")
+            ImageIO.write(bufferedImage, "png", file)
+
+        }
     }
 }

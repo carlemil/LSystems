@@ -15,25 +15,8 @@ import org.apache.batik.transcoder.image.PNGTranscoder
 import java.io.FileOutputStream
 import java.nio.file.Paths
 
-
 /**
  * Created by carlemil on 4/10/17.
- *
- * Conver output to png with image magic
- * C:\Program Files\ImageMagick-7.0.7-Q16>magick.exe -size 20000x20000 C:\Users\CarlEmil\IdeaProjects\LSystem2.0\HilbertCurve_10.svg C:\Users\CarlEmil\IdeaProjects\LSystem2.0\HilbertCurve_10.png
- *
- *
- * starting with 132 photos of my colleagues  in high res (5120x3413)
- *
- * for f in *.jpg; do magick convert "$f" -crop 3413x3413+853+0 +repage -scale 30% "$f"; done
- */
-// for f in *.jpg; do mv -n "$f" "${f/*/$RANDOM.jpg}"; done
-/**
- * magick montage -tile x12 -background #aaaaaa *.jpg ../montage.jpg
- *
- * magick HilbertCurve_11_asd.svg HilbertCurve_11_asd.svg.png
- *
- * [10:17][:~/source/LSystems(master)]$ gradle run -PlsArgs="['--verbose']"
  *
  * gradle run -PlsArgs="['-v true', '-t black', '-s Hilbert', '-i 5', '-w 1.5' ]"
  *
@@ -69,13 +52,17 @@ fun main(args: Array<String>) = mainBody {
         val strokeWidth: Double = Math.sqrt(Math.pow(c0.first - c1.first, 2.0) + Math.pow(c0.second - c1.second, 2.0)) * outputImageSize * lineWidth / 4.0
         val sidePadding = outputImageSize / 50 //strokeWidth * 2
 
-        writeSVGToFile(outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
 
-        println("Write HTML wrapper file.")
-        writeSVGToHtmlFile(fileName + ".html", outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, palette, image, paletteRepeat)
+        drawToBitmap(coordList, outputImageSize, sidePadding, palette)
 
-        println("Write PNG file.")
-        convertSVGtoPNG(svgFileName, fileName + ".png")
+//
+//        writeSVGToFile(outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
+//
+//        println("Write HTML wrapper file.")
+//        writeSVGToHtmlFile(fileName + ".html", outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, palette, image, paletteRepeat)
+//
+//        println("Write PNG file.")
+//        convertSVGtoPNG(svgFileName, fileName + ".png")
 
         println("Done")
     }
@@ -88,6 +75,18 @@ private fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
         System.exit(-1)
     }
     return lSystemInfo.systems.find { lsd -> lsd.name == lSystemName }
+}
+
+private fun drawToBitmap(coordList: List<Pair<Double, Double>>, size: Double, sidePadding: Double, palette: IntArray) {
+
+    val d =  DrawLine.paint(coordList,size)
+
+    Thread.sleep(3000)
+    println("asd: "+d)
+}
+
+private fun writeToPNG(bitmap: BufferedImage, file: File) {
+
 }
 
 private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,
