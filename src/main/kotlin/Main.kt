@@ -79,7 +79,7 @@ private fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
 
 private fun drawToBitmap(coordList: List<Pair<Double, Double>>, size: Double, sidePadding: Double, palette: IntArray) {
 
-    val d =  DrawLine.paint(coordList,size)
+    val d =  DrawLine.paint(coordList,size, sidePadding, palette)
 
     Thread.sleep(3000)
     println("asd: "+d)
