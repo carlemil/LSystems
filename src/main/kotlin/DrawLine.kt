@@ -18,24 +18,16 @@ class DrawLine {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
             g2!!.stroke = BasicStroke(2f)
-            g2.color = Color.RED
+            g2.color = Color.WHITE
 
-            for (i in 1..coordList.size - 3 step 3) {
+            for (i in 1..coordList.size - 2 step 2) {
                 val p0 = coordList.get(i - 1)
                 val p1 = coordList.get(i)
                 val p2 = coordList.get(i + 1)
-                val p3 = coordList.get(i + 2)
-                val x0 = p0.first * size + sidePadding
-                val y0 = p0.second * size + sidePadding
-                val x1 = p1.first * size + sidePadding
-                val y1 = p1.second * size + sidePadding
-                val x2 = p2.first * size + sidePadding
-                val y2 = p2.second * size + sidePadding
-                val x3 = p3.first * size + sidePadding
-                val y3 = p3.second * size + sidePadding
+
                 //g2.draw(Line2D.Double(x0, y0, x1, y1))
-                draw(g2, 1.0, 4.0, 20,
-                        Point2D.Double(x0, y0), Point2D.Double(x1, y1), Point2D.Double(x2, y2), Point2D.Double(x3, y3))
+                draw(g2, 1.0, 16.0, 40,
+                        p0, p1, p2, size)
             }
 
             g2.dispose()
@@ -46,32 +38,27 @@ class DrawLine {
         }
 
         fun draw(g2: Graphics2D, startWidth: Double, endWidth: Double, drawSteps: Int,
-                 startPoint: Point2D, control1: Point2D, control2: Point2D, endPoint: Point2D) {
+                 p0: Pair<Double, Double>, p1: Pair<Double, Double>, p2: Pair<Double, Double>, size: Double) {
 //        val originalWidth = paint.getStrokeWidth()
             val widthDelta = endWidth - startWidth
             for (i in 0 until drawSteps) {
                 // Calculate the Bezier (x, y) coordinate for this step.
-                val t = i.toFloat() / drawSteps
-                val tt = t * t
-                val ttt = tt * t
-                val u = 1 - t
-                val uu = u * u
-                val uuu = uu * u
-                var x = uuu * startPoint.x
-                x += 3 * uu * t * control1.x
-                x += 3 * u * tt * control2.x
-                x += ttt * endPoint.x
-                var y = uuu * startPoint.y
-                y += 3 * uu * t * control1.y
-                y += 3 * u * tt * control2.y
-                y += ttt * endPoint.y
-                // Set the incremental stroke width and draw.
-//            g2.setStrokeWidth(startWidth + ttt * widthDelta)
-                val radius = 2
-                val circle = Ellipse2D.Double((x - radius).toDouble(), (y - radius).toDouble(),
-                        2.0 * radius, 2.0 * radius)
+                val t = (i.toFloat() / drawSteps).toDouble()
 
-                g2.draw(circle)
+                // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
+                val x = (Math.pow((1 - t), 2.0) * p0.first) +
+                        (2 * (1 - t) * t * p1.first) +
+                        (Math.pow(t, 2.0) * p2.first)
+                val y = (Math.pow((1 - t), 2.0) * p0.second) +
+                        (2 * (1 - t) * t * p1.second) +
+                        (Math.pow(t, 2.0) * p2.second)
+
+                val radius = startWidth * t + endWidth * (1 - t)
+                val circle = Ellipse2D.Double(((x * size) - radius / 2), ((y * size) - radius / 2),
+                        radius, radius)
+
+
+                g2.fill(circle)
             }
 //        paint.setStrokeWidth(originalWidth)
         }

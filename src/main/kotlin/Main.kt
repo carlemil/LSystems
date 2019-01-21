@@ -81,7 +81,7 @@ private fun drawToBitmap(coordList: List<Pair<Double, Double>>, size: Double, si
 
     val d =  DrawLine.paint(coordList,size, sidePadding, palette)
 
-    Thread.sleep(3000)
+    Thread.sleep(300)
     println("asd: "+d)
 }
 
