@@ -1,17 +1,36 @@
 import java.awt.*
 import java.awt.geom.Ellipse2D
-import java.awt.geom.Point2D
 import javax.imageio.ImageIO
 import java.io.File
 import java.awt.image.BufferedImage
 
 
-class DrawLine {
+class SplineLines {
 
     val circle = Ellipse2D.Double()
 
+    // For 4 control points:
+    //
+    //P = (1−t)3P1 + 3(1−t)2tP2 +3(1−t)t2P3 + t3P4
+
     companion object {
-        fun paint(coordList: List<Pair<Double, Double>>, size: Double, sidePadding: Double, palette: IntArray) {
+
+        fun addMidPointsToPolygon(coordList: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
+            val resultingCoordList = ArrayList<Pair<Double, Double>>()
+
+            for (i in 0 until coordList.size - 1) {
+                val c0 = coordList[i]
+                val c1 = coordList[i + 1]
+                val cMid = Pair((c0.first + c1.first) / 2.0, (c0.second + c1.second) / 2.0)
+                resultingCoordList.add(c0)
+                resultingCoordList.add(cMid)
+            }
+            resultingCoordList.add(coordList.last())
+
+            return resultingCoordList
+        }
+
+        fun paint(polygon: List<Pair<Double, Double>>, size: Double, sidePadding: Double, palette: IntArray) {
             val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
                     BufferedImage.TYPE_INT_RGB)
             val g2 = bufferedImage.createGraphics()
@@ -20,14 +39,15 @@ class DrawLine {
             g2!!.stroke = BasicStroke(2f)
             g2.color = Color.WHITE
 
-            for (i in 1..coordList.size - 2 step 2) {
-                val p0 = coordList.get(i - 1)
-                val p1 = coordList.get(i)
-                val p2 = coordList.get(i + 1)
+            val polygonWithMidpoints = addMidPointsToPolygon(polygon)
+
+            for (i in 1 until polygonWithMidpoints.size - 2 step 2) {
+                val p0 = polygonWithMidpoints[i]
+                val p1 = polygonWithMidpoints[i + 1]
+                val p2 = polygonWithMidpoints[i + 2]
 
                 //g2.draw(Line2D.Double(x0, y0, x1, y1))
-                draw(g2, 1.0, 16.0, 40,
-                        p0, p1, p2, size)
+                draw(g2, 5.0, 5.0, 40, p0, p1, p2, size)
             }
 
             g2.dispose()
