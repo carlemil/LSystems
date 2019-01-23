@@ -30,13 +30,17 @@ class SplineLines {
             return resultingCoordList
         }
 
-        fun paint(polygon: List<Pair<Double, Double>>, size: Double, sidePadding: Double, palette: IntArray) {
+        fun paint(polygon: List<Pair<Double, Double>>,
+                  inputImage: BufferedImage,
+                  size: Double,
+                  sidePadding: Double,
+                  palette: IntArray): java.awt.image.BufferedImage {
             val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
                     BufferedImage.TYPE_INT_RGB)
             val g2 = bufferedImage.createGraphics()
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
-            g2!!.stroke = BasicStroke(2f)
+            g2.stroke = BasicStroke(2f)
             g2.color = Color.WHITE
 
             val polygonWithMidpoints = addMidPointsToPolygon(polygon)
@@ -46,20 +50,20 @@ class SplineLines {
                 val p1 = polygonWithMidpoints[i + 1]
                 val p2 = polygonWithMidpoints[i + 2]
 
-                //g2.draw(Line2D.Double(x0, y0, x1, y1))
-                draw(g2, 5.0, 5.0, 40, p0, p1, p2, size)
+                draw(g2, inputImage, 40, p0, p1, p2, size)
             }
-
             g2.dispose()
-
-            val file = File("newimage.png")
-            ImageIO.write(bufferedImage, "png", file)
-
+            return bufferedImage
         }
 
-        fun draw(g2: Graphics2D, startWidth: Double, endWidth: Double, drawSteps: Int,
-                 p0: Pair<Double, Double>, p1: Pair<Double, Double>, p2: Pair<Double, Double>, size: Double) {
-//        val originalWidth = paint.getStrokeWidth()
+        fun draw(g2: Graphics2D,
+                 inputImage: BufferedImage,
+                 drawSteps: Int,
+                 p0: Pair<Double, Double>,
+                 p1: Pair<Double, Double>,
+                 p2: Pair<Double, Double>,
+                 size: Double) {
+
             val widthDelta = endWidth - startWidth
             for (i in 0 until drawSteps) {
                 // Calculate the Bezier (x, y) coordinate for this step.
@@ -77,7 +81,7 @@ class SplineLines {
                 val circle = Ellipse2D.Double(((x * size) - radius / 2), ((y * size) - radius / 2),
                         radius, radius)
 
-
+                /// TODO circle.setColor(inputImage.getPixel(x,y))
                 g2.fill(circle)
             }
 //        paint.setStrokeWidth(originalWidth)

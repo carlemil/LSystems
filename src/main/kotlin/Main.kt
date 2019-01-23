@@ -31,41 +31,30 @@ fun main(args: Array<String>) = mainBody {
 
         println(lsystem + "  " + lSystem?.name)
 
-        val image = if (!imageName.isEmpty()) readImageFile(imageName) else null
+        val inputImage = if (!imageName.isEmpty()) readImageFile(imageName) else null
         val fileName = lSystem?.name + "_" + iterations +
                 (if (!imageName.isEmpty()) "_" + imageName.subSequence(0, imageName.lastIndexOf(".")) else "") +
                 "_" + themeName + (if (useBezierCurves) "_bezier" else "") + "_scale_" + outputImageSize.toInt()
 
-        val svgFileName = fileName + ".svg"
+        val pngFileName = fileName + ".png"
 
         val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 6.0).toInt(), 100)
 
         val coordList = computeLSystem(lSystem!!, iterations)
 
-        println("Write SVG to file: " + svgFileName)
-        File(svgFileName).delete()
-        val svgBufferedWriter = File(svgFileName).bufferedWriter()
-        svgBufferedWriter.append("")
-
-        val c0 = coordList[1]
-        val c1 = coordList[2]
-        val strokeWidth: Double = Math.sqrt(Math.pow(c0.first - c1.first, 2.0) + Math.pow(c0.second - c1.second, 2.0)) * outputImageSize * lineWidth / 4.0
         val sidePadding = outputImageSize / 50 //strokeWidth * 2
 
+        val bufferedImage = SplineLines.paint(coordList, inputImage, outputImageSize, sidePadding, palette)
 
-        drawToBitmap(coordList, outputImageSize, sidePadding, palette)
-
-//
-//        writeSVGToFile(outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, image, palette, svgBufferedWriter, paletteRepeat)
-//
-//        println("Write HTML wrapper file.")
-//        writeSVGToHtmlFile(fileName + ".html", outputImageSize, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, palette, image, paletteRepeat)
-//
-//        println("Write PNG file.")
-//        convertSVGtoPNG(svgFileName, fileName + ".png")
+        writeImageToPngFile(bufferedImage, pngFileName)
 
         println("Done")
     }
+}
+
+private fun writeImageToPngFile(bufferedImage: java.awt.image.BufferedImage, pngFileName: String) {
+    val file = File(pngFileName)
+    ImageIO.write(bufferedImage, "png", file)
 }
 
 private fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
@@ -75,18 +64,6 @@ private fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
         System.exit(-1)
     }
     return lSystemInfo.systems.find { lsd -> lsd.name == lSystemName }
-}
-
-private fun drawToBitmap(coordList: List<Pair<Double, Double>>, size: Double, sidePadding: Double, palette: IntArray) {
-
-    val d =  SplineLines.paint(coordList,size, sidePadding, palette)
-
-    Thread.sleep(300)
-    println("asd: "+d)
-}
-
-private fun writeToPNG(bitmap: BufferedImage, file: File) {
-
 }
 
 private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,
