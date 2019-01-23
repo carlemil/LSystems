@@ -33,13 +33,17 @@ class SplineLines {
                   size: Double,
                   sidePadding: Double,
                   palette: IntArray): java.awt.image.BufferedImage {
+
             val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
                     BufferedImage.TYPE_INT_RGB)
+
             val g2 = bufferedImage.createGraphics()
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
             g2.stroke = BasicStroke(2f)
             g2.color = Color.WHITE
+            g2.fill(Rectangle(0, 0, bufferedImage.width, bufferedImage.height))
+            g2.color = Color.BLACK
 
             val polygonWithMidpoints = addMidPointsToPolygon(polygon)
 
@@ -74,9 +78,10 @@ class SplineLines {
                         (2 * (1 - t) * t * p1.second) +
                         (Math.pow(t, 2.0) * p2.second)
 
-                var radius = 5.0
+                var radius = 1.0
                 if (inputImage != null) {
-                    radius = getBrightnessFromImage(x, y, inputImage) * 10
+                    // Use the inverted brightness as width of the line we draw.
+                    radius = (1 - getBrightnessFromImage(x, y, inputImage)) * 5 + 1
                 }
 
                 val circle = Ellipse2D.Double(((x * size) - radius / 2), ((y * size) - radius / 2),
