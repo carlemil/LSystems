@@ -1,7 +1,5 @@
 import java.awt.*
 import java.awt.geom.Ellipse2D
-import javax.imageio.ImageIO
-import java.io.File
 import java.awt.image.BufferedImage
 
 
@@ -31,7 +29,7 @@ class SplineLines {
         }
 
         fun paint(polygon: List<Pair<Double, Double>>,
-                  inputImage: BufferedImage,
+                  inputImage: BufferedImage?,
                   size: Double,
                   sidePadding: Double,
                   palette: IntArray): java.awt.image.BufferedImage {
@@ -57,14 +55,13 @@ class SplineLines {
         }
 
         fun draw(g2: Graphics2D,
-                 inputImage: BufferedImage,
+                 inputImage: BufferedImage?,
                  drawSteps: Int,
                  p0: Pair<Double, Double>,
                  p1: Pair<Double, Double>,
                  p2: Pair<Double, Double>,
                  size: Double) {
 
-            val widthDelta = endWidth - startWidth
             for (i in 0 until drawSteps) {
                 // Calculate the Bezier (x, y) coordinate for this step.
                 val t = (i.toFloat() / drawSteps).toDouble()
@@ -77,14 +74,34 @@ class SplineLines {
                         (2 * (1 - t) * t * p1.second) +
                         (Math.pow(t, 2.0) * p2.second)
 
-                val radius = startWidth * t + endWidth * (1 - t)
+                var radius = 5.0
+                if (inputImage != null) {
+                    radius = getBrightnessFromImage(x, y, inputImage) * 10
+                }
+
                 val circle = Ellipse2D.Double(((x * size) - radius / 2), ((y * size) - radius / 2),
                         radius, radius)
 
                 /// TODO circle.setColor(inputImage.getPixel(x,y))
+
                 g2.fill(circle)
             }
-//        paint.setStrokeWidth(originalWidth)
+        }
+
+        fun getBrightnessFromImage(inX: Double, inY: Double, image: BufferedImage?): Double {
+            var color = 0xffffff
+            if (image != null) {
+                val x = (inX * (image.width - 1.0)).toInt()
+                val y = (inY * (image.height - 1.0)).toInt()
+                color = image.getRGB(x, y)
+            }
+            var c = FloatArray(3)
+            Color.RGBtoHSB(
+                    color shr 16 and 255,
+                    color shr 8 and 255,
+                    color and 255,
+                    c)
+            return c[2].toDouble()
         }
     }
 }
