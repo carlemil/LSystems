@@ -44,8 +44,11 @@ class SplineLines {
                                 p2.first, p2.second),
                         doubleArrayOf(
                                 // Use the inverted brightness as width of the line we drawSpline.
-                                (1 - getBrightnessFromImage(p1.first, p1.second, inputImage)) * 11 + 1
+                                (1 - getBrightnessFromImage(p0.first, p0.second, inputImage)) * 11 + 1,
+                                (1 - getBrightnessFromImage(p1.first, p1.second, inputImage)) * 11 + 1,
+                                (1 - getBrightnessFromImage(p2.first, p2.second, inputImage)) * 11 + 1
                         ),
+                        sidePadding,
                         size)
             }
             g2.dispose()
@@ -71,6 +74,7 @@ class SplineLines {
                                drawSteps: Int,
                                polygonPoints: DoubleArray,
                                widthForPoints: DoubleArray,
+                               sidePadding: Double,
                                size: Double) {
             for (i in 0 until drawSteps) {
                 // Calculate the Bezier (x, y) coordinate for this step.
@@ -84,10 +88,14 @@ class SplineLines {
                         (2 * (1 - t) * t * polygonPoints[3]) +
                         (Math.pow(t, 2.0) * polygonPoints[5])
 
-                var radius = widthForPoints[0]
+                val width = (Math.pow((1 - t), 2.0) * widthForPoints[0]) +
+                        (2 * (1 - t) * t * widthForPoints[1]) +
+                        (Math.pow(t, 2.0) * widthForPoints[2])
 
-                val circle = Ellipse2D.Double(((x * size) - radius / 2), ((y * size) - radius / 2),
-                        radius, radius)
+                val circle = Ellipse2D.Double(
+                        ((x * size) - width / 2) + sidePadding,
+                        ((y * size) - width / 2) + sidePadding,
+                        width, width)
 
                 g2.fill(circle)
             }
