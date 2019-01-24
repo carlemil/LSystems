@@ -39,7 +39,7 @@ private fun generate(axiom: String, rules: Map<String, String>, iterations: Int,
         tmp.append(instructions)
     }
     for (c in forwardChars) {
-        instructions.replace(Regex(c.toString()), "F")
+        instructions.replace(Regex(c), "F")
     }
     return instructions
 }
@@ -53,8 +53,7 @@ private fun convertToXY(instructions: String, systemAngle: Double, forwardChars:
 
     val stack: Stack<Pair<Double, Double>> = Stack()
 
-    //list.add(Pair(x, y))
-    // list.add(Pair(x, y))
+    list.add(Pair(x, y))
     for (c in instructions) {
         when (c.toString()) {
             "-" -> angle -= systemAngle

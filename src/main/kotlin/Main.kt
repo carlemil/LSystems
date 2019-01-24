@@ -66,69 +66,6 @@ private fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
     return lSystemInfo.systems.find { lsd -> lsd.name == lSystemName }
 }
 
-private fun writeSVGToHtmlFile(htmlFileName: String, scale: Double, sidePadding: Double,
-                               coordList: List<Pair<Double, Double>>, useBezierCurves: Boolean, useVariableLineWidth: Boolean,
-                               strokeWidth: Double, palette: IntArray, image: BufferedImage?, paletteRepeat: Double) {
-    File(htmlFileName).delete()
-    val htmlBufferedWriter = File(htmlFileName).bufferedWriter()
-    htmlBufferedWriter.append("<!DOCTYPE html>\n<html>\n<body>\n")
-    writeSVGToFile(scale, sidePadding, coordList, useBezierCurves, useVariableLineWidth, strokeWidth, image, palette, htmlBufferedWriter, paletteRepeat)
-    htmlBufferedWriter.append("</body>\n</html>\n")
-    htmlBufferedWriter.flush()
-}
-
-
-private fun writeSVGToFile(scale: Double, sidePadding: Double, xyList: List<Pair<Double, Double>>,
-                           useBezierCurves: Boolean, useVariableLineWidth: Boolean, strokeWidth: Double, image: BufferedImage?,
-                           palette: IntArray, file: BufferedWriter, paletteRepeat: Double) {
-    file.append("<?xml version=\"1.0\" standalone=\"no\"?>\n" +
-            "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20010904//EN\"\n" +
-            " \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">\n" +
-            "<svg version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\"\n ")
-    file.append(" width=\"" + (sidePadding * 2 + scale) + "\" height=\"" + (sidePadding * 2 + scale) + "\">\n")
-    if (useBezierCurves) {
-        val separator = " "
-        for (i in 1..xyList.size - 2) {
-            file.append("\n<path d=\"")
-            val p0 = xyList.get(i - 1)
-            val p1 = xyList.get(i)
-            val p2 = xyList.get(i + 1)
-            val brightness = getBrightnessFromImage(p0, image)
-            val segmentStrokeWidth = getVariableLineWidth(useVariableLineWidth, strokeWidth, brightness)
-            val color = getLineSegmentColor(useVariableLineWidth, i, brightness, palette, paletteRepeat, xyList)
-            file.append("M " + getCoord(getCenter(p0, p1), scale, sidePadding, separator) +
-                    " Q " + getCoord(p1, scale, sidePadding, separator) +
-                    " " + getCoord(getCenter(p1, p2), scale, sidePadding, separator) + ", ")
-            file.append("\" stroke=\"#" + color + "\" stroke-width=\"" + "%.2f".format(segmentStrokeWidth) + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
-        }
-    } else {
-        for (i in 0..xyList.size - 2) {
-            val p0 = xyList.get(i)
-            val p1 = xyList.get(i + 1)
-            val brightness = getBrightnessFromImage(p0, image)
-            val segmentStrokeWidth = getVariableLineWidth(useVariableLineWidth, strokeWidth, brightness)
-            val color = getLineSegmentColor(useVariableLineWidth, i, brightness, palette, paletteRepeat, xyList)
-            file.append("\n<polyline points=\"")
-            file.append(getCoord(p0, scale, sidePadding, ","))
-            file.append(" ")
-            file.append(getCoord(p1, scale, sidePadding, ","))
-            file.append("\" stroke=\"#" + color + "\" stroke-width=\"" + "%.2f".format(segmentStrokeWidth) + "\" fill=\"none\" stroke-linecap=\"round\"/>\n")
-        }
-    }
-    file.append("\n</svg>")
-    file.flush()
-}
-
-private fun convertSVGtoPNG(svgInFile: String, pngOutFile: String) {
-    val svg_URI_input = Paths.get(svgInFile).toUri().toURL().toString()
-    val input_svg_image = TranscoderInput(svg_URI_input)
-    val png_ostream = FileOutputStream(pngOutFile)
-    val output_png_image = TranscoderOutput(png_ostream)
-    val my_converter = PNGTranscoder()
-    my_converter.transcode(input_svg_image, output_png_image)
-    png_ostream.flush()
-    png_ostream.close()
-}
 
 private fun getLineSegmentColor(useVariableLineWidth: Boolean, i: Int, brightness: Double, palette: IntArray,
                                 paletteRepeat: Double, xyList: List<Pair<Double, Double>>): String {
@@ -136,14 +73,6 @@ private fun getLineSegmentColor(useVariableLineWidth: Boolean, i: Int, brightnes
         ColorUtils.getHexString(getPaletteColorByLinePosition(i.toDouble() / xyList.size, brightness, palette, paletteRepeat))
     } else {
         "FF000000"
-    }
-}
-
-private fun getVariableLineWidth(useVariableLineWidth: Boolean, strokeWidth: Double, brightness: Double): Double {
-    return if (useVariableLineWidth) {
-        strokeWidth * (0.2 + (1.0 - brightness))
-    } else {
-        strokeWidth
     }
 }
 
@@ -175,13 +104,3 @@ fun getPaletteColorByLinePosition(linePosition: Double, brightness: Double, pale
     val b = (f3[0] * brightness).toInt()
     return Color(r, g, b, a)
 }
-
-private fun getCenter(p0: Pair<Double, Double>, p1: Pair<Double, Double>): Pair<Double, Double> {
-    return Pair((p0.first + p1.first) / 2.0, (p0.second + p1.second) / 2.0)
-}
-
-private fun getCoord(p: Pair<Double, Double>, scale: Double, sidePadding: Double, separator: String): String {
-    return "" + (p.first * scale + sidePadding).format(4) + separator + (p.second * scale + sidePadding).format(4)
-}
-
-fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)

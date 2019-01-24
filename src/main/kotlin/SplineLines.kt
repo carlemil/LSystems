@@ -32,10 +32,12 @@ class SplineLines {
 
             val polygonWithMidpoints = addMidPointsToPolygon(polygon)
 
-            for (i in 1 until polygonWithMidpoints.size - 2 step 2) {
-                val p0 = polygonWithMidpoints[i]
-                val p1 = polygonWithMidpoints[i + 1]
-                val p2 = polygonWithMidpoints[i + 2]
+            println(polygon)
+            println(polygonWithMidpoints)
+            for (i in 0 until polygonWithMidpoints.size step 2) {
+                val p0 = polygonWithMidpoints[Math.max(i - 1, 0)]
+                val p1 = polygonWithMidpoints[i]
+                val p2 = polygonWithMidpoints[Math.min(i + 1, polygonWithMidpoints.size - 1)]
 
                 drawSpline(g2, 40,
                         doubleArrayOf(
