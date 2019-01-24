@@ -11,7 +11,7 @@ class LSArgParser(parser: ArgParser) {
             help = "Number of iterations of the L system") { trim().toInt() }.default(4)
 
     val outputImageSize by parser.storing(
-            "-S", "--outputImageSize",
+            "-s", "--outputImageSize",
             help = "Size of the output svg image (in pixels)") { trim().toDouble() }.default(800.0)
 
     val useBezierCurves by parser.storing(
@@ -31,7 +31,7 @@ class LSArgParser(parser: ArgParser) {
             help = "The path to the input image") { trim() }.default("")
 
     val lsystem by parser.storing(
-            "-s", "--system",
+            "-l", "--lsystem",
             help = "What L system to use: " + getLSystemNames()) { trim() }.default("Hilbert")
 
     val paletteRepeat by parser.storing(

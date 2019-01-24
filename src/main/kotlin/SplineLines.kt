@@ -17,6 +17,7 @@ class SplineLines {
                                  inputImage: BufferedImage?,
                                  size: Double,
                                  sidePadding: Double,
+                                 lineWidth: Double,
                                  palette: IntArray): java.awt.image.BufferedImage {
 
             val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
@@ -49,7 +50,8 @@ class SplineLines {
                                 (1 - getBrightnessFromImage(p2.first, p2.second, inputImage)) * 11 + 1
                         ),
                         sidePadding,
-                        size)
+                        size,
+                        lineWidth)
             }
             g2.dispose()
             return bufferedImage
@@ -75,7 +77,8 @@ class SplineLines {
                                polygonPoints: DoubleArray,
                                widthForPoints: DoubleArray,
                                sidePadding: Double,
-                               size: Double) {
+                               size: Double,
+                               lineWidth: Double) {
             for (i in 0 until drawSteps) {
                 // Calculate the Bezier (x, y) coordinate for this step.
                 val t = (i.toFloat() / drawSteps).toDouble()
@@ -88,9 +91,9 @@ class SplineLines {
                         (2 * (1 - t) * t * polygonPoints[3]) +
                         (Math.pow(t, 2.0) * polygonPoints[5])
 
-                val width = (Math.pow((1 - t), 2.0) * widthForPoints[0]) +
+                val width = ((Math.pow((1 - t), 2.0) * widthForPoints[0]) +
                         (2 * (1 - t) * t * widthForPoints[1]) +
-                        (Math.pow(t, 2.0) * widthForPoints[2])
+                        (Math.pow(t, 2.0) * widthForPoints[2])) * lineWidth
 
                 val circle = Ellipse2D.Double(
                         ((x * size) - width / 2) + sidePadding,
