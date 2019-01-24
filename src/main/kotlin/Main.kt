@@ -18,7 +18,7 @@ import java.nio.file.Paths
 /**
  * Created by carlemil on 4/10/17.
  *
- * gradle run -PlsArgs="['-v true', '-t black', '-s Hilbert', '-i 3', '-w 1.5', '-p ceb.jpg' ]"
+ *  gradle run -PlsArgs="['-v true', '-t black', '-l SnowFlake', '-i 5', '-s 1600', '-w 0.6', '-p ceb.jpg' ]"
  *
  */
 
