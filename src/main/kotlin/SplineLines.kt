@@ -13,21 +13,6 @@ class SplineLines {
 
     companion object {
 
-        fun addMidPointsToPolygon(coordList: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
-            val resultingCoordList = ArrayList<Pair<Double, Double>>()
-
-            for (i in 0 until coordList.size - 1) {
-                val c0 = coordList[i]
-                val c1 = coordList[i + 1]
-                val cMid = Pair((c0.first + c1.first) / 2.0, (c0.second + c1.second) / 2.0)
-                resultingCoordList.add(c0)
-                resultingCoordList.add(cMid)
-            }
-            resultingCoordList.add(coordList.last())
-
-            return resultingCoordList
-        }
-
         fun drawPolygonAsSplines(polygon: List<Pair<Double, Double>>,
                                  inputImage: BufferedImage?,
                                  size: Double,
@@ -58,13 +43,28 @@ class SplineLines {
             return bufferedImage
         }
 
-        fun drawSpline(g2: Graphics2D,
-                       inputImage: BufferedImage?,
-                       drawSteps: Int,
-                       p0: Pair<Double, Double>,
-                       p1: Pair<Double, Double>,
-                       p2: Pair<Double, Double>,
-                       size: Double) {
+        private fun addMidPointsToPolygon(coordList: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
+            val resultingCoordList = ArrayList<Pair<Double, Double>>()
+
+            for (i in 0 until coordList.size - 1) {
+                val c0 = coordList[i]
+                val c1 = coordList[i + 1]
+                val cMid = Pair((c0.first + c1.first) / 2.0, (c0.second + c1.second) / 2.0)
+                resultingCoordList.add(c0)
+                resultingCoordList.add(cMid)
+            }
+            resultingCoordList.add(coordList.last())
+
+            return resultingCoordList
+        }
+
+        private fun drawSpline(g2: Graphics2D,
+                               inputImage: BufferedImage?,
+                               drawSteps: Int,
+                               p0: Pair<Double, Double>,
+                               p1: Pair<Double, Double>,
+                               p2: Pair<Double, Double>,
+                               size: Double) {
 
             for (i in 0 until drawSteps) {
                 // Calculate the Bezier (x, y) coordinate for this step.
@@ -91,7 +91,7 @@ class SplineLines {
             }
         }
 
-        fun getBrightnessFromImage(inX: Double, inY: Double, image: BufferedImage?): Double {
+        private fun getBrightnessFromImage(inX: Double, inY: Double, image: BufferedImage?): Double {
             var color = 0xffffff
             if (image != null) {
                 val x = (inX * (image.width - 1.0)).toInt()
