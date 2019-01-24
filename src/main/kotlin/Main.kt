@@ -44,7 +44,7 @@ fun main(args: Array<String>) = mainBody {
 
         val sidePadding = outputImageSize / 50 //strokeWidth * 2
 
-        val bufferedImage = SplineLines.paint(coordList, inputImage, outputImageSize, sidePadding, palette)
+        val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, inputImage, outputImageSize, sidePadding, palette)
 
         writeImageToPngFile(bufferedImage, pngFileName)
 

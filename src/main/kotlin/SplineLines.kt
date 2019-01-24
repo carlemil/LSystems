@@ -28,11 +28,11 @@ class SplineLines {
             return resultingCoordList
         }
 
-        fun paint(polygon: List<Pair<Double, Double>>,
-                  inputImage: BufferedImage?,
-                  size: Double,
-                  sidePadding: Double,
-                  palette: IntArray): java.awt.image.BufferedImage {
+        fun drawPolygonAsSplines(polygon: List<Pair<Double, Double>>,
+                                 inputImage: BufferedImage?,
+                                 size: Double,
+                                 sidePadding: Double,
+                                 palette: IntArray): java.awt.image.BufferedImage {
 
             val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
                     BufferedImage.TYPE_INT_RGB)
@@ -52,19 +52,19 @@ class SplineLines {
                 val p1 = polygonWithMidpoints[i + 1]
                 val p2 = polygonWithMidpoints[i + 2]
 
-                draw(g2, inputImage, 40, p0, p1, p2, size)
+                drawSpline(g2, inputImage, 40, p0, p1, p2, size)
             }
             g2.dispose()
             return bufferedImage
         }
 
-        fun draw(g2: Graphics2D,
-                 inputImage: BufferedImage?,
-                 drawSteps: Int,
-                 p0: Pair<Double, Double>,
-                 p1: Pair<Double, Double>,
-                 p2: Pair<Double, Double>,
-                 size: Double) {
+        fun drawSpline(g2: Graphics2D,
+                       inputImage: BufferedImage?,
+                       drawSteps: Int,
+                       p0: Pair<Double, Double>,
+                       p1: Pair<Double, Double>,
+                       p2: Pair<Double, Double>,
+                       size: Double) {
 
             for (i in 0 until drawSteps) {
                 // Calculate the Bezier (x, y) coordinate for this step.
@@ -80,14 +80,12 @@ class SplineLines {
 
                 var radius = 1.0
                 if (inputImage != null) {
-                    // Use the inverted brightness as width of the line we draw.
+                    // Use the inverted brightness as width of the line we drawSpline.
                     radius = (1 - getBrightnessFromImage(x, y, inputImage)) * 5 + 1
                 }
 
                 val circle = Ellipse2D.Double(((x * size) - radius / 2), ((y * size) - radius / 2),
                         radius, radius)
-
-                /// TODO circle.setColor(inputImage.getPixel(x,y))
 
                 g2.fill(circle)
             }
