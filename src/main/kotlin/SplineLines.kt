@@ -37,7 +37,16 @@ class SplineLines {
                 val p1 = polygonWithMidpoints[i + 1]
                 val p2 = polygonWithMidpoints[i + 2]
 
-                drawSpline(g2, inputImage, 40, p0, p1, p2, size)
+                drawSpline(g2, 40,
+                        doubleArrayOf(
+                                p0.first, p0.second,
+                                p1.first, p1.second,
+                                p2.first, p2.second),
+                        doubleArrayOf(
+                                // Use the inverted brightness as width of the line we drawSpline.
+                                (1 - getBrightnessFromImage(p1.first, p1.second, inputImage)) * 11 + 1
+                        ),
+                        size)
             }
             g2.dispose()
             return bufferedImage
@@ -59,30 +68,23 @@ class SplineLines {
         }
 
         private fun drawSpline(g2: Graphics2D,
-                               inputImage: BufferedImage?,
                                drawSteps: Int,
-                               p0: Pair<Double, Double>,
-                               p1: Pair<Double, Double>,
-                               p2: Pair<Double, Double>,
+                               polygonPoints: DoubleArray,
+                               widthForPoints: DoubleArray,
                                size: Double) {
-
             for (i in 0 until drawSteps) {
                 // Calculate the Bezier (x, y) coordinate for this step.
                 val t = (i.toFloat() / drawSteps).toDouble()
 
                 // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
-                val x = (Math.pow((1 - t), 2.0) * p0.first) +
-                        (2 * (1 - t) * t * p1.first) +
-                        (Math.pow(t, 2.0) * p2.first)
-                val y = (Math.pow((1 - t), 2.0) * p0.second) +
-                        (2 * (1 - t) * t * p1.second) +
-                        (Math.pow(t, 2.0) * p2.second)
+                val x = (Math.pow((1 - t), 2.0) * polygonPoints[0]) +
+                        (2 * (1 - t) * t * polygonPoints[2]) +
+                        (Math.pow(t, 2.0) * polygonPoints[4])
+                val y = (Math.pow((1 - t), 2.0) * polygonPoints[1]) +
+                        (2 * (1 - t) * t * polygonPoints[3]) +
+                        (Math.pow(t, 2.0) * polygonPoints[5])
 
-                var radius = 1.0
-                if (inputImage != null) {
-                    // Use the inverted brightness as width of the line we drawSpline.
-                    radius = (1 - getBrightnessFromImage(x, y, inputImage)) * 5 + 1
-                }
+                var radius = widthForPoints[0]
 
                 val circle = Ellipse2D.Double(((x * size) - radius / 2), ((y * size) - radius / 2),
                         radius, radius)
