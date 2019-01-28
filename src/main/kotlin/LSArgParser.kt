@@ -38,6 +38,10 @@ class LSArgParser(parser: ArgParser) {
             "-w", "--lineWidth",
             help = "The width of the line") { trim().toDouble() }.default(1.0)
 
+    val outlineWidth by parser.storing(
+            "-v", "--outlineWidth",
+            help = "The width of the outline of the line") { trim().toDouble() }.default(1.0)
+
 
     private fun getLSystemNames(): String? {
         val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())

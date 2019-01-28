@@ -18,7 +18,8 @@ class SplineLines {
                                  lightnessImage: BufferedImage?,
                                  size: Double,
                                  sidePadding: Double,
-                                 lineWidth: Double): java.awt.image.BufferedImage {
+                                 lineWidth: Double,
+                                 outlineWidth: Double): java.awt.image.BufferedImage {
 
             val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
                     BufferedImage.TYPE_INT_RGB)
@@ -64,9 +65,12 @@ class SplineLines {
                         allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, lineWidth)
             }
             g2.paint = Color.RED
-            for (i in 0 until allPolygonPoints.size) {
-                drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
-                        allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, lineWidth/2.0)
+            val width = lineWidth - outlineWidth
+            if (width > 0) {
+                for (i in 0 until allPolygonPoints.size) {
+                    drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
+                            allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, width)
+                }
             }
 
             g2.dispose()

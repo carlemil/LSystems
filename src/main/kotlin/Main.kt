@@ -1,10 +1,7 @@
 import LSystem.*
-import LSystem.color.Palette
-import LSystem.color.Theme
 import com.beust.klaxon.Klaxon
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
-import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -12,7 +9,7 @@ import javax.imageio.ImageIO
 /**
  * Created by carlemil on 4/10/17.
  *
- *  ./gradlew run -PlsArgs="['-s SnowFlake', '-i 4', '-o 600', '-w 0.6', '-b ceb.jpg' ]"
+ *  ./gradlew run -PlsArgs="['-s SnowFlake', '-i 4', '-o 600', '-w 0.6', '-v 0.2', '-b ceb.jpg' ]"
  *
  */
 
@@ -42,7 +39,7 @@ fun main(args: Array<String>) = mainBody {
         val sidePadding = outputImageSize / 50 //strokeWidth * 2
 
         val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage,
-                outputImageSize, sidePadding, lineWidth)
+                outputImageSize, sidePadding, lineWidth, outlineWidth)
 
         writeImageToPngFile(bufferedImage, pngFileName)
 
