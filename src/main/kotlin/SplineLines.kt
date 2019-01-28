@@ -57,9 +57,16 @@ class SplineLines {
                 allWidthForPoints = (allWidthForPoints + widthForPoints).toMutableList()
             }
 
+
+            g2.paint = Color.BLACK
             for (i in 0 until allPolygonPoints.size) {
                 drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
                         allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, lineWidth)
+            }
+            g2.paint = Color.RED
+            for (i in 0 until allPolygonPoints.size) {
+                drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
+                        allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, lineWidth/2.0)
             }
 
             g2.dispose()
