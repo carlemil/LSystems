@@ -33,6 +33,9 @@ class SplineLines {
 
             val polygonWithMidpoints = addMidPointsToPolygon(polygon)
 
+            var allPolygonPoints = mutableListOf<DoubleArray>()
+            var allWidthForPoints = mutableListOf<DoubleArray>()
+
             for (i in 0 until polygonWithMidpoints.size step 2) {
                 val p0 = polygonWithMidpoints[Math.max(i - 1, 0)]
                 val p1 = polygonWithMidpoints[i]
@@ -41,16 +44,24 @@ class SplineLines {
                 val polygonPoints = doubleArrayOf(
                         p0.first, p0.second,
                         p1.first, p1.second,
-                        p2.first, p2.second)
+                        p2.first, p2.second
+                )
+                allPolygonPoints = (allPolygonPoints + polygonPoints).toMutableList()
+
                 val widthForPoints = doubleArrayOf(
                         // Use the inverted brightness as width of the line we drawSpline.
                         (1 - ColorUtils.getLightnessFromImage(p0.first, p0.second, lightnessImage)) * 11 + 1,
                         (1 - ColorUtils.getLightnessFromImage(p1.first, p1.second, lightnessImage)) * 11 + 1,
                         (1 - ColorUtils.getLightnessFromImage(p2.first, p2.second, lightnessImage)) * 11 + 1
                 )
-                drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
-                        polygonPoints, widthForPoints, sidePadding, size, lineWidth)
+                allWidthForPoints = (allWidthForPoints + widthForPoints).toMutableList()
             }
+
+            for (i in 0 until allPolygonPoints.size) {
+                drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
+                        allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, lineWidth)
+            }
+
             g2.dispose()
             return bufferedImage
         }
