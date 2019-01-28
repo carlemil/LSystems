@@ -14,11 +14,11 @@ class SplineLines {
     companion object {
 
         fun drawPolygonAsSplines(polygon: List<Pair<Double, Double>>,
-                                 inputImage: BufferedImage?,
+                                 hueImage: BufferedImage?,
+                                 lightnessImage: BufferedImage?,
                                  size: Double,
                                  sidePadding: Double,
-                                 lineWidth: Double,
-                                 palette: IntArray): java.awt.image.BufferedImage {
+                                 lineWidth: Double): java.awt.image.BufferedImage {
 
             val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
                     BufferedImage.TYPE_INT_RGB)
@@ -38,20 +38,18 @@ class SplineLines {
                 val p1 = polygonWithMidpoints[i]
                 val p2 = polygonWithMidpoints[Math.min(i + 1, polygonWithMidpoints.size - 1)]
 
+                val polygonPoints = doubleArrayOf(
+                        p0.first, p0.second,
+                        p1.first, p1.second,
+                        p2.first, p2.second)
+                val widthForPoints = doubleArrayOf(
+                        // Use the inverted brightness as width of the line we drawSpline.
+                        (1 - ColorUtils.getLightnessFromImage(p0.first, p0.second, lightnessImage)) * 11 + 1,
+                        (1 - ColorUtils.getLightnessFromImage(p1.first, p1.second, lightnessImage)) * 11 + 1,
+                        (1 - ColorUtils.getLightnessFromImage(p2.first, p2.second, lightnessImage)) * 11 + 1
+                )
                 drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
-                        doubleArrayOf(
-                                p0.first, p0.second,
-                                p1.first, p1.second,
-                                p2.first, p2.second),
-                        doubleArrayOf(
-                                // Use the inverted brightness as width of the line we drawSpline.
-                                (1 - getBrightnessFromImage(p0.first, p0.second, inputImage)) * 11 + 1,
-                                (1 - getBrightnessFromImage(p1.first, p1.second, inputImage)) * 11 + 1,
-                                (1 - getBrightnessFromImage(p2.first, p2.second, inputImage)) * 11 + 1
-                        ),
-                        sidePadding,
-                        size,
-                        lineWidth)
+                        polygonPoints, widthForPoints, sidePadding, size, lineWidth)
             }
             g2.dispose()
             return bufferedImage
@@ -104,20 +102,20 @@ class SplineLines {
             }
         }
 
-        private fun getBrightnessFromImage(inX: Double, inY: Double, image: BufferedImage?): Double {
-            var color = 0xffffff
-            if (image != null) {
-                val x = (inX * (image.width - 1.0)).toInt()
-                val y = (inY * (image.height - 1.0)).toInt()
-                color = image.getRGB(x, y)
-            }
-            var c = FloatArray(3)
-            Color.RGBtoHSB(
-                    color shr 16 and 255,
-                    color shr 8 and 255,
-                    color and 255,
-                    c)
-            return c[2].toDouble()
-        }
+//        private fun getBrightnessFromImage(inX: Double, inY: Double, image: BufferedImage?): Double {
+//            var color = 0xffffff
+//            if (image != null) {
+//                val x = (inX * (image.width - 1.0)).toInt()
+//                val y = (inY * (image.height - 1.0)).toInt()
+//                color = image.getRGB(x, y)
+//            }
+//            var c = FloatArray(3)
+//            Color.RGBtoHSB(
+//                    color shr 16 and 255,
+//                    color shr 8 and 255,
+//                    color and 255,
+//                    c)
+//            return c[2].toDouble()
+//        }
     }
 }
