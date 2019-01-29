@@ -64,10 +64,14 @@ class SplineLines {
                 drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
                         allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, lineWidth)
             }
-            g2.paint = Color.RED
+
             val width = lineWidth - outlineWidth
             if (width > 0) {
                 for (i in 0 until allPolygonPoints.size) {
+                    g2.paint = ColorUtils.getColorFromImage(
+                            allPolygonPoints[i][0],
+                            allPolygonPoints[i][1],
+                            hueImage)
                     drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
                             allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, width)
                 }
@@ -76,6 +80,7 @@ class SplineLines {
             g2.dispose()
             return bufferedImage
         }
+
 
         private fun addMidPointsToPolygon(coordList: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
             val resultingCoordList = ArrayList<Pair<Double, Double>>()

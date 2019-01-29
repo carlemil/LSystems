@@ -37,7 +37,7 @@ object ColorUtils {
         return c[2].toDouble()
     }
 
-    fun getHueFromImage(x_: Double, y_: Double, image: BufferedImage?): Double {
+    fun getHueFromImage(x_: Double, y_: Double, image: BufferedImage?): Float {
         var color = 0xffffff
         if (image != null) {
             val x = (x_ * (image.width - 1))
@@ -50,7 +50,16 @@ object ColorUtils {
                 color shr 8 and 255,
                 color and 255,
                 c)
-        return c[1].toDouble()
+        return c[1]
+    }
+    fun getColorFromImage(x_: Double, y_: Double, image: BufferedImage?): Color {
+        var color = 0xffffff
+        if (image != null) {
+            val x = (x_ * (image.width - 1))
+            val y = (y_ * (image.height - 1))
+            color = image.getRGB(x.toInt(), y.toInt())
+        }
+        return Color.decode(color.toString())
     }
 
     fun getLineSegmentColor(useVariableLineWidth: Boolean, i: Int, brightness: Double, palette: IntArray,
