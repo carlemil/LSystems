@@ -68,10 +68,14 @@ class SplineLines {
             val width = lineWidth - outlineWidth
             if (width > 0) {
                 for (i in 0 until allPolygonPoints.size) {
-                    g2.paint = ColorUtils.getColorFromImage(
-                            allPolygonPoints[i][0],
-                            allPolygonPoints[i][1],
-                            hueImage)
+                    if (hueImage != null) {
+                        g2.paint = ColorUtils.getColorFromImage(
+                                allPolygonPoints[i][0],
+                                allPolygonPoints[i][1],
+                                hueImage)
+                    } else {
+                        g2.paint = Color.ORANGE
+                    }
                     drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
                             allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, width)
                 }

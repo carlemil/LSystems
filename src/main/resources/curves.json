@@ -26,6 +26,7 @@
     {
       "name": "Hilbert",
       "angle": 1.57079632679,
+      "fractalDimension": 2,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"
@@ -60,15 +61,16 @@
       "axiom": "A"
     },
     {
-      "name": "fff",
-      "angle": 0.1471975512,
+      "name": "Peano",
+      "angle": 1.57079632679,
       "rules": {
-        "B": "F[-B]F[+B][B]"
+        "L": "LFRFL-F-RFLFR+F+LFRFL",
+        "R": "RFLFR+F+LFRFL-F-RFLFR"
       },
       "forwardChars": [
-        "B", "F"
+        "F"
       ],
-      "axiom": "B"
+      "axiom": "L"
     }
   ]
 }

@@ -23,10 +23,10 @@ fun main(args: Array<String>) = mainBody {
         println(lsystem + "  " + lSystem?.name)
 
         val hueImage = if (!hueImageName.isEmpty()) readImageFile(hueImageName) else null
-        val lightnessImage = if (!lightnessImageName.isEmpty()) readImageFile(lightnessImageName) else null
+        val lightnessImage = if (!brightnessImageName.isEmpty()) readImageFile(brightnessImageName) else null
         val fileName = lSystem?.name + "_" + iterations +
                 (if (!hueImageName.isEmpty()) "_" + hueImageName.subSequence(0, hueImageName.lastIndexOf(".")) else "") +
-                (if (!lightnessImageName.isEmpty()) "_" + lightnessImageName.subSequence(0, lightnessImageName.lastIndexOf(".")) else "") +
+                (if (!brightnessImageName.isEmpty()) "_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf(".")) else "") +
 //                "_" + themeName +
                 "_scale_" + outputImageSize.toInt()
 
@@ -58,7 +58,7 @@ private fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
         println("Failed to read LSystem definitions.")
         System.exit(-1)
     }
-    return lSystemInfo.systems.find { lsd -> lsd.name == lSystemName }
+    return lSystemInfo.systems.find { lsd -> lsd.name.startsWith(lSystemName,true) }
 }
 
 private fun readImageFile(file: String): BufferedImage {

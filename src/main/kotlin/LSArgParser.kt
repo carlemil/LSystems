@@ -22,7 +22,7 @@ class LSArgParser(parser: ArgParser) {
             "-u", "--hue",
             help = "The path to the hue input image") { trim() }.default("")
 
-    val lightnessImageName by parser.storing(
+    val brightnessImageName by parser.storing(
             "-b", "--bri",
             help = "The path to the brightness input image") { trim() }.default("")
 
