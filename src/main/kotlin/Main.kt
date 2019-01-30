@@ -17,7 +17,6 @@ fun main(args: Array<String>) = mainBody {
     println("Init")
 
     ArgParser(args).parseInto(::LSArgParser).run {
-
         val lSystem = readLSystemDefinitions(lsystem)
 
         println(lsystem + "  " + lSystem?.name)
@@ -27,19 +26,18 @@ fun main(args: Array<String>) = mainBody {
         val fileName = lSystem?.name + "_" + iterations +
                 (if (!hueImageName.isEmpty()) "_" + hueImageName.subSequence(0, hueImageName.lastIndexOf(".")) else "") +
                 (if (!brightnessImageName.isEmpty()) "_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf(".")) else "") +
-//                "_" + themeName +
                 "_scale_" + outputImageSize.toInt()
 
         val pngFileName = fileName + ".png"
 
-//        val palette = Palette.getPalette(Theme(themeName), Math.pow(4.0, 6.0).toInt(), 100)
-
         val coordList = computeLSystem(lSystem!!, iterations)
 
-        val sidePadding = outputImageSize / 50 //strokeWidth * 2
+        val sidePadding = outputImageSize / 50
 
-        val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage,
-                outputImageSize, sidePadding, lineWidth, outlineWidth)
+        val lineWidthScaling = Math.pow(lSystem?.scaling, -iterations.toDouble()) * 300
+
+        val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
+                sidePadding, lineWidth * lineWidthScaling, (outlineWidth / 4) * lineWidthScaling)
 
         writeImageToPngFile(bufferedImage, pngFileName)
 
@@ -58,7 +56,7 @@ private fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
         println("Failed to read LSystem definitions.")
         System.exit(-1)
     }
-    return lSystemInfo.systems.find { lsd -> lsd.name.startsWith(lSystemName,true) }
+    return lSystemInfo.systems.find { lsd -> lsd.name.startsWith(lSystemName, true) }
 }
 
 private fun readImageFile(file: String): BufferedImage {

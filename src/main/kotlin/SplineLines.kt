@@ -51,9 +51,9 @@ class SplineLines {
 
                 val widthForPoints = doubleArrayOf(
                         // Use the inverted brightness as width of the line we drawSpline.
-                        (1 - ColorUtils.getLightnessFromImage(p0.first, p0.second, lightnessImage)) * 11 + 1,
-                        (1 - ColorUtils.getLightnessFromImage(p1.first, p1.second, lightnessImage)) * 11 + 1,
-                        (1 - ColorUtils.getLightnessFromImage(p2.first, p2.second, lightnessImage)) * 11 + 1
+                        (1 - ColorUtils.getLightnessFromImage(p0.first, p0.second, lightnessImage)),
+                        (1 - ColorUtils.getLightnessFromImage(p1.first, p1.second, lightnessImage)),
+                        (1 - ColorUtils.getLightnessFromImage(p2.first, p2.second, lightnessImage))
                 )
                 allWidthForPoints = (allWidthForPoints + widthForPoints).toMutableList()
             }
