@@ -54,7 +54,7 @@
     {
       "name": "SnowFlake",
       "angle": 1.0471975512,
-      "scaling": 2,
+      "scaling": 1.55,
       "rules": {
         "A": "A-B--B+A++AA+B-",
         "B": "+A-BB--B-A++A+B"
@@ -67,7 +67,7 @@
     {
       "name": "Peano",
       "angle": 1.57079632679,
-      "scaling": 2.5,
+      "scaling": 2.0,
       "rules": {
         "L": "LFRFL-F-RFLFR+F+LFRFL",
         "R": "RFLFR+F+LFRFL-F-RFLFR"

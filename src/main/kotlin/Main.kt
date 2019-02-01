@@ -9,7 +9,7 @@ import javax.imageio.ImageIO
 /**
  * Created by carlemil on 4/10/17.
  *
- *  ./gradlew run -PlsArgs="['-s SnowFlake', '-i 4', '-o 600', '-w 0.6', '-v 0.2', '-b ceb.jpg' ]"
+ *  ./gradlew run -PlsArgs="['-s SnowFlake', '-i 2', '-o 200', '-w 1', '-v 1', '-b che_b.png', '-u che_h.png' ]"; ./gradlew run -PlsArgs="['-s SnowFlake', '-i 4', '-o 200', '-w 1', '-v 1', '-b che_b.png', '-u che_h.png' ]"
  *
  */
 
@@ -34,10 +34,13 @@ fun main(args: Array<String>) = mainBody {
 
         val sidePadding = outputImageSize / 50
 
-        val lineWidthScaling = Math.pow(lSystem?.scaling, -iterations.toDouble()) * 300
+        val lineWidthScaling = (outputImageSize / Math.pow(2.0, lSystem.scaling * iterations.toDouble())) / 2
+        println("outputImageSize "+outputImageSize+", lSystem.scaling "+lSystem.scaling+
+                ", Math.pow(2.0, lSystem.scaling * iterations.toDouble()) "+Math.pow(2.0, lSystem.scaling * iterations.toDouble())+
+                " lineWidthScaling "+lineWidthScaling)
 
         val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
-                sidePadding, lineWidth * lineWidthScaling, (outlineWidth / 4) * lineWidthScaling)
+                sidePadding, 2*lineWidth * lineWidthScaling, outlineWidth)
 
         writeImageToPngFile(bufferedImage, pngFileName)
 
