@@ -69,22 +69,25 @@ class SplineLines {
             }
         }
 
-        private fun drawThePolygon(lineWidth: Double, outlineWidth: Double, allPolygonPoints: MutableList<DoubleArray>,
+        private fun drawThePolygon(lineWidth: Double, outlineWidth: Double, polygonPoints: MutableList<DoubleArray>,
                                    hueImage: BufferedImage?, g2: Graphics2D, size: Double, polygon: List<Pair<Double, Double>>,
                                    allWidthForPoints: MutableList<DoubleArray>, sidePadding: Double) {
             val width = lineWidth - outlineWidth
             if (width > 0) {
-                for (i in 0 until allPolygonPoints.size) {
+                for (i in 0 until polygonPoints.size) {
                     if (hueImage != null) {
                         g2.paint = ColorUtils.getColorFromImage(
-                                allPolygonPoints[i][0],
-                                allPolygonPoints[i][1],
+                                polygonPoints[i][0],
+                                polygonPoints[i][1],
                                 hueImage)
                     } else {
                         g2.paint = Color.ORANGE
                     }
+
+                    // Blend the colors between points.
+
                     drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
-                            allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, width)
+                            polygonPoints[i], allWidthForPoints[i], sidePadding, size, width)
                 }
             }
         }
