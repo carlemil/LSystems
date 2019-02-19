@@ -21,6 +21,8 @@ class SplineLines {
                                  lineWidth: Double,
                                  outlineWidth: Double): java.awt.image.BufferedImage {
 
+            val t0 = System.currentTimeMillis()
+
             val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
                     BufferedImage.TYPE_INT_RGB)
 
@@ -37,6 +39,7 @@ class SplineLines {
             var allPolygonPoints = mutableListOf<DoubleArray>()
             var allWidthForPoints = mutableListOf<DoubleArray>()
 
+            val t1 = System.currentTimeMillis()
             for (i in 0 until polygonWithMidpoints.size step 2) {
                 val p0 = polygonWithMidpoints[Math.max(i - 1, 0)]
                 val p1 = polygonWithMidpoints[i]
@@ -57,13 +60,16 @@ class SplineLines {
                 )
                 allWidthForPoints = (allWidthForPoints + widthForPoints).toMutableList()
             }
-
+            val t2 = System.currentTimeMillis()
+            print("Generate midpoints: " + (t2 - t1) + "ms\n")
 
             g2.paint = Color.BLACK
             for (i in 0 until allPolygonPoints.size) {
                 drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
                         allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, lineWidth)
             }
+            val t3 = System.currentTimeMillis()
+            print("Draw spline outlines: " + (t3 - t2) + "ms\n")
 
             val width = lineWidth - outlineWidth
             if (width > 0) {
@@ -80,8 +86,12 @@ class SplineLines {
                             allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, width)
                 }
             }
-
             g2.dispose()
+
+            val t4 = System.currentTimeMillis()
+            print("Draw splines: " + (t4 - t3) + "ms\n")
+            print("Draw splines total: " + (t4 - t0) + "ms\n")
+
             return bufferedImage
         }
 

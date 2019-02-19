@@ -19,7 +19,7 @@ fun main(args: Array<String>) = mainBody {
     ArgParser(args).parseInto(::LSArgParser).run {
         val lSystem = readLSystemDefinitions(lsystem)
 
-        println(lsystem + "  " + lSystem?.name)
+        println("Rendering " + lSystem?.name +".")
 
         val hueImage = if (!hueImageName.isEmpty()) readImageFile(hueImageName) else null
         val lightnessImage = if (!brightnessImageName.isEmpty()) readImageFile(brightnessImageName) else null
