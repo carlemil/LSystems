@@ -90,7 +90,7 @@ class SplineLines {
         }
 
         private fun preparePolygonDataForDrawing(polygonWithMidpoints: List<Pair<Double, Double>>): MutableList<DoubleArray> {
-            var allPolygonPoints1 = mutableListOf<DoubleArray>()
+            var listOfDoubleArrays = mutableListOf<DoubleArray>()
             for (i in 0 until polygonWithMidpoints.size step 2) {
                 val p0 = polygonWithMidpoints[Math.max(i - 1, 0)]
                 val p1 = polygonWithMidpoints[i]
@@ -101,10 +101,10 @@ class SplineLines {
                         p1.first, p1.second,
                         p2.first, p2.second
                 )
-                allPolygonPoints1 = (allPolygonPoints1 + polygonPoints).toMutableList()
+                listOfDoubleArrays = (listOfDoubleArrays + polygonPoints).toMutableList()
 
             }
-            return allPolygonPoints1
+            return listOfDoubleArrays
         }
 
         private fun getWidthListForPolygon(polygon: List<Pair<Double, Double>>, lightnessImage: BufferedImage?): MutableList<DoubleArray> {
@@ -124,7 +124,6 @@ class SplineLines {
             }
             return widthList
         }
-
 
         private fun addMidPointsToPolygon(coordList: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
             val resultingCoordList = ArrayList<Pair<Double, Double>>()
