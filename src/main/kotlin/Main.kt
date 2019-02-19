@@ -35,9 +35,6 @@ fun main(args: Array<String>) = mainBody {
         val sidePadding = outputImageSize / 50
 
         val lineWidthScaling = (outputImageSize / Math.pow(2.0, lSystem.scaling * iterations.toDouble())) / 2
-        println("outputImageSize "+outputImageSize+", lSystem.scaling "+lSystem.scaling+
-                ", Math.pow(2.0, lSystem.scaling * iterations.toDouble()) "+Math.pow(2.0, lSystem.scaling * iterations.toDouble())+
-                " lineWidthScaling "+lineWidthScaling)
 
         val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
                 sidePadding, 2*lineWidth * lineWidthScaling, outlineWidth)
