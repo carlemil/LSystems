@@ -62,10 +62,10 @@ class SplineLines {
         }
 
         private fun drawThePolygonOutline(g2: Graphics2D, allPolygonPoints: MutableList<DoubleArray>, size: Double, polygon: List<Pair<Double, Double>>, allWidthForPoints: MutableList<DoubleArray>, sidePadding: Double, lineWidth: Double) {
-            g2.paint = Color.BLACK
+            var colors = listOf(Color.BLACK, Color.BLACK, Color.BLACK)
             for (i in 0 until allPolygonPoints.size) {
                 drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
-                        allPolygonPoints[i], allWidthForPoints[i], sidePadding, size, lineWidth)
+                        allPolygonPoints[i], allWidthForPoints[i], colors, sidePadding, size, lineWidth)
             }
         }
 
@@ -74,20 +74,15 @@ class SplineLines {
                                    allWidthForPoints: MutableList<DoubleArray>, sidePadding: Double) {
             val width = lineWidth - outlineWidth
             if (width > 0) {
+                listOf<Color>()
                 for (i in 0 until polygonPoints.size) {
-                    if (hueImage != null) {
-                        g2.paint = ColorUtils.getColorFromImage(
-                                polygonPoints[i][0],
-                                polygonPoints[i][1],
-                                hueImage)
-                    } else {
-                        g2.paint = Color.ORANGE
-                    }
-
-                    // Blend the colors between points.
+                    var colors = listOf(
+                            ColorUtils.getColorFromImage(polygonPoints[i][0], polygonPoints[i][1], hueImage),
+                            ColorUtils.getColorFromImage(polygonPoints[i][2], polygonPoints[i][3], hueImage),
+                            ColorUtils.getColorFromImage(polygonPoints[i][4], polygonPoints[i][5], hueImage))
 
                     drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
-                            polygonPoints[i], allWidthForPoints[i], sidePadding, size, width)
+                            polygonPoints[i], allWidthForPoints[i], colors, sidePadding, size, width)
                 }
             }
         }
@@ -147,14 +142,17 @@ class SplineLines {
                                drawSteps: Int,
                                polygonPoints: DoubleArray,
                                widthForPoints: DoubleArray,
+                               colors: List<Color>,
                                sidePadding: Double,
                                size: Double,
                                lineWidth: Double) {
             for (i in 0 until drawSteps) {
-                // Calculate the Bezier (x, y) coordinate for this step.
+                // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
+
+                // Calculate the t value used in the Bezier calculations below.
                 val t = (i.toFloat() / drawSteps).toDouble()
 
-                // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
+                // Calculate the Bezier (x, y) coordinate for this step.
                 val x = (Math.pow((1 - t), 2.0) * polygonPoints[0]) +
                         (2 * (1 - t) * t * polygonPoints[2]) +
                         (Math.pow(t, 2.0) * polygonPoints[4])
@@ -162,33 +160,30 @@ class SplineLines {
                         (2 * (1 - t) * t * polygonPoints[3]) +
                         (Math.pow(t, 2.0) * polygonPoints[5])
 
+                // Calculate the Bezier width for this step.
                 val width = ((Math.pow((1 - t), 2.0) * widthForPoints[0]) +
                         (2 * (1 - t) * t * widthForPoints[1]) +
                         (Math.pow(t, 2.0) * widthForPoints[2])) * lineWidth
 
+                // Crate a circle at the right spot and size
                 val circle = Ellipse2D.Double(
                         ((x * size) - width / 2) + sidePadding,
                         ((y * size) - width / 2) + sidePadding,
                         width, width)
 
+                // Calculate the color of the circle for this step.
+                var color: Color = when {
+                    i == drawSteps -> colors[1]
+                    i < drawSteps / 2 -> ColorUtils.blend(colors[1], colors[0], i / (drawSteps / 2.0))
+                    else -> ColorUtils.blend(colors[1], colors[2], (i- (drawSteps / 2.0)+1) / (drawSteps / 2.0))
+                }
+
+                // Set the color of the circle.
+                g2.color = color
+print("color: "+color+"\n")
+                // Draw the circle.
                 g2.fill(circle)
             }
         }
-
-//        private fun getBrightnessFromImage(inX: Double, inY: Double, image: BufferedImage?): Double {
-//            var color = 0xffffff
-//            if (image != null) {
-//                val x = (inX * (image.width - 1.0)).toInt()
-//                val y = (inY * (image.height - 1.0)).toInt()
-//                color = image.getRGB(x, y)
-//            }
-//            var c = FloatArray(3)
-//            Color.RGBtoHSB(
-//                    color shr 16 and 255,
-//                    color shr 8 and 255,
-//                    color and 255,
-//                    c)
-//            return c[2].toDouble()
-//        }
     }
 }
