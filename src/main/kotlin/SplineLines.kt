@@ -161,9 +161,9 @@ class SplineLines {
                         (Math.pow(t, 2.0) * polygonPoints[5])
 
                 // Calculate the Bezier width for this step.
-                val width = 25.0 //((Math.pow((1 - t), 2.0) * widthForPoints[0]) +
-//                        (2 * (1 - t) * t * widthForPoints[1]) +
-//                        (Math.pow(t, 2.0) * widthForPoints[2])) * lineWidth
+                val width = ((Math.pow((1 - t), 2.0) * widthForPoints[0]) +
+                        (2 * (1 - t) * t * widthForPoints[1]) +
+                        (Math.pow(t, 2.0) * widthForPoints[2])) * lineWidth
 
                 // Crate a circle at the right spot and size
                 val circle = Ellipse2D.Double(
@@ -172,12 +172,11 @@ class SplineLines {
                         width, width)
 
                 // Calculate the color of the circle for this step.
-//                var color: Color = when {
-//                    i == drawSteps -> colors[1]
-//                    i < drawSteps / 2 -> ColorUtils.blend(colors[0], colors[1], i / (drawSteps / 2.0))
-//                    else -> ColorUtils.blend(colors[1], colors[2], 1-((i- (drawSteps / 2.0)+1) / (drawSteps / 2.0)))
-//                }
-                var color: Color = ColorUtils.blend(colors[2], colors[0], i.toDouble() / drawSteps )
+                var color: Color = when {
+                    i == drawSteps -> colors[1]
+                    i < drawSteps / 2 -> ColorUtils.blend(colors[0], colors[1], 1.0-i / (drawSteps / 2.0))
+                    else -> ColorUtils.blend(colors[1], colors[2], 1-((i- (drawSteps / 2.0)+1) / (drawSteps / 2.0)))
+                }
 
                 // Set the color of the circle.
                 g2.color = color
