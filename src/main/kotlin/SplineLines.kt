@@ -194,7 +194,7 @@ class SplineLines {
                 g2.fill(circle)
 
                 // Calculate the t value used in the Bezier calculations above.
-                t += euclideanDistance / (width / 4.0)
+                t += (width / 8.0) / (euclideanDistance * size)
             }
         }
     }
