@@ -152,7 +152,6 @@ class SplineLines {
                                size: Double,
                                lineWidth: Double) {
 
-
             val euclideanDistance = Math.sqrt(
                     Math.abs(Math.pow(polygonPoints[0] - polygonPoints[2], 2.0) +
                             Math.pow(polygonPoints[1] - polygonPoints[3], 2.0)))
@@ -163,8 +162,6 @@ class SplineLines {
             var t = 0.0
             while (t <= 1.0) {
                 // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
-
-                // Calculate the t value used in the Bezier calculations below.
 
                 // Calculate the Bezier (x, y) coordinate for this step.
                 val x = (Math.pow((1 - t), 2.0) * polygonPoints[0]) +
@@ -197,6 +194,7 @@ class SplineLines {
                 // Draw the circle.
                 g2.fill(circle)
 
+                // Calculate the t value used in the Bezier calculations below.
                 t += euclideanDistance / (width / 4.0)
             }
             val plotDbugPoints = false
