@@ -23,8 +23,8 @@ optional arguments:
 
   -b BRI, --bri BRI             The path to the brightness input image
 
-  -s LSYSTEM,                   What L system to use: , , , , ,
-  --lsystem LSYSTEM
+  -s LSYSTEM,                   What L system to use: KochSnowFlake, Dragon,
+  --lsystem LSYSTEM             Hilbert, Sierpinski, SnowFlake, Peano
 
   -w LINEWIDTH,                 The width of the line
   --lineWidth LINEWIDTH
