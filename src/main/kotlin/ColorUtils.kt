@@ -22,7 +22,7 @@ object ColorUtils {
     }
 
     fun getLightnessFromImage(x_: Double, y_: Double, image: BufferedImage?): Double {
-        var color = 0xffffff
+        var color = 0x777777
         if (image != null) {
             val x = (x_ * (image.width - 1))
             val y = (y_ * (image.height - 1))
@@ -54,7 +54,7 @@ object ColorUtils {
     }
 
     fun getColorFromImage(x_: Double, y_: Double, image: BufferedImage?): Color {
-        var color = 0xff10ff
+        var color = 0x777777
         if (image != null) {
             val x = (x_ * (image.width - 1))
             val y = (y_ * (image.height - 1))

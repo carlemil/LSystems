@@ -1,47 +1,54 @@
 # LSystems
 kotlin code for rendering LSystems to SVG files
 
-example run:
+get help:
 
->gradle run -PlsArgs="['-h']"
-Starting a Gradle Daemon (subsequent builds will be faster)
+[09:36][:~/source/LSystems(master)]$ ./gradlew run -PlsArgs="['-h']"
+
+help output:
+
+usage: [-h] [-i ITERATIONS] [-o OUTPUTSIZE] [-u HUE] [-b BRI] [-s LSYSTEM]
+       [-w LINEWIDTH] [-v OUTLINEWIDTH]
+
+optional arguments:
+  -h, --help                    show this help message and exit
+
+  -i ITERATIONS,                Number of iterations of the L system
+  --iterations ITERATIONS
+
+  -o OUTPUTSIZE,                Size of the output svg image (in pixels)
+  --outputSize OUTPUTSIZE
+
+  -u HUE, --hue HUE             The path to the hue input image
+
+  -b BRI, --bri BRI             The path to the brightness input image
+
+  -s LSYSTEM,                   What L system to use: , , , , ,
+  --lsystem LSYSTEM
+
+  -w LINEWIDTH,                 The width of the line
+  --lineWidth LINEWIDTH
+
+  -v OUTLINEWIDTH,              The width of the outline of the line
+  --outlineWidth OUTLINEWIDTH
+
+[09:36][:~/source/LSystems(master)]$ ./gradlew run -PlsArgs="['-s SnowFlake', '-i 3', '-o 400', '-w 1', '-v 1', '-b che_b.png', '-u che_h.png' ]"
 
 > Task :run
 Init
-usage: [-h] [-i ITERATIONS] [-S OUTPUTIMAGESIZE] [-b USEBEZIERCURVES]
-       [-t THEMENAME] [-p IMAGENAME] [-s SYSTEM] [-r PALETTEREPEAT]
-       [-w LINEWIDTH]
+Rendering SnowFlake.
+Generated fractal in: 2ms
+Convert to XY in: 1ms
+Scale XY list in: 1ms
+Generate midpoints: 1ms
+Draw spline outlines: 238ms
+Draw splines: 123ms
+Draw total: 393ms
+Done
 
-optional arguments:
-  -h, --help                          show this help message and exit
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 5.0.
+Use '--warning-mode all' to show the individual deprecation warnings.
+See https://docs.gradle.org/4.10.1/userguide/command_line_interface.html#sec:command_line_warnings
 
-  -i ITERATIONS,                      Number of iterations of the L system
-  --iterations ITERATIONS
-
-  -S OUTPUTIMAGESIZE,                 Size of the output svg image (in pixels)
-  --outputImageSize OUTPUTIMAGESIZE
-
-  -b USEBEZIERCURVES,                 Draw the L system using bezier curves,
-  --useBezierCurves USEBEZIERCURVES   not straight lines
-
-  -t THEMENAME,                       The name of the theme, default
-  --themeName THEMENAME               "hsv_gradient_checkered", look in
-                                      Themes.kt for more themes
-
-  -p IMAGENAME,                       The path to the input image
-  --imageName IMAGENAME
-
-  -s SYSTEM, --system SYSTEM          What L system to use, default:
-                                      "DragonCurve" other curves:
-                                      KochSnowFlakeLSystem, HilbertCurve,
-                                      Line, SierpinskiCurve, SnowFlake1Curve
-
-  -r PALETTEREPEAT,                   The repeat frequency of the palette (1)
-  --paletteRepeat PALETTEREPEAT
-
-  -w LINEWIDTH,                       The width of the line
-  --lineWidth LINEWIDTH
-
-
-BUILD SUCCESSFUL in 10s
-2 actionable tasks: 1 executed, 1 up-to-date
+BUILD SUCCESSFUL in 2s
+3 actionable tasks: 1 executed, 2 up-to-date
