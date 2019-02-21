@@ -1,6 +1,8 @@
 import java.awt.*
 import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage
+import java.awt.RenderingHints
+import java.awt.RenderingHints.*
 
 
 class SplineLines {
@@ -27,9 +29,14 @@ class SplineLines {
                     BufferedImage.TYPE_INT_RGB)
 
             val g2 = bufferedImage.createGraphics()
+            val rh = mutableMapOf<RenderingHints.Key, Any>()
+            rh[KEY_ANTIALIASING] = VALUE_ANTIALIAS_ON
+            rh[KEY_ALPHA_INTERPOLATION] = VALUE_ALPHA_INTERPOLATION_QUALITY
+            rh[KEY_COLOR_RENDERING] = VALUE_COLOR_RENDER_QUALITY
+            rh[KEY_RENDERING] = VALUE_RENDER_QUALITY
+            rh[KEY_STROKE_CONTROL] = VALUE_STROKE_PURE
+            g2.setRenderingHints(rh)
 
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
             g2.stroke = BasicStroke(2f)
             g2.color = Color.WHITE
             g2.fill(Rectangle(0, 0, bufferedImage.width, bufferedImage.height))
@@ -149,9 +156,10 @@ class SplineLines {
             val euclideanDistance = Math.sqrt(
                     Math.abs(Math.pow(polygonPoints[0] - polygonPoints[2], 2.0) +
                             Math.pow(polygonPoints[1] - polygonPoints[3], 2.0)))
+            if (euclideanDistance <= 0.0) {
+                return
+            }
 
-            //TODO dela upp i många små steg, låt stegen vara propotionella mot width/3?
-            // räkna euclidiskt avstånd mellan xy0 och xy2, använd ihop med width för att stega frammåt i lagom stora steg
             var t = 0.0
             while (t <= 1.0) {
                 // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
@@ -167,10 +175,9 @@ class SplineLines {
                         (Math.pow(t, 2.0) * polygonPoints[5])
 
                 // Calculate the Bezier width for this step.
-                val width = ((Math.pow((1 - t), 2.0) * widthForPoints[0]) +
+                val width = Math.max(1.0, ((Math.pow((1 - t), 2.0) * widthForPoints[0]) +
                         (2 * (1 - t) * t * widthForPoints[1]) +
-                        (Math.pow(t, 2.0) * widthForPoints[2])) * lineWidth
-                //print("x " + x * size + ", y " + y * size + ", w " + width + " ds: " + drawSteps + "\n")
+                        (Math.pow(t, 2.0) * widthForPoints[2])) * lineWidth)
 
                 // Crate a circle at the right spot and size
                 val circle = Ellipse2D.Double(
@@ -190,7 +197,7 @@ class SplineLines {
                 // Draw the circle.
                 g2.fill(circle)
 
-                t += 0.1
+                t += euclideanDistance / (width / 4.0)
             }
             val plotDbugPoints = false
             if (plotDbugPoints) {
