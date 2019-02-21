@@ -46,12 +46,12 @@ class SplineLines {
             val t2 = System.currentTimeMillis()
             print("Generate midpoints: " + (t2 - t1) + "ms\n")
 
-            drawThePolygonOutline(g2, polygonDoubleArrayList, size, polygon, widthListForPolygon, sidePadding, lineWidth)
+            drawThePolygonOutline(g2, polygonDoubleArrayList, size, widthListForPolygon, sidePadding, lineWidth)
 
             val t3 = System.currentTimeMillis()
             print("Draw spline outlines: " + (t3 - t2) + "ms\n")
 
-            drawThePolygon(lineWidth, outlineWidth, polygonDoubleArrayList, hueImage, g2, size, polygon, widthListForPolygon, sidePadding)
+            drawThePolygon(lineWidth, outlineWidth, polygonDoubleArrayList, hueImage, g2, size, widthListForPolygon, sidePadding)
             g2.dispose()
 
             val t4 = System.currentTimeMillis()
@@ -61,16 +61,16 @@ class SplineLines {
             return bufferedImage
         }
 
-        private fun drawThePolygonOutline(g2: Graphics2D, allPolygonPoints: MutableList<DoubleArray>, size: Double, polygon: List<Pair<Double, Double>>, allWidthForPoints: MutableList<DoubleArray>, sidePadding: Double, lineWidth: Double) {
+        private fun drawThePolygonOutline(g2: Graphics2D, allPolygonPoints: MutableList<DoubleArray>, size: Double,
+                                          allWidthForPoints: MutableList<DoubleArray>, sidePadding: Double, lineWidth: Double) {
             var colors = listOf(Color.BLACK, Color.BLACK, Color.BLACK)
             for (i in 0 until allPolygonPoints.size) {
-                drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
-                        allPolygonPoints[i], allWidthForPoints[i], colors, sidePadding, size, lineWidth)
+                drawSpline(g2, allPolygonPoints[i], allWidthForPoints[i], colors, sidePadding, size, lineWidth)
             }
         }
 
         private fun drawThePolygon(lineWidth: Double, outlineWidth: Double, polygonPoints: MutableList<DoubleArray>,
-                                   hueImage: BufferedImage?, g2: Graphics2D, size: Double, polygon: List<Pair<Double, Double>>,
+                                   hueImage: BufferedImage?, g2: Graphics2D, size: Double,
                                    allWidthForPoints: MutableList<DoubleArray>, sidePadding: Double) {
             val width = lineWidth - outlineWidth
             if (width > 0) {
@@ -81,8 +81,7 @@ class SplineLines {
                             ColorUtils.getColorFromImage(polygonPoints[i][2], polygonPoints[i][3], hueImage),
                             ColorUtils.getColorFromImage(polygonPoints[i][4], polygonPoints[i][5], hueImage))
 
-                    drawSpline(g2, (size / Math.sqrt(polygon.size.toDouble())).toInt(),
-                            polygonPoints[i], allWidthForPoints[i], colors, sidePadding, size, width)
+                    drawSpline(g2, polygonPoints[i], allWidthForPoints[i], colors, sidePadding, size, width)
                 }
             }
         }
@@ -139,18 +138,25 @@ class SplineLines {
         }
 
         private fun drawSpline(g2: Graphics2D,
-                               drawSteps: Int,
                                polygonPoints: DoubleArray,
                                widthForPoints: DoubleArray,
                                colors: List<Color>,
                                sidePadding: Double,
                                size: Double,
                                lineWidth: Double) {
-            for (i in 0 until drawSteps) {
+
+
+            val euclideanDistance = Math.sqrt(
+                    Math.abs(Math.pow(polygonPoints[0] - polygonPoints[2], 2.0) +
+                            Math.pow(polygonPoints[1] - polygonPoints[3], 2.0)))
+
+            //TODO dela upp i många små steg, låt stegen vara propotionella mot width/3?
+            // räkna euclidiskt avstånd mellan xy0 och xy2, använd ihop med width för att stega frammåt i lagom stora steg
+            var t = 0.0
+            while (t <= 1.0) {
                 // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
 
                 // Calculate the t value used in the Bezier calculations below.
-                val t = (i.toFloat() / drawSteps).toDouble()
 
                 // Calculate the Bezier (x, y) coordinate for this step.
                 val x = (Math.pow((1 - t), 2.0) * polygonPoints[0]) +
@@ -164,6 +170,7 @@ class SplineLines {
                 val width = ((Math.pow((1 - t), 2.0) * widthForPoints[0]) +
                         (2 * (1 - t) * t * widthForPoints[1]) +
                         (Math.pow(t, 2.0) * widthForPoints[2])) * lineWidth
+                //print("x " + x * size + ", y " + y * size + ", w " + width + " ds: " + drawSteps + "\n")
 
                 // Crate a circle at the right spot and size
                 val circle = Ellipse2D.Double(
@@ -173,9 +180,8 @@ class SplineLines {
 
                 // Calculate the color of the circle for this step.
                 var color: Color = when {
-                    i == drawSteps -> colors[1]
-                    i < drawSteps / 2 -> ColorUtils.blend(colors[0], colors[1], 1.0-i / (drawSteps / 2.0))
-                    else -> ColorUtils.blend(colors[1], colors[2], 1-((i- (drawSteps / 2.0)+1) / (drawSteps / 2.0)))
+                    t < 0.5 -> ColorUtils.blend(colors[0], colors[1], 1.0 - t * 2)
+                    else -> ColorUtils.blend(colors[1], colors[2], 1.0 - (t - 0.5) * 2)
                 }
 
                 // Set the color of the circle.
@@ -183,6 +189,31 @@ class SplineLines {
 
                 // Draw the circle.
                 g2.fill(circle)
+
+                t += 0.1
+            }
+            val plotDbugPoints = false
+            if (plotDbugPoints) {
+                if (euclideanDistance > 0.02) {
+                    g2.color = Color.BLACK
+                } else {
+                    g2.color = Color.CYAN
+
+                }
+                g2.fill(Ellipse2D.Double(
+                        ((polygonPoints[0] * size) - 2.5) + sidePadding,
+                        ((polygonPoints[1] * size) - 2.5) + sidePadding,
+                        5.0, 4.0))
+                g2.fill(Ellipse2D.Double(
+                        ((polygonPoints[2] * size) - 2.5) + sidePadding,
+                        ((polygonPoints[3] * size) - 2.5) + sidePadding,
+                        4.0, 5.0))
+
+//            g2.color = Color.GREEN
+//            g2.fill(Ellipse2D.Double(
+//                    ((polygonPoints[4] * size) - 2.5) + sidePadding,
+//                    ((polygonPoints[5] * size) -  2.5) + sidePadding,
+//                    5.0, 5.0))
             }
         }
     }
