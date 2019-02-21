@@ -9,7 +9,7 @@ import javax.imageio.ImageIO
 /**
  * Created by carlemil on 4/10/17.
  *
- *  ./gradlew run -PlsArgs="['-s SnowFlake', '-i 2', '-o 200', '-w 1', '-v 1', '-b che_b.png', '-u che_h.png' ]"; ./gradlew run -PlsArgs="['-s SnowFlake', '-i 4', '-o 200', '-w 1', '-v 1', '-b che_b.png', '-u che_h.png' ]"
+ *  ./gradlew run -PlsArgs="['-s SnowFlake', '-i 3', '-o 400', '-b che_b.png', '-u che_h.png' ]"
  *
  */
 
