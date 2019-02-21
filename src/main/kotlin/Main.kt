@@ -19,7 +19,9 @@ fun main(args: Array<String>) = mainBody {
     ArgParser(args).parseInto(::LSArgParser).run {
         val lSystem = readLSystemDefinitions(lsystem)
 
-        println("Rendering " + lSystem?.name +".")
+        val t0 = System.currentTimeMillis()
+
+        println("Rendering " + lSystem?.name + ".")
 
         val hueImage = if (!hueImageName.isEmpty()) readImageFile(hueImageName) else null
         val lightnessImage = if (!brightnessImageName.isEmpty()) readImageFile(brightnessImageName) else null
@@ -37,11 +39,13 @@ fun main(args: Array<String>) = mainBody {
         val lineWidthScaling = (outputImageSize / Math.pow(2.0, lSystem.scaling * iterations.toDouble())) / 2
 
         val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
-                sidePadding, 2*lineWidth * lineWidthScaling, outlineWidth)
+                sidePadding, 2 * lineWidth * lineWidthScaling, outlineWidth)
 
         writeImageToPngFile(bufferedImage, pngFileName)
 
-        println("Done")
+        val t1 = System.currentTimeMillis()
+
+        println("Done after: " + (t1 - t0) + "ms\n")
     }
 }
 

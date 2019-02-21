@@ -63,7 +63,6 @@ class SplineLines {
 
             val t4 = System.currentTimeMillis()
             print("Draw splines: " + (t4 - t3) + "ms\n")
-            print("Draw total: " + (t4 - t0) + "ms\n")
 
             return bufferedImage
         }
@@ -194,31 +193,8 @@ class SplineLines {
                 // Draw the circle.
                 g2.fill(circle)
 
-                // Calculate the t value used in the Bezier calculations below.
+                // Calculate the t value used in the Bezier calculations above.
                 t += euclideanDistance / (width / 4.0)
-            }
-            val plotDbugPoints = false
-            if (plotDbugPoints) {
-                if (euclideanDistance > 0.02) {
-                    g2.color = Color.BLACK
-                } else {
-                    g2.color = Color.CYAN
-
-                }
-                g2.fill(Ellipse2D.Double(
-                        ((polygonPoints[0] * size) - 2.5) + sidePadding,
-                        ((polygonPoints[1] * size) - 2.5) + sidePadding,
-                        5.0, 4.0))
-                g2.fill(Ellipse2D.Double(
-                        ((polygonPoints[2] * size) - 2.5) + sidePadding,
-                        ((polygonPoints[3] * size) - 2.5) + sidePadding,
-                        4.0, 5.0))
-
-//            g2.color = Color.GREEN
-//            g2.fill(Ellipse2D.Double(
-//                    ((polygonPoints[4] * size) - 2.5) + sidePadding,
-//                    ((polygonPoints[5] * size) -  2.5) + sidePadding,
-//                    5.0, 5.0))
             }
         }
     }
