@@ -28,7 +28,7 @@
     {
       "name": "Hilbert",
       "angle": 1.57079632679,
-      "scaling": 2,
+      "scaling": 1.2,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"
