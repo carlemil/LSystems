@@ -20,7 +20,8 @@ class SplineLines {
                                  size: Double,
                                  sidePadding: Double,
                                  lineWidth: Double,
-                                 outlineWidth: Double): java.awt.image.BufferedImage {
+                                 outlineWidth: Double,
+                                 debug: Boolean): java.awt.image.BufferedImage {
 
             val t0 = System.currentTimeMillis()
 
@@ -40,12 +41,20 @@ class SplineLines {
             val t2 = System.currentTimeMillis()
             print("Generate midpoints: " + (t2 - t1) + "ms\n")
 
+            print("polygonDoubleArrayList " + polygonDoubleArrayList.size + " widthList " + widthList.size)
+
             drawThePolygonOutline(g2, polygonDoubleArrayList, size, widthList, sidePadding, lineWidth)
 
             val t3 = System.currentTimeMillis()
             print("Draw spline outlines: " + (t3 - t2) + "ms\n")
 
             drawThePolygon(lineWidth, outlineWidth, polygonDoubleArrayList, hueImage, g2, size, widthList, sidePadding)
+
+            if (debug) {
+                drawDebugPoints(polygonDoubleArrayList, g2, size, sidePadding)
+            }
+
+            // No drawing can be performed after this.
             g2.dispose()
 
             val t4 = System.currentTimeMillis()
@@ -106,16 +115,19 @@ class SplineLines {
                                    hueImage: BufferedImage?, g2: Graphics2D, size: Double,
                                    allWidthForPoints: MutableList<DoubleArray>, sidePadding: Double) {
             val width = lineWidth - outlineWidth
-            if (width > 0) {
-                listOf<Color>()
-                for (i in 0 until polygonPoints.size) {
-                    var colors = listOf(
-                            ColorUtils.getColorFromImage(polygonPoints[i][0], polygonPoints[i][1], hueImage),
-                            ColorUtils.getColorFromImage(polygonPoints[i][2], polygonPoints[i][3], hueImage),
-                            ColorUtils.getColorFromImage(polygonPoints[i][4], polygonPoints[i][5], hueImage))
+            for (i in 0 until polygonPoints.size) {
+                var colors = listOf(
+                        ColorUtils.getColorFromImage(polygonPoints[i][0], polygonPoints[i][1], hueImage),
+                        ColorUtils.getColorFromImage(polygonPoints[i][2], polygonPoints[i][3], hueImage),
+                        ColorUtils.getColorFromImage(polygonPoints[i][4], polygonPoints[i][5], hueImage))
 
-                    drawSpline(g2, polygonPoints[i], allWidthForPoints[i], colors, sidePadding, size, width)
-                }
+                drawSpline(g2, polygonPoints[i], allWidthForPoints[i], colors, sidePadding, size, width)
+            }
+        }
+
+        private fun drawDebugPoints(polygonPoints: MutableList<DoubleArray>, g2: Graphics2D, size: Double, sidePadding: Double) {
+            for (i in 0 until polygonPoints.size) {
+                drawDebugPoint(polygonPoints[i], g2, size, sidePadding)
             }
         }
 
@@ -226,6 +238,19 @@ class SplineLines {
                 // Calculate the t value used in the Bezier calculations above.
                 t += (width / 8.0) / (euclideanDistance * size)
             }
+        }
+
+        private fun drawDebugPoint(polygonPoints: DoubleArray, g2: Graphics2D, size: Double, sidePadding: Double) {
+            g2.color = Color.BLACK
+            g2.fill(Ellipse2D.Double(
+                    ((polygonPoints[0] * size) - 2.5) + sidePadding,
+                    ((polygonPoints[1] * size) - 2.5) + sidePadding,
+                    5.0, 5.0))
+
+            g2.fill(Ellipse2D.Double(
+                    ((polygonPoints[2] * size) - 2.5) + sidePadding,
+                    ((polygonPoints[3] * size) - 2.5) + sidePadding,
+                    5.0, 5.0))
         }
     }
 }
