@@ -79,16 +79,19 @@ class SplineLines {
         }
 
         private fun average(list: List<Double>): Double {
-            var avg = 0.0
+            if (list.size == 1) {
+                return list[0]
+            }
+            var sum = 0.0
             var fractionTotal = 0.0
             for (i in 0 until list.size) {
                 val n = list.size.toDouble() - 1
                 val nn = (i / n) * 0.8 + 0.1
                 val fraction = Math.sin(nn * Math.PI)
                 fractionTotal += fraction
-                avg += list[i] * fraction
+                sum += list[i] * fraction
             }
-            return avg / fractionTotal
+            return sum / fractionTotal
         }
 
         private fun drawThePolygonOutline(g2: Graphics2D, allPolygonPoints: MutableList<DoubleArray>, size: Double,
