@@ -1,7 +1,6 @@
 import java.awt.*
 import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage
-import java.awt.RenderingHints
 import java.awt.RenderingHints.*
 
 
@@ -25,22 +24,7 @@ class SplineLines {
 
             val t0 = System.currentTimeMillis()
 
-            val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
-                    BufferedImage.TYPE_INT_RGB)
-
-            val g2 = bufferedImage.createGraphics()
-            val rh = mutableMapOf<RenderingHints.Key, Any>()
-            rh[KEY_ANTIALIASING] = VALUE_ANTIALIAS_ON
-            rh[KEY_ALPHA_INTERPOLATION] = VALUE_ALPHA_INTERPOLATION_QUALITY
-            rh[KEY_COLOR_RENDERING] = VALUE_COLOR_RENDER_QUALITY
-            rh[KEY_RENDERING] = VALUE_RENDER_QUALITY
-            rh[KEY_STROKE_CONTROL] = VALUE_STROKE_PURE
-            g2.setRenderingHints(rh)
-
-            g2.stroke = BasicStroke(2f)
-            g2.color = Color.WHITE
-            g2.fill(Rectangle(0, 0, bufferedImage.width, bufferedImage.height))
-            g2.color = Color.BLACK
+            val (bufferedImage, g2) = setupGraphics(size, sidePadding)
 
             val polygonWithMidpoints = addMidPointsToPolygon(polygon)
 
@@ -49,6 +33,7 @@ class SplineLines {
             var widthList = prepareWidthDataForDrawing(smoothWidthList)
 
             val t1 = System.currentTimeMillis()
+            print("Prepare data for drawing: " + (t1 - t0) + "ms\n")
 
             val polygonDoubleArrayList = preparePolygonDataForDrawing(polygonWithMidpoints)
 
@@ -69,8 +54,41 @@ class SplineLines {
             return bufferedImage
         }
 
+        private fun setupGraphics(size: Double, sidePadding: Double): Pair<BufferedImage, Graphics2D> {
+            val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
+                    BufferedImage.TYPE_INT_RGB)
+
+            val g2 = bufferedImage.createGraphics()
+            val rh = mutableMapOf<Key, Any>()
+            rh[KEY_ANTIALIASING] = VALUE_ANTIALIAS_ON
+            rh[KEY_ALPHA_INTERPOLATION] = VALUE_ALPHA_INTERPOLATION_QUALITY
+            rh[KEY_COLOR_RENDERING] = VALUE_COLOR_RENDER_QUALITY
+            rh[KEY_RENDERING] = VALUE_RENDER_QUALITY
+            rh[KEY_STROKE_CONTROL] = VALUE_STROKE_PURE
+            g2.setRenderingHints(rh)
+
+            g2.stroke = BasicStroke(2f)
+            g2.color = Color.WHITE
+            g2.fill(Rectangle(0, 0, bufferedImage.width, bufferedImage.height))
+            g2.color = Color.BLACK
+            return Pair(bufferedImage, g2)
+        }
+
         private fun smoothOutWidthListForPolygon(rawWidthListForPolygon: MutableList<Double>): MutableList<Double> {
-            return rawWidthListForPolygon.windowed(size = 4, step = 1, partialWindows = true) { window -> window.average() }.toMutableList()
+            return rawWidthListForPolygon.windowed(size = 5, step = 1, partialWindows = true) { window -> average(window) }.toMutableList()
+        }
+
+        private fun average(list: List<Double>): Double {
+            var avg = 0.0
+            var fractionTotal = 0.0
+            for (i in 0 until list.size) {
+                val n = list.size.toDouble() - 1
+                val nn = (i / n) * 0.8 + 0.1
+                val fraction = Math.sin(nn * Math.PI)
+                fractionTotal += fraction
+                avg += list[i] * fraction
+            }
+            return avg / fractionTotal
         }
 
         private fun drawThePolygonOutline(g2: Graphics2D, allPolygonPoints: MutableList<DoubleArray>, size: Double,
