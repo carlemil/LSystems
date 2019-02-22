@@ -7,8 +7,6 @@ import java.util.*
 
 class SplineLines {
 
-    val circle = Ellipse2D.Double()
-
     // For 4 control points:
     //
     //P = (1−t)3P1 + 3(1−t)2tP2 +3(1−t)t2P3 + t3P4
@@ -41,8 +39,6 @@ class SplineLines {
 
             val t2 = System.currentTimeMillis()
             print("Generate midpoints: " + (t2 - t1) + "ms\n")
-
-            print("polygonDoubleArrayList " + polygonDoubleArrayList.size + " widthList " + widthList.size)
 
             if (outlineWidth > 0) {
                 drawThePolygonOutline(g2, polygonDoubleArrayList, size, widthList, sidePadding, lineWidth, outlineWidth)
@@ -196,21 +192,17 @@ class SplineLines {
         private fun drawSpline(g2: Graphics2D, polygonPoints: DoubleArray, widthList: DoubleArray, colors: List<Color>,
                                sidePadding: Double, size: Double, lineWidth: Double, outlineWidth: Double) {
 
-            println("draw spline")
             if (lineWidth == 0.0) {
                 return
             }
-            println("points: " + Arrays.toString(polygonPoints))
 
             val euclideanDistance = Math.sqrt(
                     Math.abs(Math.pow(polygonPoints[0] - polygonPoints[2], 2.0) +
                             Math.pow(polygonPoints[1] - polygonPoints[3], 2.0)))
-            if (euclideanDistance <= 0.0) {
-                return
-            }
 
             var t = 0.0
             while (t <= 1.0) {
+                // The bezier square spline is calculated using this formula from wikipedia.
                 // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
 
                 // Calculate the Bezier (x, y) coordinate for this step.
@@ -246,7 +238,7 @@ class SplineLines {
                 g2.fill(circle)
 
                 // Calculate the t value used in the Bezier calculations above.
-                t += (width / 8.0) / (euclideanDistance * size)
+                t += (width / 8.0) / (Math.max(1.0, euclideanDistance) * size)
             }
         }
 
