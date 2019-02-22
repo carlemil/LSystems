@@ -32,7 +32,7 @@ class LSArgParser(parser: ArgParser) {
 
     val outlineWidth by parser.storing(
             "-v", "--outlineWidth",
-            help = "The width of the outline of the line") { trim().toDouble() }.default(1.0)
+            help = "The width of the outline of the line") { trim().toDouble() }.default(0.0)
 
     val debug by parser.storing(
             "-d", "--debug",

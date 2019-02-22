@@ -28,7 +28,7 @@ fun main(args: Array<String>) = mainBody {
         val fileName = lSystem?.name + "_" + iterations +
                 (if (!hueImageName.isEmpty()) "_" + hueImageName.subSequence(0, hueImageName.lastIndexOf(".")) else "") +
                 (if (!brightnessImageName.isEmpty()) "_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf(".")) else "") +
-                "_scale_" + outputImageSize.toInt()
+                "_size_" + outputImageSize.toInt()
 
         val pngFileName = fileName + ".png"
 
@@ -39,7 +39,7 @@ fun main(args: Array<String>) = mainBody {
         val lineWidthScaling = (outputImageSize / Math.pow(2.0, lSystem.scaling * iterations.toDouble())) / 2
 
         val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
-                sidePadding, 2 * lineWidth * lineWidthScaling, outlineWidth, debug)
+                sidePadding, lineWidth * lineWidthScaling, outlineWidth, debug)
 
         writeImageToPngFile(bufferedImage, pngFileName)
 

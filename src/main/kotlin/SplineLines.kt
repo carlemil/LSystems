@@ -2,6 +2,7 @@ import java.awt.*
 import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage
 import java.awt.RenderingHints.*
+import java.util.*
 
 
 class SplineLines {
@@ -43,15 +44,17 @@ class SplineLines {
 
             print("polygonDoubleArrayList " + polygonDoubleArrayList.size + " widthList " + widthList.size)
 
-            drawThePolygonOutline(g2, polygonDoubleArrayList, size, widthList, sidePadding, lineWidth)
+            if (outlineWidth > 0) {
+                drawThePolygonOutline(g2, polygonDoubleArrayList, size, widthList, sidePadding, lineWidth, outlineWidth)
+            }
 
             val t3 = System.currentTimeMillis()
             print("Draw spline outlines: " + (t3 - t2) + "ms\n")
 
-            drawThePolygon(lineWidth, outlineWidth, polygonDoubleArrayList, hueImage, g2, size, widthList, sidePadding)
+            drawThePolygon(g2, polygonDoubleArrayList, hueImage, size, widthList, sidePadding, lineWidth)
 
             if (debug) {
-                drawDebugPoints(polygonDoubleArrayList, g2, size, sidePadding)
+                drawDebugPoints(g2, polygonDoubleArrayList, size, sidePadding)
             }
 
             // No drawing can be performed after this.
@@ -103,31 +106,31 @@ class SplineLines {
             return sum / fractionTotal
         }
 
-        private fun drawThePolygonOutline(g2: Graphics2D, allPolygonPoints: MutableList<DoubleArray>, size: Double,
-                                          allWidthForPoints: MutableList<DoubleArray>, sidePadding: Double, lineWidth: Double) {
+        private fun drawThePolygonOutline(g2: Graphics2D, polygonPoints: MutableList<DoubleArray>, size: Double,
+                                          widthList: MutableList<DoubleArray>, sidePadding: Double, lineWidth: Double, outlineWidth: Double) {
             var colors = listOf(Color.BLACK, Color.BLACK, Color.BLACK)
-            for (i in 0 until allPolygonPoints.size) {
-                drawSpline(g2, allPolygonPoints[i], allWidthForPoints[i], colors, sidePadding, size, lineWidth)
+            for (i in 0 until polygonPoints.size) {
+                drawSpline(g2, polygonPoints[i], widthList[i], colors, sidePadding, size, lineWidth, outlineWidth)
             }
         }
 
-        private fun drawThePolygon(lineWidth: Double, outlineWidth: Double, polygonPoints: MutableList<DoubleArray>,
-                                   hueImage: BufferedImage?, g2: Graphics2D, size: Double,
-                                   allWidthForPoints: MutableList<DoubleArray>, sidePadding: Double) {
-            val width = lineWidth - outlineWidth
+        private fun drawThePolygon(g2: Graphics2D, polygonPoints: MutableList<DoubleArray>, hueImage: BufferedImage?, size: Double,
+                                   widthList: MutableList<DoubleArray>, sidePadding: Double, lineWidth: Double) {
             for (i in 0 until polygonPoints.size) {
                 var colors = listOf(
                         ColorUtils.getColorFromImage(polygonPoints[i][0], polygonPoints[i][1], hueImage),
                         ColorUtils.getColorFromImage(polygonPoints[i][2], polygonPoints[i][3], hueImage),
                         ColorUtils.getColorFromImage(polygonPoints[i][4], polygonPoints[i][5], hueImage))
 
-                drawSpline(g2, polygonPoints[i], allWidthForPoints[i], colors, sidePadding, size, width)
+                drawSpline(g2, polygonPoints[i], widthList[i], colors, sidePadding, size, lineWidth, 0.0)
             }
         }
 
-        private fun drawDebugPoints(polygonPoints: MutableList<DoubleArray>, g2: Graphics2D, size: Double, sidePadding: Double) {
+        private fun drawDebugPoints(g2: Graphics2D, polygonPoints: MutableList<DoubleArray>, size: Double, sidePadding: Double) {
+            g2.color = Color.CYAN
             for (i in 0 until polygonPoints.size) {
-                drawDebugPoint(polygonPoints[i], g2, size, sidePadding)
+                drawDebugPoint(g2, polygonPoints[i], size, sidePadding)
+                g2.color = Color.BLACK
             }
         }
 
@@ -190,8 +193,14 @@ class SplineLines {
             return resultingCoordList
         }
 
-        private fun drawSpline(g2: Graphics2D, polygonPoints: DoubleArray, widthForPoints: DoubleArray, colors: List<Color>,
-                               sidePadding: Double, size: Double, lineWidth: Double) {
+        private fun drawSpline(g2: Graphics2D, polygonPoints: DoubleArray, widthList: DoubleArray, colors: List<Color>,
+                               sidePadding: Double, size: Double, lineWidth: Double, outlineWidth: Double) {
+
+            println("draw spline")
+            if (lineWidth == 0.0) {
+                return
+            }
+            println("points: " + Arrays.toString(polygonPoints))
 
             val euclideanDistance = Math.sqrt(
                     Math.abs(Math.pow(polygonPoints[0] - polygonPoints[2], 2.0) +
@@ -213,9 +222,10 @@ class SplineLines {
                         (Math.pow(t, 2.0) * polygonPoints[5])
 
                 // Calculate the Bezier width for this step.
-                val width = Math.max(1.0, ((Math.pow((1 - t), 2.0) * widthForPoints[0]) +
-                        (2 * (1 - t) * t * widthForPoints[1]) +
-                        (Math.pow(t, 2.0) * widthForPoints[2])) * lineWidth)
+                val width = Math.max(1.0,
+                        ((Math.pow((1 - t), 2.0) * widthList[0]) +
+                                (2 * (1 - t) * t * widthList[1]) +
+                                (Math.pow(t, 2.0) * widthList[2])) * lineWidth) + outlineWidth
 
                 // Crate a circle at the right spot and size
                 val circle = Ellipse2D.Double(
@@ -240,8 +250,7 @@ class SplineLines {
             }
         }
 
-        private fun drawDebugPoint(polygonPoints: DoubleArray, g2: Graphics2D, size: Double, sidePadding: Double) {
-            g2.color = Color.BLACK
+        private fun drawDebugPoint(g2: Graphics2D, polygonPoints: DoubleArray, size: Double, sidePadding: Double) {
             g2.fill(Ellipse2D.Double(
                     ((polygonPoints[0] * size) - 2.5) + sidePadding,
                     ((polygonPoints[1] * size) - 2.5) + sidePadding,
