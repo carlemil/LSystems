@@ -34,7 +34,7 @@ fun main(args: Array<String>) = mainBody {
 
         val coordList = computeLSystem(lSystem!!, iterations)
 
-        val sidePadding = outputImageSize / 50
+        val sidePadding = outputImageSize / 20
 
         val lineWidthScaling = (outputImageSize / Math.pow(2.0, lSystem.scaling * iterations.toDouble())) / 2
 

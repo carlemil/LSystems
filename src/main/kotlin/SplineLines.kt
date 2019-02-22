@@ -178,13 +178,8 @@ class SplineLines {
             return resultingCoordList
         }
 
-        private fun drawSpline(g2: Graphics2D,
-                               polygonPoints: DoubleArray,
-                               widthForPoints: DoubleArray,
-                               colors: List<Color>,
-                               sidePadding: Double,
-                               size: Double,
-                               lineWidth: Double) {
+        private fun drawSpline(g2: Graphics2D, polygonPoints: DoubleArray, widthForPoints: DoubleArray, colors: List<Color>,
+                               sidePadding: Double, size: Double, lineWidth: Double) {
 
             val euclideanDistance = Math.sqrt(
                     Math.abs(Math.pow(polygonPoints[0] - polygonPoints[2], 2.0) +
