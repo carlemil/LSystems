@@ -54,7 +54,7 @@ object ColorUtils {
     }
 
     fun getColorFromImage(x_: Double, y_: Double, image: BufferedImage?): Color {
-        var color = 0x777777
+        var color = 0x000000
         if (image != null) {
             val x = (x_ * (image.width - 1))
             val y = (y_ * (image.height - 1))

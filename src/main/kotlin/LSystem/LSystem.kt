@@ -7,7 +7,7 @@ import java.util.*
  * Created by carlemil on 4/10/17.
  */
 
-fun computeLSystem(lSystem: LSystemDefinition, iterations: Int): List<Pair<Double, Double>> {
+fun computeLSystem(lSystem: LSystemDefinition, iterations: Int): List<Triple<Double, Double, Double>> {
     val t0 = System.currentTimeMillis()
     val instructions = generate(lSystem.axiom, lSystem.rules, iterations, lSystem.forwardChars)
     val t1 = System.currentTimeMillis()
@@ -44,16 +44,18 @@ private fun generate(axiom: String, rules: Map<String, String>, iterations: Int,
     return instructions
 }
 
-private fun convertToXY(instructions: String, systemAngle: Double, forwardChars: Set<String>): List<Pair<Double, Double>> {
-    val list: MutableList<Pair<Double, Double>> = mutableListOf()
+private fun convertToXY(instructions: String, systemAngle: Double, forwardChars: Set<String>): List<Triple<Double, Double, Double>> {
+    val list: MutableList<Triple<Double, Double, Double>> = mutableListOf()
 
     var x = 0.0
     var y = 0.0
     var angle: Double = Math.PI / 2
+    var width = 1.0
+    val w = 1.3
 
     val stack: Stack<Pair<Double, Double>> = Stack()
 
-    list.add(Pair(x, y))
+    list.add(Triple(x, y, width))
     for (c in instructions) {
         when (c.toString()) {
             "-" -> angle -= systemAngle
@@ -65,18 +67,19 @@ private fun convertToXY(instructions: String, systemAngle: Double, forwardChars:
                 y = p.second
                 // Start a new list in list here to denote a new polyline
             }
+            "w" -> width = width / w
+            "W" -> width = width * w
             in forwardChars -> {
                 x += sin(angle)
                 y += cos(angle)
-                list.add(Pair(x, y))
+                list.add(Triple(x, y, width))
             }
         }
     }
-    //list.add(Pair(x, y))
     return list
 }
 
-private fun scaleXYList(list: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
+private fun scaleXYList(list: List<Triple<Double, Double, Double>>): List<Triple<Double, Double, Double>> {
     var minX = Double.MAX_VALUE
     var maxX = Double.MIN_VALUE
     var minY = Double.MAX_VALUE
@@ -93,9 +96,9 @@ private fun scaleXYList(list: List<Pair<Double, Double>>): List<Pair<Double, Dou
     val scaleX = 1 / (maxX - minX)
     val scaleY = 1 / (maxY - minY)
 
-    var scaledList: MutableList<Pair<Double, Double>> = mutableListOf()
+    var scaledList: MutableList<Triple<Double, Double, Double>> = mutableListOf()
     for (p in list) {
-        scaledList.add(Pair((p.first - minX) * scaleX, (p.second - minY) * scaleY))
+        scaledList.add(Triple((p.first - minX) * scaleX, (p.second - minY) * scaleY, p.third))
     }
 
     return scaledList

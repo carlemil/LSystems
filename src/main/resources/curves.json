@@ -28,7 +28,7 @@
     {
       "name": "Hilbert",
       "angle": 1.57079632679,
-      "scaling": 1.2,
+      "scaling": 2,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"
@@ -52,6 +52,19 @@
       "axiom": "A"
     },
     {
+      "name": "Boldinski",
+      "angle": 1.0471975512,
+      "scaling": 2,
+      "rules": {
+        "A": "BF-WAFw-B",
+        "B": "AF+BF+A"
+      },
+      "forwardChars": [
+        "F"
+      ],
+      "axiom": "A"
+    },
+    {
       "name": "SnowFlake",
       "angle": 1.0471975512,
       "scaling": 1.55,
@@ -67,7 +80,7 @@
     {
       "name": "Peano",
       "angle": 1.57079632679,
-      "scaling": 2.0,
+      "scaling": 3.3,
       "rules": {
         "L": "LFRFL-F-RFLFR+F+LFRFL",
         "R": "RFLFR+F+LFRFL-F-RFLFR"

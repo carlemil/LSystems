@@ -13,7 +13,7 @@ class SplineLines {
 
     companion object {
 
-        fun drawPolygonAsSplines(polygon: List<Pair<Double, Double>>,
+        fun drawPolygonAsSplines(polygon: List<Triple<Double, Double, Double>>,
                                  hueImage: BufferedImage?,
                                  lightnessImage: BufferedImage?,
                                  size: Double,
@@ -115,8 +115,8 @@ class SplineLines {
             for (i in 0 until polygonPoints.size) {
                 var colors = listOf(
                         ColorUtils.getColorFromImage(polygonPoints[i][0], polygonPoints[i][1], hueImage),
-                        ColorUtils.getColorFromImage(polygonPoints[i][2], polygonPoints[i][3], hueImage),
-                        ColorUtils.getColorFromImage(polygonPoints[i][4], polygonPoints[i][5], hueImage))
+                        ColorUtils.getColorFromImage(polygonPoints[i][3], polygonPoints[i][4], hueImage),
+                        ColorUtils.getColorFromImage(polygonPoints[i][6], polygonPoints[i][7], hueImage))
 
                 drawSpline(g2, polygonPoints[i], widthList[i], colors, sidePadding, size, lineWidth, 0.0)
             }
@@ -130,7 +130,7 @@ class SplineLines {
             }
         }
 
-        private fun preparePolygonDataForDrawing(polygonWithMidpoints: List<Pair<Double, Double>>): MutableList<DoubleArray> {
+        private fun preparePolygonDataForDrawing(polygonWithMidpoints: List<Triple<Double, Double, Double>>): MutableList<DoubleArray> {
             var listOfDoubleArrays = mutableListOf<DoubleArray>()
             for (i in 0 until polygonWithMidpoints.size step 2) {
                 val p0 = polygonWithMidpoints[Math.max(i - 1, 0)]
@@ -138,9 +138,9 @@ class SplineLines {
                 val p2 = polygonWithMidpoints[Math.min(i + 1, polygonWithMidpoints.size - 1)]
 
                 val polygonPoints = doubleArrayOf(
-                        p0.first, p0.second,
-                        p1.first, p1.second,
-                        p2.first, p2.second
+                        p0.first, p0.second, p0.third,
+                        p1.first, p1.second, p1.third,
+                        p2.first, p2.second, p2.third
                 )
                 listOfDoubleArrays = (listOfDoubleArrays + polygonPoints).toMutableList()
 
@@ -164,23 +164,23 @@ class SplineLines {
             return listOfDoubleArrays
         }
 
-        private fun getWidthListForPolygon(polygon: List<Pair<Double, Double>>, lightnessImage: BufferedImage?): MutableList<Double> {
+        private fun getWidthListForPolygon(polygon: List<Triple<Double, Double, Double>>, lightnessImage: BufferedImage?): MutableList<Double> {
             var widthList = mutableListOf<Double>()
             for (i in 0 until polygon.size) {
                 val p = polygon[i]
                 // Use the inverted brightness as width of the line we drawSpline.
-                widthList.add(1 - ColorUtils.getLightnessFromImage(p.first, p.second, lightnessImage))
+                widthList.add((1 - ColorUtils.getLightnessFromImage(p.first, p.second, lightnessImage)) * p.third)
             }
             return widthList
         }
 
-        private fun addMidPointsToPolygon(coordList: List<Pair<Double, Double>>): List<Pair<Double, Double>> {
-            val resultingCoordList = ArrayList<Pair<Double, Double>>()
+        private fun addMidPointsToPolygon(coordList: List<Triple<Double, Double, Double>>): List<Triple<Double, Double, Double>> {
+            val resultingCoordList = ArrayList<Triple<Double, Double, Double>>()
 
             for (i in 0 until coordList.size - 1) {
                 val c0 = coordList[i]
                 val c1 = coordList[i + 1]
-                val cMid = Pair((c0.first + c1.first) / 2.0, (c0.second + c1.second) / 2.0)
+                val cMid = Triple((c0.first + c1.first) / 2.0, (c0.second + c1.second) / 2.0, (c0.third + c1.third) / 2.0)
                 resultingCoordList.add(c0)
                 resultingCoordList.add(cMid)
             }
@@ -197,8 +197,8 @@ class SplineLines {
             }
 
             val euclideanDistance = Math.sqrt(
-                    Math.abs(Math.pow(polygonPoints[0] - polygonPoints[2], 2.0) +
-                            Math.pow(polygonPoints[1] - polygonPoints[3], 2.0)))
+                    Math.abs(Math.pow(polygonPoints[0] - polygonPoints[3], 2.0) +
+                            Math.pow(polygonPoints[1] - polygonPoints[4], 2.0)))
 
             var t = 0.0
             while (t <= 1.0) {
@@ -207,11 +207,11 @@ class SplineLines {
 
                 // Calculate the Bezier (x, y) coordinate for this step.
                 val x = (Math.pow((1 - t), 2.0) * polygonPoints[0]) +
-                        (2 * (1 - t) * t * polygonPoints[2]) +
-                        (Math.pow(t, 2.0) * polygonPoints[4])
-                val y = (Math.pow((1 - t), 2.0) * polygonPoints[1]) +
                         (2 * (1 - t) * t * polygonPoints[3]) +
-                        (Math.pow(t, 2.0) * polygonPoints[5])
+                        (Math.pow(t, 2.0) * polygonPoints[6])
+                val y = (Math.pow((1 - t), 2.0) * polygonPoints[1]) +
+                        (2 * (1 - t) * t * polygonPoints[4]) +
+                        (Math.pow(t, 2.0) * polygonPoints[7])
 
                 // Calculate the Bezier width for this step.
                 val width = Math.max(1.0,
@@ -238,7 +238,7 @@ class SplineLines {
                 g2.fill(circle)
 
                 // Calculate the t value used in the Bezier calculations above.
-                t += (width / 8.0) / (Math.max(1.0, euclideanDistance) * size)
+                t += (width /2.0) / (Math.max(1.0, euclideanDistance) * size)
             }
         }
 

@@ -11,6 +11,8 @@ import javax.imageio.ImageIO
  *
  *  ./gradlew run -PlsArgs="['-s SnowFlake', '-i 3', '-o 400', '-b che_b.png', '-u che_h.png' ]"
  *
+ *  gradle run -PlsArgs="['-s Hi', '-i 1', '-o 400', '-b str.jpg', '-u str.jpg' ]"
+ *
  */
 
 fun main(args: Array<String>) = mainBody {
@@ -26,17 +28,18 @@ fun main(args: Array<String>) = mainBody {
         val hueImage = if (!hueImageName.isEmpty()) readImageFile(hueImageName) else null
         val lightnessImage = if (!brightnessImageName.isEmpty()) readImageFile(brightnessImageName) else null
         val fileName = lSystem?.name + "_" + iterations +
-                (if (!hueImageName.isEmpty()) "_" + hueImageName.subSequence(0, hueImageName.lastIndexOf(".")) else "") +
-                (if (!brightnessImageName.isEmpty()) "_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf(".")) else "") +
+                (if (!hueImageName.isEmpty()) "_hue_" + hueImageName.subSequence(0, hueImageName.lastIndexOf(".")) else "") +
+                (if (!brightnessImageName.isEmpty()) "_bri_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf(".")) else "") +
+                "_scale_" + lSystem?.scaling +
                 "_size_" + outputImageSize.toInt()
 
         val pngFileName = fileName + ".png"
 
         val coordList = computeLSystem(lSystem!!, iterations)
 
-        val sidePadding = outputImageSize / 20
+        val lineWidthScaling = (outputImageSize / Math.pow(lSystem.scaling, iterations.toDouble()))
 
-        val lineWidthScaling = (outputImageSize / Math.pow(2.0, lSystem.scaling * iterations.toDouble())) / 2
+        val sidePadding = lineWidthScaling + outputImageSize / 20
 
         val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
                 sidePadding, lineWidth * lineWidthScaling, outlineWidth, debug)
