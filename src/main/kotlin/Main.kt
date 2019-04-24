@@ -42,7 +42,7 @@ fun main(args: Array<String>) = mainBody {
         val sidePadding = lineWidthScaling + outputImageSize / 20
 
         val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
-                sidePadding, lineWidth * lineWidthScaling, outlineWidth, debug)
+                sidePadding, lineWidth * lineWidthScaling, debug)
 
         writeImageToPngFile(bufferedImage, pngFileName)
 

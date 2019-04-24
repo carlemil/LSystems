@@ -15,12 +15,11 @@ class SplineLines {
 
         fun drawPolygonAsSplines(polygon: List<Triple<Double, Double, Double>>,
                                  hueImage: BufferedImage?,
-                                 lightnessImage: BufferedImage?,
+                                 brightnessImage: BufferedImage?,
                                  size: Double,
                                  sidePadding: Double,
                                  lineWidth: Double,
-                                 outlineWidth: Double,
-                                 debug: Boolean): java.awt.image.BufferedImage {
+                                 debug: Boolean): BufferedImage {
 
             val t0 = System.currentTimeMillis()
 
@@ -28,7 +27,7 @@ class SplineLines {
 
             val polygonWithMidpoints = addMidPointsToPolygon(polygon)
 
-            var rawWidthList = getWidthListForPolygon(polygonWithMidpoints, lightnessImage)
+            var rawWidthList = getWidthListForPolygon(polygonWithMidpoints, brightnessImage)
             var smoothWidthList = smoothOutWidthListForPolygon(rawWidthList)
             var widthList = prepareWidthDataForDrawing(smoothWidthList)
 
@@ -39,10 +38,6 @@ class SplineLines {
 
             val t2 = System.currentTimeMillis()
             print("Generate midpoints: " + (t2 - t1) + "ms\n")
-
-            if (outlineWidth > 0) {
-                drawThePolygonOutline(g2, polygonDoubleArrayList, size, widthList, sidePadding, lineWidth, outlineWidth)
-            }
 
             val t3 = System.currentTimeMillis()
             print("Draw spline outlines: " + (t3 - t2) + "ms\n")
@@ -102,14 +97,6 @@ class SplineLines {
             return sum / fractionTotal
         }
 
-        private fun drawThePolygonOutline(g2: Graphics2D, polygonPoints: MutableList<DoubleArray>, size: Double,
-                                          widthList: MutableList<DoubleArray>, sidePadding: Double, lineWidth: Double, outlineWidth: Double) {
-            var colors = listOf(Color.BLACK, Color.BLACK, Color.BLACK)
-            for (i in 0 until polygonPoints.size) {
-                drawSpline(g2, polygonPoints[i], widthList[i], colors, sidePadding, size, lineWidth, outlineWidth)
-            }
-        }
-
         private fun drawThePolygon(g2: Graphics2D, polygonPoints: MutableList<DoubleArray>, hueImage: BufferedImage?, size: Double,
                                    widthList: MutableList<DoubleArray>, sidePadding: Double, lineWidth: Double) {
             for (i in 0 until polygonPoints.size) {
@@ -164,12 +151,12 @@ class SplineLines {
             return listOfDoubleArrays
         }
 
-        private fun getWidthListForPolygon(polygon: List<Triple<Double, Double, Double>>, lightnessImage: BufferedImage?): MutableList<Double> {
+        private fun getWidthListForPolygon(polygon: List<Triple<Double, Double, Double>>, brightnessImage: BufferedImage?): MutableList<Double> {
             var widthList = mutableListOf<Double>()
             for (i in 0 until polygon.size) {
                 val p = polygon[i]
                 // Use the inverted brightness as width of the line we drawSpline.
-                widthList.add((1 - ColorUtils.getLightnessFromImage(p.first, p.second, lightnessImage)) * p.third)
+                widthList.add((1 - ColorUtils.getBrightnessFromImage(p.first, p.second, brightnessImage)) * p.third)
             }
             return widthList
         }
@@ -192,7 +179,7 @@ class SplineLines {
         private fun drawSpline(g2: Graphics2D, polygonPoints: DoubleArray, widthList: DoubleArray, colors: List<Color>,
                                sidePadding: Double, size: Double, lineWidth: Double, outlineWidth: Double) {
 
-            if (lineWidth == 0.0) {
+            if (lineWidth <= 0.0) {
                 return
             }
 
