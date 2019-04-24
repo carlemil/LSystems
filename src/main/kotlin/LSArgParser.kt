@@ -30,10 +30,6 @@ class LSArgParser(parser: ArgParser) {
             "-w", "--lineWidth",
             help = "The width of the line") { trim().toDouble() }.default(1.0)
 
-    val debug by parser.storing(
-            "-d", "--debug",
-            help = "Debug drawing enabled") { trim().toBoolean() }.default(false)
-
     private fun getLSystemNames(): String? {
         val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())
         val systems = lSystemInfo?.systems

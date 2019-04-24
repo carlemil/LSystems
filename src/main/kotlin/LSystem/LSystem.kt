@@ -7,7 +7,7 @@ import java.util.*
  * Created by carlemil on 4/10/17.
  */
 
-fun computeLSystem(lSystem: LSystemDefinition, iterations: Int): List<Triple<Double, Double, Double>> {
+fun computeLSystem(lSystem: LSystemDefinition, iterations: Int): List<PolyPoint> {
     val t0 = System.currentTimeMillis()
     val instructions = generate(lSystem.axiom, lSystem.rules, iterations, lSystem.forwardChars)
     val t1 = System.currentTimeMillis()
@@ -44,8 +44,8 @@ private fun generate(axiom: String, rules: Map<String, String>, iterations: Int,
     return instructions
 }
 
-private fun convertToXY(instructions: String, systemAngle: Double, forwardChars: Set<String>): List<Triple<Double, Double, Double>> {
-    val list: MutableList<Triple<Double, Double, Double>> = mutableListOf()
+private fun convertToXY(instructions: String, systemAngle: Double, forwardChars: Set<String>): List<PolyPoint> {
+    val list: MutableList<PolyPoint> = mutableListOf()
 
     var x = 0.0
     var y = 0.0
@@ -55,7 +55,7 @@ private fun convertToXY(instructions: String, systemAngle: Double, forwardChars:
 
     val stack: Stack<Pair<Double, Double>> = Stack()
 
-    list.add(Triple(x, y, width))
+    list.add(PolyPoint(x, y, width))
     for (c in instructions) {
         when (c.toString()) {
             "-" -> angle -= systemAngle
@@ -72,33 +72,33 @@ private fun convertToXY(instructions: String, systemAngle: Double, forwardChars:
             in forwardChars -> {
                 x += sin(angle)
                 y += cos(angle)
-                list.add(Triple(x, y, width))
+                list.add(PolyPoint(x, y, width))
             }
         }
     }
     return list
 }
 
-private fun scaleXYList(list: List<Triple<Double, Double, Double>>): List<Triple<Double, Double, Double>> {
+private fun scaleXYList(list: List<PolyPoint>): List<PolyPoint> {
     var minX = Double.MAX_VALUE
     var maxX = Double.MIN_VALUE
     var minY = Double.MAX_VALUE
     var maxY = Double.MIN_VALUE
 
     for (p in list) {
-        if (p.first < minX) minX = p.first
-        if (p.second < minY) minY = p.second
+        if (p.x < minX) minX = p.x
+        if (p.y < minY) minY = p.y
 
-        if (p.first > maxX) maxX = p.first
-        if (p.second > maxY) maxY = p.second
+        if (p.x > maxX) maxX = p.x
+        if (p.y > maxY) maxY = p.y
     }
 
     val scaleX = 1 / (maxX - minX)
     val scaleY = 1 / (maxY - minY)
 
-    var scaledList: MutableList<Triple<Double, Double, Double>> = mutableListOf()
+    var scaledList: MutableList<PolyPoint> = mutableListOf()
     for (p in list) {
-        scaledList.add(Triple((p.first - minX) * scaleX, (p.second - minY) * scaleY, p.third))
+        scaledList.add(PolyPoint((p.x - minX) * scaleX, (p.y - minY) * scaleY, p.w))
     }
 
     return scaledList
