@@ -8,10 +8,6 @@ import java.util.*
 
 class SplineLines {
 
-    // For 4 control points:
-    //
-    //P = (1−t)3P1 + 3(1−t)2tP2 +3(1−t)t2P3 + t3P4
-
     companion object {
 
         fun drawPolygonAsSplines(polygon: List<PolyPoint>,
@@ -25,31 +21,19 @@ class SplineLines {
 
             val (bufferedImage, g2) = setupGraphics(size, sidePadding)
 
-            //  val polygonWithMidpoints = addMidPointsToPolygon(polygon)
-
             val polygonWithWidthAdjusted = adjustWidthAccordingToImage(polygon, brightnessImage)
             val polygonWithColor = setColorToPolygon(polygonWithWidthAdjusted, hueImage)
-            //  var smoothWidthList = smoothOutWidthListForPolygon(rawWidthList)
-            // var widthList = prepareWidthDataForDrawing(smoothWidthList)
 
             val t1 = System.currentTimeMillis()
             print("Prepare data for drawing: " + (t1 - t0) + "ms\n")
-
-            // val polygonDoubleArrayList = preparePolygonDataForDrawing(polygonWithMidpoints)
-
-            val t2 = System.currentTimeMillis()
-            print("Generate midpoints: " + (t2 - t1) + "ms\n")
-
-            val t3 = System.currentTimeMillis()
-            print("Draw spline outlines: " + (t3 - t2) + "ms\n")
 
             drawThePolygon(g2, polygonWithColor, hueImage, size, lineWidth, sidePadding)
 
             // No drawing can be performed after this.
             g2.dispose()
 
-            val t4 = System.currentTimeMillis()
-            print("Draw splines: " + (t4 - t3) + "ms\n")
+            val t2 = System.currentTimeMillis()
+            print("Draw splines: " + (t2 - t1) + "ms\n")
 
             return bufferedImage
         }
@@ -74,26 +58,6 @@ class SplineLines {
             return Pair(bufferedImage, g2)
         }
 
-//        private fun smoothOutWidthListForPolygon(ppList: List<PolyPoint>): List<PolyPoint> {
-//            return ppList.windowed(size = 5, step = 1, partialWindows = true) { window -> average(window) }.toMutableList()
-//        }
-//
-//        private fun average(list: List<PolyPoint>): PolyPoint {
-//            if (list.size == 1) {
-//                return list[0]
-//            }
-//            var sum = 0.0
-//            var fractionTotal = 0.0
-//            for (i in 0 until list.size) {
-//                val n = list.size.toDouble() - 1
-//                val nn = (i / n) * 0.8 + 0.1
-//                val fraction = Math.sin(nn * Math.PI)
-//                fractionTotal += fraction
-//                sum += list[i].w * fraction
-//            }
-//            return PolyPoint()sum / fractionTotal
-//        }
-
         private fun setColorToPolygon(pp: List<PolyPoint>, hueImage: BufferedImage?): List<PolyPoint> {
             val ppOut = mutableListOf<PolyPoint>()
             for (i in 0 until pp.size) {
@@ -105,18 +69,25 @@ class SplineLines {
 
         private fun drawThePolygon(g2: Graphics2D, pp: List<PolyPoint>, hueImage: BufferedImage?,
                                    size: Double, lineWidth: Double, sidePadding: Double) {
+
             for (i in 0 until pp.size) {
+                // Get 3 points and set color to them
+                var tmp0 = pp[Math.max(i - 1, 0)]
+                val p0 = PolyPoint(tmp0.x, tmp0.y, tmp0.w, ColorUtils.getColorFromImage(tmp0.x, tmp0.y, hueImage))
 
-                var pp1 = pp[Math.max(i - 1, 0)]
-                var pp2 = PolyPoint(pp[i].x, pp[i].y, pp[i].w,
-                        ColorUtils.getColorFromImage(pp[i].x, pp[i].y, hueImage))
-                var pp3 = pp[Math.min(i + 1, pp.size - 1)]
+                var tmp1 = pp[i]
+                val p1 = PolyPoint(tmp1.x, tmp1.y, tmp1.w, ColorUtils.getColorFromImage(tmp1.x, tmp1.y, hueImage))
 
-                drawSpline(g2,
-                        PolyPoint((pp1.x + pp2.x) / 2.0, (pp1.y + pp2.y) / 2.0, (pp1.w + pp2.w) / 2.0, ColorUtils.blend(pp1.c, pp2.c, 0.5)), // TODO Blend color as well, add p, p constuctor to handle averaging of points
-                        pp2,
-                        PolyPoint((pp2.x + pp3.x) / 2.0, (pp2.y + pp3.y) / 2.0, (pp2.w + pp3.w) / 2.0, ColorUtils.blend(pp2.c, pp3.c, 0.5)),
-                        size, lineWidth, sidePadding)
+                val tmp2 = pp[Math.min(i + 1, pp.size - 1)]
+                val p2 = PolyPoint(tmp2.x, tmp2.y, tmp2.w, ColorUtils.getColorFromImage(tmp2.x, tmp2.y, hueImage))
+
+                // Calculate intermediate draw points
+                val dp0 = PolyPoint.average(p0, p1)
+                val dp1 = p1
+                val dp2 = PolyPoint.average(p1, p2)
+
+                // Draw spline segment
+                drawSpline(g2, dp0, dp1, dp2, size, lineWidth, sidePadding)
             }
         }
 
@@ -126,7 +97,6 @@ class SplineLines {
                 var p = polygon[i]
                 // Use the inverted brightness as width of the line we drawSpline.
                 val c = (1 - ColorUtils.getBrightnessFromImage(p.x, p.y, image))
-                println("c: " + c + " , pw " + p.w)
                 ppList.add(PolyPoint(p.x, p.y, p.w * c))
             }
             return ppList
@@ -134,8 +104,6 @@ class SplineLines {
 
         private fun drawSpline(g2: Graphics2D, pp1: PolyPoint, pp2: PolyPoint, pp3: PolyPoint,
                                size: Double, lineWidth: Double, sidePadding: Double) {
-
-            println("p1: " + pp1 + "  p2: " + pp2 + "  p3: " + pp3)
 
             val euclideanDistance = Math.sqrt(
                     Math.abs(Math.pow(pp1.x - pp2.x, 2.0) +
@@ -182,5 +150,8 @@ class SplineLines {
                 t += (width / 2.0) / (Math.max(1.0, euclideanDistance) * size)
             }
         }
+
+        // For 4 control points: P = (1−t)3P1 + 3(1−t)2tP2 +3(1−t)t2P3 + t3P4
+
     }
 }

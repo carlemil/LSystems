@@ -11,7 +11,7 @@ import javax.imageio.ImageIO
  *
  *  ./gradlew run -PlsArgs="['-s SnowFlake', '-i 3', '-o 400', '-b che_b.png', '-u che_h.png' ]"
  *
- *  gradle run -PlsArgs="['-s Hi', '-i 1', '-o 400', '-b str.jpg', '-u str.jpg' ]"
+ *  gradle run -PlsArgs="['-s b', '-i 4', '-o 800', '-b str.jpg', '-u str.jpg', '-B 1.5' ]"
  *
  */
 
@@ -35,7 +35,7 @@ fun main(args: Array<String>) = mainBody {
 
         val pngFileName = fileName + ".png"
 
-        val coordList = computeLSystem(lSystem!!, iterations)
+        val coordList = computeLSystem(lSystem!!, iterations, bold)
 
         val lineWidthScaling = (outputImageSize / Math.pow(lSystem.scaling, iterations.toDouble()))
 

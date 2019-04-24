@@ -7,12 +7,12 @@ import java.util.*
  * Created by carlemil on 4/10/17.
  */
 
-fun computeLSystem(lSystem: LSystemDefinition, iterations: Int): List<PolyPoint> {
+fun computeLSystem(lSystem: LSystemDefinition, iterations: Int, bold: Double): List<PolyPoint> {
     val t0 = System.currentTimeMillis()
     val instructions = generate(lSystem.axiom, lSystem.rules, iterations, lSystem.forwardChars)
     val t1 = System.currentTimeMillis()
     print("Generated fractal in: " + (t1 - t0) + "ms\n")
-    val xyList = convertToXY(instructions.toString(), lSystem.angle, lSystem.forwardChars)
+    val xyList = convertToXY(instructions.toString(), lSystem.angle, lSystem.forwardChars, bold)
     val t2 = System.currentTimeMillis()
     print("Convert to XY in: " + (t2 - t1) + "ms\n")
     val svg = scaleXYList(xyList)
@@ -44,14 +44,13 @@ private fun generate(axiom: String, rules: Map<String, String>, iterations: Int,
     return instructions
 }
 
-private fun convertToXY(instructions: String, systemAngle: Double, forwardChars: Set<String>): List<PolyPoint> {
+private fun convertToXY(instructions: String, systemAngle: Double, forwardChars: Set<String>, bold: Double): List<PolyPoint> {
     val list: MutableList<PolyPoint> = mutableListOf()
 
     var x = 0.0
     var y = 0.0
     var angle: Double = Math.PI / 2
     var width = 1.0
-    val w = 1.3
 
     val stack: Stack<Pair<Double, Double>> = Stack()
 
@@ -67,8 +66,8 @@ private fun convertToXY(instructions: String, systemAngle: Double, forwardChars:
                 y = p.second
                 // Start a new list in list here to denote a new polyline
             }
-            "w" -> width = width / w
-            "W" -> width = width * w
+            "w" -> width = width / bold
+            "W" -> width = width * bold
             in forwardChars -> {
                 x += sin(angle)
                 y += cos(angle)
