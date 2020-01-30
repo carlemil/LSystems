@@ -18,38 +18,59 @@ import javax.imageio.ImageIO
 fun main(args: Array<String>) = mainBody {
     println("Init")
 
-    ArgParser(args).parseInto(::LSArgParser).run {
-        val lSystem = readLSystemDefinitions(lsystem)
-
-        val t0 = System.currentTimeMillis()
-
-        println("Rendering " + lSystem?.name + ".")
-
-        val hueImage = if (!hueImageName.isEmpty()) readImageFile(hueImageName) else null
-        val lightnessImage = if (!brightnessImageName.isEmpty()) readImageFile(brightnessImageName) else null
-        val fileName = lSystem?.name + "_" + iterations +
-                (if (!hueImageName.isEmpty()) "_hue_" + hueImageName.subSequence(0, hueImageName.lastIndexOf(".")) else "") +
-                (if (!brightnessImageName.isEmpty()) "_bri_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf(".")) else "") +
-                "_scale_" + lSystem?.scaling +
-                "_size_" + outputImageSize.toInt()
-
-        val pngFileName = fileName + ".png"
-
-        val coordList = computeLSystem(lSystem!!, iterations, bold)
-
-        val lineWidthScaling = (outputImageSize / Math.pow(lSystem.scaling, iterations.toDouble()))
-
-        val sidePadding = lineWidthScaling + outputImageSize / 20
-
-        val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
-                 lineWidth * lineWidthScaling, sidePadding)
-
-        writeImageToPngFile(bufferedImage, pngFileName)
-
-        val t1 = System.currentTimeMillis()
-
-        println("Done after: " + (t1 - t0) + "ms\n")
+    if (args.size > 0) {
+        ArgParser(args).parseInto(::LSArgParser).run {
+            renderLSystem(lsystem, iterations, hueImageName, brightnessImageName, outputImageSize, lineWidth, bold)
+        }
+    } else {
+        renderLSystem("SnowFlake",
+                4,
+                "",
+                "str.jpg",
+                400.0,
+                0.1,
+                1.0)
     }
+}
+
+private fun renderLSystem(lsystem: String,
+                          iterations: Int,
+                          hueImageName: String,
+                          brightnessImageName: String,
+                          outputImageSize: Double,
+                          lineWidth: Double,
+                          boldWidth: Double) {
+
+    val lSystem = readLSystemDefinitions(lsystem)
+
+    val t0 = System.currentTimeMillis()
+
+    println("Rendering " + lSystem?.name + ".")
+
+    val hueImage = if (!hueImageName.isEmpty()) readImageFile(hueImageName) else null
+    val lightnessImage = if (!brightnessImageName.isEmpty()) readImageFile(brightnessImageName) else null
+    val fileName = lSystem?.name + "_" + iterations +
+            (if (!hueImageName.isEmpty()) "_hue_" + hueImageName.subSequence(0, hueImageName.lastIndexOf(".")) else "") +
+            (if (!brightnessImageName.isEmpty()) "_bri_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf(".")) else "") +
+            "_scale_" + lSystem?.scaling +
+            "_size_" + outputImageSize.toInt()
+
+    val pngFileName = fileName + ".png"
+
+    val coordList = computeLSystem(lSystem!!, iterations, boldWidth)
+
+    val lineWidthScaling = (outputImageSize / Math.pow(lSystem.scaling, iterations.toDouble()))
+
+    val sidePadding = lineWidthScaling + outputImageSize / 20
+
+    val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
+            lineWidth * lineWidthScaling, sidePadding)
+
+    writeImageToPngFile(bufferedImage, pngFileName)
+
+    val t1 = System.currentTimeMillis()
+
+    println("Done after: " + (t1 - t0) + "ms\n")
 }
 
 private fun writeImageToPngFile(bufferedImage: java.awt.image.BufferedImage, pngFileName: String) {
