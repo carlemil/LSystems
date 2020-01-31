@@ -10,7 +10,7 @@ class SplineLines {
 
     companion object {
 
-        fun drawPolygonAsSplines(polygon: List<PolyPoint>,
+        fun drawPolygonAsSplines(polyPointList: List<PolyPoint>,
                                  hueImage: BufferedImage?,
                                  brightnessImage: BufferedImage?,
                                  size: Double,
@@ -18,16 +18,27 @@ class SplineLines {
                                  sidePadding: Double): BufferedImage {
 
             val t0 = System.currentTimeMillis()
-
             val (bufferedImage, g2) = setupGraphics(size, sidePadding)
 
-            val polygonWithWidthAdjusted = adjustWidthAccordingToImage(polygon, brightnessImage)
-            val polygonWithColor = setColorToPolygon(polygonWithWidthAdjusted, hueImage)
+            val polygon = Polygon()
+            polyPointList.forEach { p ->
+                val width = (p.w + p.w) / 2.0
+                polygon.addPoint(
+                        (((p.x * size) - width / 2.0) + sidePadding).toInt(),
+                        (((p.y * size) - width / 2.0) + sidePadding).toInt()
+                )
+            }
+
+
+            g2.drawPolygon(polygon)
+
+            //val polygonWithWidthAdjusted = adjustWidthAccordingToImage(polygon, brightnessImage)
+            //val polygonWithColor = setColorToPolygon(polygonWithWidthAdjusted, hueImage)
 
             val t1 = System.currentTimeMillis()
             print("Prepare data for drawing: " + (t1 - t0) + "ms\n")
 
-            drawThePolygon(g2, polygonWithColor, hueImage, size, lineWidth, sidePadding)
+            //drawThePolygon(g2, polygonWithColor, hueImage, size, lineWidth, sidePadding)
 
             // No drawing can be performed after this.
             g2.dispose()
@@ -86,7 +97,7 @@ class SplineLines {
                 val dp1 = p1
                 val dp2 = PolyPoint.average(p1, p2)
 
-                drawLine(g2, p0, p2, size, lineWidth, sidePadding)
+                drawLine(g2, p0, p1, size, lineWidth, sidePadding)
 
                 // Draw spline segment
                 //drawSpline(g2, dp0, dp1, dp2, size, lineWidth, sidePadding)
@@ -97,7 +108,7 @@ class SplineLines {
                              size: Double, lineWidth: Double, sidePadding: Double) {
             g2.color = ColorUtils.blend(pp1.c, pp2.c, 0.5)
             val width = (pp1.w + pp2.w) / 2.0
-            g2.stroke = BasicStroke(width.toFloat())
+            g2.stroke = BasicStroke((width * lineWidth).toFloat())
 
             g2.drawLine(
                     (((pp1.x * size) - width / 2.0) + sidePadding).toInt(),

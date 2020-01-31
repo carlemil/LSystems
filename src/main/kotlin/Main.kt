@@ -24,11 +24,11 @@ fun main(args: Array<String>) = mainBody {
         }
     } else {
         renderLSystem("SnowFlake",
-                5,
+                2,
                 "",
                 "str.jpg",
                 400.0,
-                0.3,
+                1.0,
                 1.0)
     }
 }
