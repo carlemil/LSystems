@@ -3,7 +3,8 @@ import java.awt.*
 import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage
 import java.awt.RenderingHints.*
-import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.tan
 
 
 class SplineLines {
@@ -20,17 +21,46 @@ class SplineLines {
             val t0 = System.currentTimeMillis()
             val (bufferedImage, g2) = setupGraphics(size, sidePadding)
 
-            val polygon = Polygon()
+            val leftPolygon = Polygon()
+            val rightPolygon = Polygon()
+            var x0 = (((polyPointList[0].x * size) - polyPointList[0].w / 2.0) + sidePadding)
+            var y0 = (((polyPointList[0].y * size) - polyPointList[0].w / 2.0) + sidePadding)
+
+            var x1 = x0
+            var y1 = y0
+
             polyPointList.forEach { p ->
-                val width = (p.w + p.w) / 2.0
-                polygon.addPoint(
-                        (((p.x * size) - width / 2.0) + sidePadding).toInt(),
-                        (((p.y * size) - width / 2.0) + sidePadding).toInt()
-                )
+                x1 = x0
+                y1 = y0
+                x0 = ((p.x * size) - p.w / 2.0) + sidePadding
+                y0 = ((p.y * size) - p.w / 2.0) + sidePadding
+
+                //leftPolygon.addPoint(p0.x, p0.y)
+
+                val m = (x0 - x1) / if (y0 - y1 == 0.0) {
+                    Double.MAX_VALUE
+                } else {
+                    (y0 - y1)
+                }
+                val a = tan(m)
+                val angle = (a) * (Math.PI / 180); // Convert to radians
+
+                println()
+                println("" + x0 + ", " + y0 + " - " + x1 + ", " + y1)
+                println("m: " + m + ",  a: " + a + " angle: " + angle)
+
+                val d = 5.0
+
+                val px = x0 - d * Math.cos(90.0 + angle)
+                val py = y0 - d * Math.sin(90.0 + angle)
+                println("x0 = " + x0 + " px: " + px)
+                leftPolygon.addPoint(x0.toInt(), y0.toInt())
+                rightPolygon.addPoint(px.toInt(), py.toInt())
             }
-
-
-            g2.drawPolygon(polygon)
+            g2.color = Color.BLUE
+            g2.drawPolygon(leftPolygon)
+            g2.color = Color.RED
+            g2.drawPolygon(rightPolygon)
 
             //val polygonWithWidthAdjusted = adjustWidthAccordingToImage(polygon, brightnessImage)
             //val polygonWithColor = setColorToPolygon(polygonWithWidthAdjusted, hueImage)
