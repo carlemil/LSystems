@@ -86,9 +86,25 @@ class SplineLines {
                 val dp1 = p1
                 val dp2 = PolyPoint.average(p1, p2)
 
+                drawLine(g2, p0, p2, size, lineWidth, sidePadding)
+
                 // Draw spline segment
-                drawSpline(g2, dp0, dp1, dp2, size, lineWidth, sidePadding)
+                //drawSpline(g2, dp0, dp1, dp2, size, lineWidth, sidePadding)
             }
+        }
+
+        private fun drawLine(g2: Graphics2D, pp1: PolyPoint, pp2: PolyPoint,
+                             size: Double, lineWidth: Double, sidePadding: Double) {
+            g2.color = ColorUtils.blend(pp1.c, pp2.c, 0.5)
+            val width = (pp1.w + pp2.w) / 2.0
+            g2.stroke = BasicStroke(width.toFloat())
+
+            g2.drawLine(
+                    (((pp1.x * size) - width / 2.0) + sidePadding).toInt(),
+                    (((pp1.y * size) - width / 2.0) + sidePadding).toInt(),
+                    (((pp2.x * size) - width / 2.0) + sidePadding).toInt(),
+                    (((pp2.y * size) - width / 2.0) + sidePadding).toInt())
+
         }
 
         private fun adjustWidthAccordingToImage(polygon: List<PolyPoint>, image: BufferedImage?): List<PolyPoint> {
