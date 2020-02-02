@@ -90,5 +90,19 @@
       ],
       "axiom": "L"
     }
+
+    {
+      "name": "Experimental",
+      "angle": 1.0471975512,
+      "scaling": 2,
+      "rules": {
+        "A": "BF-WAFw-B",
+        "B": "AF+BF+A"
+      },
+      "forwardChars": [
+        "F"
+      ],
+      "axiom": "A"
+    },
   ]
 }

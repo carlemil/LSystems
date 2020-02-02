@@ -23,7 +23,7 @@ fun main(args: Array<String>) = mainBody {
             renderLSystem(lsystem, iterations, hueImageName, brightnessImageName, outputImageSize, lineWidth, bold)
         }
     } else {
-        renderLSystem("SnowFlake",
+        renderLSystem("K",
                 2,
                 "",
                 "str.jpg",
