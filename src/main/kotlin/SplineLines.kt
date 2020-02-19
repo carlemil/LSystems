@@ -21,30 +21,32 @@ class SplineLines {
             val t0 = System.currentTimeMillis()
             val (bufferedImage, g2) = setupGraphics(size, sidePadding)
 
-            var polyPointList2 = listOf(
-                    PolyPoint(0.0, 0.0, 1.0, Color.BLUE),
-                    PolyPoint(5.0, 0.0, 1.0, Color.BLACK),
-                    PolyPoint(5.0, 5.0, 1.0, Color.YELLOW),
-                    PolyPoint(0.0, 5.0, 1.0, Color.GREEN),
-                    PolyPoint(0.0, 0.0, 1.0, Color.RED))
+//            var polyPointList2 = listOf(
+//                    PolyPoint(0.0, 0.0, 1.0, Color.BLUE),
+//                    PolyPoint(5.0, 0.0, 1.0, Color.BLACK),
+//                    PolyPoint(5.0, 5.0, 1.0, Color.YELLOW),
+//                    PolyPoint(0.0, 5.0, 1.0, Color.GREEN),
+//                    PolyPoint(0.0, 0.0, 1.0, Color.RED))
 
             val leftPolygon = Polygon()
             val rightPolygon = Polygon()
-            var x0 = (((polyPointList2[0].x * size) - polyPointList2[0].w / 2.0) + sidePadding)
-            var y0 = (((polyPointList2[0].y * size) - polyPointList2[0].w / 2.0) + sidePadding)
+            var x0 = (((polyPointList[0].x * size) - polyPointList[0].w / 2.0) + sidePadding)
+            var y0 = (((polyPointList[0].y * size) - polyPointList[0].w / 2.0) + sidePadding)
+
+            g2.drawOval(x0.toInt(), y0.toInt(), 10, 10)
 
             var x1 = x0
             var y1 = y0
             var x2 = x1
             var y2 = y1
 
-            polyPointList2.forEach { p ->
+            polyPointList.forEach { p ->
                 x2 = x1
                 y2 = y1
                 x1 = x0
                 y1 = y0
-                x0 = ((p.x * size / 20) - p.w / 2.0) + sidePadding
-                y0 = ((p.y * size / 20) - p.w / 2.0) + sidePadding
+                x0 = ((p.x * size) - p.w / 2.0) + sidePadding
+                y0 = ((p.y * size) - p.w / 2.0) + sidePadding
 
                 val a1 = atan2((x2 - x1), (y2 - y1))
                 val a2 = atan2((x1 - x0), (y1 - y0))
@@ -53,11 +55,11 @@ class SplineLines {
                     ((a1 + PI * 2) + a2) / 2.0
                 } else {
                     (a1 + a2) / 2.0
-                } - PI/2.0
+                } - PI / 2.0
 
-                println()
-                println("" + (x0 - 119.5) + ", " + (y0 - 119.5) + " --- " + (x1 - 119.5) + ", " + (y1 - 119.5) + " --- " + (x2 - 119.5) + ", " + (y2 - 119.5))
-                println("a  %.2f  --      a1: %.2f  a2: %.2f    cos: %.2f    sin: %.2f".format(a, a1, a2, cos(a), sin(a)))
+                // println()
+                // println("" + (x0 - 119.5) + ", " + (y0 - 119.5) + " --- " + (x1 - 119.5) + ", " + (y1 - 119.5) + " --- " + (x2 - 119.5) + ", " + (y2 - 119.5))
+                println("a  %.2f  --      a1: %.2f  a2: %.2f    cos: %.2f    sin: %.2f".format(a/ PI*180+180, a1, a2, cos(a), sin(a)))
 
                 val d = 5.0
 
@@ -67,9 +69,9 @@ class SplineLines {
                 leftPolygon.addPoint(x1.toInt(), y1.toInt())
                 rightPolygon.addPoint(px.toInt(), py.toInt())
             }
-            for (i in 0..4) {
-                oval(polyPointList2, i, g2)
-            }
+//            for (i in 0..4) {
+//                oval(polyPointList, i, g2)
+//            }
 
             g2.color = Color.BLUE
             g2.drawPolygon(leftPolygon)
