@@ -4,6 +4,7 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import java.awt.image.BufferedImage
 import java.io.File
+import java.util.*
 import javax.imageio.ImageIO
 
 /**
@@ -23,13 +24,16 @@ fun main(args: Array<String>) = mainBody {
             renderLSystem(lsystem, iterations, hueImageName, brightnessImageName, outputImageSize, lineWidth, bold)
         }
     } else {
-        renderLSystem("SnowFlake",
-                4,
-                "",
-                "str.jpg",
-                400.0,
-                0.1,
-                1.0)
+        val lineWidthMod = 1.0
+        for (iterations in 2..5) {
+            renderLSystem("SnowFlake",
+                    iterations,
+                    "",
+                    "str.jpg",
+                    1400.0,
+                    lineWidthMod,
+                    0.0)
+        }
     }
 }
 
@@ -38,7 +42,7 @@ private fun renderLSystem(lsystem: String,
                           hueImageName: String,
                           brightnessImageName: String,
                           outputImageSize: Double,
-                          lineWidth: Double,
+                          lineWidthMod: Double,
                           boldWidth: Double) {
 
     val lSystem = readLSystemDefinitions(lsystem)
@@ -59,12 +63,12 @@ private fun renderLSystem(lsystem: String,
 
     val coordList = computeLSystem(lSystem!!, iterations, boldWidth)
 
-    val lineWidthScaling = (outputImageSize / Math.pow(lSystem.scaling, iterations.toDouble()))
+    val lineWidthScaling = (outputImageSize / Math.pow(lSystem.scaling, iterations.toDouble())) / 5.0
 
     val sidePadding = lineWidthScaling + outputImageSize / 20
 
     val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
-            lineWidth * lineWidthScaling, sidePadding)
+            lSystem.lineWidth * lineWidthMod * lineWidthScaling, sidePadding)
 
     writeImageToPngFile(bufferedImage, pngFileName)
 

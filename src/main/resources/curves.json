@@ -4,6 +4,7 @@
       "name": "KochSnowFlake",
       "angle": 1.57079632679,
       "scaling": 2,
+      "lineWidth": 10.0,
       "rules": {
         "F": "F-F+F+FF-F-F+F"
       },
@@ -16,6 +17,7 @@
       "name": "Dragon",
       "angle": 1.57079632679,
       "scaling": 2,
+      "lineWidth": 10.0,
       "rules": {
         "A": "A+BF",
         "B": "FA-B"
@@ -29,6 +31,7 @@
       "name": "Hilbert",
       "angle": 1.57079632679,
       "scaling": 2,
+      "lineWidth": 10.0,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"
@@ -42,6 +45,7 @@
       "name": "Sierpinski",
       "angle": 1.0471975512,
       "scaling": 2,
+      "lineWidth": 10.0,
       "rules": {
         "A": "BF-AF-B",
         "B": "AF+BF+A"
@@ -55,6 +59,7 @@
       "name": "Boldinski",
       "angle": 1.0471975512,
       "scaling": 2,
+      "lineWidth": 10.0,
       "rules": {
         "A": "BF-WAFw-B",
         "B": "AF+BF+A"
@@ -67,7 +72,8 @@
     {
       "name": "SnowFlake",
       "angle": 1.0471975512,
-      "scaling": 1.55,
+      "scaling": 3.6,
+      "lineWidth": 9.0,
       "rules": {
         "A": "A-B--B+A++AA+B-",
         "B": "+A-BB--B-A++A+B"
@@ -81,6 +87,7 @@
       "name": "Peano",
       "angle": 1.57079632679,
       "scaling": 3.3,
+      "lineWidth": 10.0,
       "rules": {
         "L": "LFRFL-F-RFLFR+F+LFRFL",
         "R": "RFLFR+F+LFRFL-F-RFLFR"
