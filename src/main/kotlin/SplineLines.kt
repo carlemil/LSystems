@@ -1,4 +1,4 @@
-import LSystem.PolyPoint
+import lSystem.PolyPoint
 import java.awt.*
 import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage

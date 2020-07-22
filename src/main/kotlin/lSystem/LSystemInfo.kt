@@ -1,4 +1,4 @@
-package LSystem
+package lSystem
 
 class LSystemInfo(
    val systems: List<LSystemDefinition>

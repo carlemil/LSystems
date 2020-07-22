@@ -1,4 +1,4 @@
-import LSystem.*
+import lSystem.*
 import com.beust.klaxon.Klaxon
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default

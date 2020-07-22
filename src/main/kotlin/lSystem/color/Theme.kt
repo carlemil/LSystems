@@ -1,4 +1,4 @@
-package LSystem.color
+package lSystem.color
 
 class Theme(themeName: String) {
     var blendMode = BlendMode.RGB

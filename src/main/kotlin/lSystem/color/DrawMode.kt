@@ -1,4 +1,4 @@
-package LSystem.color
+package lSystem.color
 
 enum class DrawMode {
     ZEBRA, GRADIENT, ZEBRA_GRADIENT

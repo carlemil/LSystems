@@ -3,8 +3,9 @@
     {
       "name": "KochSnowFlake",
       "angle": 1.57079632679,
-      "scaling": 2,
-      "lineWidth": 10.0,
+      "scaling": 3,
+      "lineWidth": 1.0,
+      "maxIterations": 5,
       "rules": {
         "F": "F-F+F+FF-F-F+F"
       },
@@ -16,8 +17,9 @@
     {
       "name": "Dragon",
       "angle": 1.57079632679,
-      "scaling": 2,
-      "lineWidth": 10.0,
+      "scaling": 1.6,
+      "lineWidth": 4.0,
+      "maxIterations": 12,
       "rules": {
         "A": "A+BF",
         "B": "FA-B"
@@ -30,8 +32,9 @@
     {
       "name": "Hilbert",
       "angle": 1.57079632679,
-      "scaling": 2,
-      "lineWidth": 10.0,
+      "scaling": 2.3,
+      "lineWidth": 8.0,
+      "maxIterations": 5,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"
@@ -44,8 +47,9 @@
     {
       "name": "Sierpinski",
       "angle": 1.0471975512,
-      "scaling": 2,
-      "lineWidth": 10.0,
+      "scaling": 2.5,
+      "lineWidth": 15.0,
+      "maxIterations": 8,
       "rules": {
         "A": "BF-AF-B",
         "B": "AF+BF+A"
@@ -56,10 +60,11 @@
       "axiom": "A"
     },
     {
-      "name": "Boldinski",
+      "name": "Boldinski - broken",
       "angle": 1.0471975512,
       "scaling": 2,
       "lineWidth": 10.0,
+      "maxIterations": 5,
       "rules": {
         "A": "BF-WAFw-B",
         "B": "AF+BF+A"
@@ -74,6 +79,7 @@
       "angle": 1.0471975512,
       "scaling": 3.6,
       "lineWidth": 9.0,
+      "maxIterations": 5,
       "rules": {
         "A": "A-B--B+A++AA+B-",
         "B": "+A-BB--B-A++A+B"
@@ -86,8 +92,9 @@
     {
       "name": "Peano",
       "angle": 1.57079632679,
-      "scaling": 3.3,
-      "lineWidth": 10.0,
+      "scaling": 4.0,
+      "lineWidth": 11.0,
+      "maxIterations": 5,
       "rules": {
         "L": "LFRFL-F-RFLFR+F+LFRFL",
         "R": "RFLFR+F+LFRFL-F-RFLFR"

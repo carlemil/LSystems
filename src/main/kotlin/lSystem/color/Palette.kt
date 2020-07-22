@@ -1,4 +1,4 @@
-package LSystem.color
+package lSystem.color
 
 import java.awt.Color
 

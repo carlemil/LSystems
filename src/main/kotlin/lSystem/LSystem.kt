@@ -1,4 +1,4 @@
-package LSystem
+package lSystem
 
 import java.lang.Math.*
 import java.util.*

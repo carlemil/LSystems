@@ -1,4 +1,3 @@
-import LSystem.color.Palette
 import java.awt.*
 import java.awt.image.BufferedImage
 
