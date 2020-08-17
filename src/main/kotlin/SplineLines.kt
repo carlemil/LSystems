@@ -1,14 +1,19 @@
 import lSystem.PolyPoint
 import java.awt.*
-import java.awt.geom.Ellipse2D
-import java.awt.image.BufferedImage
 import java.awt.RenderingHints.*
+import java.awt.geom.Rectangle2D
+import java.awt.image.BufferedImage
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 class SplineLines {
 
     companion object {
+
+        private val image = getRenderedCircle()
 
         fun drawPolygonAsSplines(polygon: List<PolyPoint>,
                                  hueImage: BufferedImage?,
@@ -36,6 +41,23 @@ class SplineLines {
             print("Draw splines: " + (t2 - t1) + "ms\n")
 
             return bufferedImage
+        }
+
+        private fun createImage(size: Int): BufferedImage {
+            val buffImg = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB_PRE)
+            val gbi = buffImg.createGraphics()
+            gbi.background = Color(255, 255, 0, 0);
+            gbi.clearRect(0, 0, buffImg.width, buffImg.height)
+            val rh = mutableMapOf<Key, Any>()
+            rh[KEY_ANTIALIASING] = VALUE_ANTIALIAS_ON
+            rh[KEY_ALPHA_INTERPOLATION] = VALUE_ALPHA_INTERPOLATION_QUALITY
+            rh[KEY_COLOR_RENDERING] = VALUE_COLOR_RENDER_QUALITY
+            rh[KEY_RENDERING] = VALUE_RENDER_QUALITY
+            rh[KEY_STROKE_CONTROL] = VALUE_STROKE_PURE
+            gbi.setRenderingHints(rh)
+            gbi.paint = Color.BLACK
+            gbi.fillOval(0, 0, buffImg.width, buffImg.height)
+            return buffImg
         }
 
         private fun setupGraphics(size: Double, sidePadding: Double): Pair<BufferedImage, Graphics2D> {
@@ -70,7 +92,7 @@ class SplineLines {
         private fun drawThePolygon(g2: Graphics2D, pp: List<PolyPoint>, hueImage: BufferedImage?,
                                    size: Double, lineWidth: Double, sidePadding: Double) {
 
-            for (i in 0 until pp.size) {
+            for (i in pp.indices) {
                 // Get 3 points and set color to them
                 var tmp0 = pp[Math.max(i - 1, 0)]
                 val p0 = PolyPoint(tmp0.x, tmp0.y, tmp0.w, ColorUtils.getColorFromImage(tmp0.x, tmp0.y, hueImage))
@@ -83,11 +105,10 @@ class SplineLines {
 
                 // Calculate intermediate draw points
                 val dp0 = PolyPoint.average(p0, p1)
-                val dp1 = p1
                 val dp2 = PolyPoint.average(p1, p2)
 
                 // Draw spline segment
-                drawSpline(g2, dp0, dp1, dp2, size, lineWidth, sidePadding)
+                drawSpline(g2, dp0, p1, dp2, size, lineWidth, sidePadding)
             }
         }
 
@@ -105,9 +126,9 @@ class SplineLines {
         private fun drawSpline(g2: Graphics2D, pp1: PolyPoint, pp2: PolyPoint, pp3: PolyPoint,
                                size: Double, lineWidth: Double, sidePadding: Double) {
 
-            val euclideanDistance = Math.sqrt(
-                    Math.abs(Math.pow(pp1.x - pp2.x, 2.0) +
-                            Math.pow(pp1.y - pp2.y, 2.0)))
+            val euclideanDistance = sqrt(
+                    abs((pp1.x - pp2.x).pow(2.0) +
+                            (pp1.y - pp2.y).pow(2.0)))
 
             var t = 0.0
             while (t <= 1.0) {
@@ -115,21 +136,20 @@ class SplineLines {
                 // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
 
                 // Calculate the Bezier (x, y) coordinate for this step.
-                val x = (Math.pow((1 - t), 2.0) * pp1.x) +
+                val x = ((1 - t).pow(2.0) * pp1.x) +
                         (2 * (1 - t) * t * pp2.x) +
-                        (Math.pow(t, 2.0) * pp3.x)
-                val y = (Math.pow((1 - t), 2.0) * pp1.y) +
+                        (t.pow(2.0) * pp3.x)
+                val y = ((1 - t).pow(2.0) * pp1.y) +
                         (2 * (1 - t) * t * pp2.y) +
-                        (Math.pow(t, 2.0) * pp3.y)
+                        (t.pow(2.0) * pp3.y)
 
                 // Calculate the Bezier width for this step.
-                val width = Math.max(1.0,
-                        ((Math.pow((1 - t), 2.0) * pp1.w) +
-                                (2 * (1 - t) * t * pp2.w) +
-                                (Math.pow(t, 2.0) * pp3.w)) * lineWidth)
+                val width = 1.0.coerceAtLeast((((1 - t).pow(2.0) * pp1.w) +
+                        (2 * (1 - t) * t * pp2.w) +
+                        (t.pow(2.0) * pp3.w)) * lineWidth)
 
                 // Crate a circle at the right spot and size
-                val circle = Ellipse2D.Double(
+                val circle = Rectangle2D.Double(
                         ((x * size) - width / 2) + sidePadding,
                         ((y * size) - width / 2) + sidePadding,
                         width, width)
@@ -144,7 +164,13 @@ class SplineLines {
                 g2.color = color
 
                 // Draw the circle.
-                g2.fill(circle)
+                // g2.fill(circle)
+
+                g2.drawImage(image[width.toInt()],
+                        (((x * size) - width / 2) + sidePadding).toInt(),
+                        (((y * size) - width / 2) + sidePadding).toInt(),
+                        null
+                )
 
                 // Calculate the t value used in the Bezier calculations above.
                 t += (width / 2.0) / (Math.max(1.0, euclideanDistance) * size)
@@ -152,6 +178,14 @@ class SplineLines {
         }
 
         // For 4 control points: P = (1−t)3P1 + 3(1−t)2tP2 +3(1−t)t2P3 + t3P4
+
+        private fun getRenderedCircle(): ArrayList<BufferedImage> {
+            val arrayList = arrayListOf<BufferedImage>()
+            for (i in 1..1000) {
+                arrayList.add(createImage(i))
+            }
+            return arrayList
+        }
 
     }
 }
