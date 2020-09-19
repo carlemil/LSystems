@@ -5,7 +5,8 @@ import com.xenomachina.argparser.mainBody
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
-import kotlin.math.pow
+import kotlin.math.*
+import kotlin.math.sin
 import kotlin.system.exitProcess
 
 /**
@@ -28,15 +29,15 @@ fun main(args: Array<String>): Unit = mainBody {
         }
     } else {
         readLSystemDefinitions("KochSnowFlake")?.let { lSystem ->
-            for (iterations in lSystem.maxIterations-4..lSystem.maxIterations) {
-                renderLSystem(lSystem,
-                        iterations,
-                        "",
-                        "str.jpg",
-                        400.0,
-                        1.0,
-                        0.0)
-            }
+            //for (iterations in lSystem.maxIterations-3..lSystem.maxIterations) {
+            renderLSystem(lSystem,
+                    1, //iterations,
+                    "",
+                    "str.jpg",
+                    400.0,
+                    1.0,
+                    0.0)
+            //}
         }
     }
 }

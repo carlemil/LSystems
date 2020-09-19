@@ -4,9 +4,7 @@ import java.awt.RenderingHints.*
 import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 
 class SplineLines {
@@ -34,6 +32,13 @@ class SplineLines {
 
             drawThePolygon(g2, polygonWithColor, hueImage, size, lineWidth, sidePadding)
 
+//            var pp = mutableListOf<PolyPoint>()
+//            pp.add(PolyPoint(100.0, 100.0))
+//            pp.add(PolyPoint(100.0, 200.0))
+//            pp.add(PolyPoint(200.0, 200.0))
+//            pp.add(PolyPoint(200.0, 100.0))
+//            pp.add(PolyPoint(100.0, 100.0))
+            trig(g2, polygonWithColor, size, lineWidth, sidePadding)
             // No drawing can be performed after this.
             g2.dispose()
 
@@ -42,6 +47,72 @@ class SplineLines {
 
             return bufferedImage
         }
+
+        private fun trig(g2: Graphics2D, pp: List<PolyPoint>, size: Double, lineWidth: Double, sidePadding: Double) {
+            val hull = Polygon()
+            val line = Polygon()
+
+            for (i in pp.indices) {
+                if (i > 0) {
+                    val p0 = pp[i - 1]
+                    val p1 = pp[i]
+
+                    val a = p0.x - p1.x
+                    val b = p0.y - p1.y
+                    val c = sqrt(a.pow(2.0) + b.pow(2.0))
+                    val alfa = asin(a / c)
+
+                    var leftAlfa = alfa + (PI / 2.0)
+                    // var leftBeta = alfa + (PI / 4.0)
+                    if (b < 0) leftAlfa = -leftAlfa
+//
+//                    if (leftAlfa > PI) leftAlfa -= PI * 2
+////                    if(leftBeta>PI)leftBeta -=PI*2
+//                    if (leftAlfa < -PI) leftAlfa += PI * 2
+////                    if(leftBeta<-PI)leftBeta +=PI*2
+
+                    val sleftAlfa = sin(leftAlfa)
+                    val cleftBeta = cos(leftAlfa)
+
+                    val la = 20 * sleftAlfa
+                    val lb =20 * cleftBeta
+
+
+                    val xout = (p0.x + p1.x)* size / 2.0 + la
+                    val yout = (p0.y + p1.y)* size / 2.0 + lb
+                    //(((x * size) - width / 2) + sidePadding).toInt()
+                    hull.addPoint((((xout ) ) + sidePadding).toInt(), (((yout ) ) + sidePadding).toInt())
+//                    println("-------------------")
+//                    //println("$p0")
+//                    println("a: $a, b: $b, c: $c, la: $la, lb: $lb")
+//                    //println("alfa: $alfa + lefta: $leftAngle")
+//                    println("alfa: $alfa")
+//                    println("leftAlfa: $leftAlfa")
+//                    println("sleftAlfa: $sleftAlfa, crightBeta: $cleftBeta")
+//                    g2.paint = Color.RED
+//                    g2.drawOval(xout.toInt() - 2, yout.toInt() - 2, 4, 4)
+//
+//                    line.addPoint((pp[i].x).toInt(), (pp[i].y).toInt())
+//
+//                    g2.paint = Color.BLUE
+//                    g2.drawOval((p0.x + p1.x).toInt() / 2 - 2, (p0.y + p1.y).toInt() / 2 - 2, 4, 4)
+                }
+            }
+            g2.paint = Color.RED
+            g2.draw(hull)
+
+//            g2.paint = Color.GREEN
+//            g2.draw(line)
+//
+//            g2.paint = Color.RED
+//            g2.drawOval(pp[0].x.toInt() - 2, pp[0].y.toInt() - 2, 4, 4)
+//
+//            g2.paint = Color.MAGENTA
+//            g2.drawLine(80, 150, 220, 150)
+//            g2.drawLine(150, 80, 150, 220)
+
+        }
+
 
         private fun createImage(size: Int): BufferedImage {
             val buffImg = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB_PRE)
