@@ -32,25 +32,23 @@ class SplineLines {
 
             drawThePolygon(g2, polygonWithColor, hueImage, size, lineWidth, sidePadding)
 
-//            var pp = mutableListOf<PolyPoint>()
-//            pp.add(PolyPoint(100.0, 100.0))
-//            pp.add(PolyPoint(100.0, 200.0))
-//            pp.add(PolyPoint(200.0, 200.0))
-//            pp.add(PolyPoint(200.0, 100.0))
-//            pp.add(PolyPoint(100.0, 100.0))
-            trig(g2, polygonWithColor, size, lineWidth, sidePadding)
-            // No drawing can be performed after this.
-            g2.dispose()
-
             val t2 = System.currentTimeMillis()
             print("Draw splines: " + (t2 - t1) + "ms\n")
+
+            trig(g2, polygonWithColor, size, lineWidth, sidePadding)
+
+            val t3 = System.currentTimeMillis()
+            print("Draw polygon: " + (t3 - t2) + "ms\n")
+
+            // No drawing can be performed after this.
+            g2.dispose()
 
             return bufferedImage
         }
 
         private fun trig(g2: Graphics2D, pp: List<PolyPoint>, size: Double, lineWidth: Double, sidePadding: Double) {
-            val hull = Polygon()
-            val line = Polygon()
+            val leftHull = Polygon()
+            val rightHull = Polygon()
 
             for (i in pp.indices) {
                 if (i > 0) {
@@ -63,43 +61,27 @@ class SplineLines {
                     val alfa = asin(a / c)
 
                     var leftAlfa = alfa + (PI / 2.0)
-                    // var leftBeta = alfa + (PI / 4.0)
+
                     if (b < 0) leftAlfa = -leftAlfa
-//
-//                    if (leftAlfa > PI) leftAlfa -= PI * 2
-////                    if(leftBeta>PI)leftBeta -=PI*2
-//                    if (leftAlfa < -PI) leftAlfa += PI * 2
-////                    if(leftBeta<-PI)leftBeta +=PI*2
 
-                    val sleftAlfa = sin(leftAlfa)
-                    val cleftBeta = cos(leftAlfa)
+                    val width = (p0.w + p1.w) / 2
 
-                    val la = 20 * sleftAlfa
-                    val lb =20 * cleftBeta
+                    val xlout = (p0.x + p1.x) * size / 2.0 + lineWidth * sin(leftAlfa) * width
+                    val ylout = (p0.y + p1.y) * size / 2.0 + lineWidth * cos(leftAlfa) * width
+                    val xrout = (p0.x + p1.x) * size / 2.0 - lineWidth * sin(leftAlfa) * width
+                    val yrout = (p0.y + p1.y) * size / 2.0 - lineWidth * cos(leftAlfa) * width
 
+                    leftHull.addPoint((((xlout)) + sidePadding).toInt(), (((ylout)) + sidePadding).toInt())
+                    rightHull.addPoint((((xrout)) + sidePadding).toInt(), (((yrout)) + sidePadding).toInt())
 
-                    val xout = (p0.x + p1.x)* size / 2.0 + la
-                    val yout = (p0.y + p1.y)* size / 2.0 + lb
-                    //(((x * size) - width / 2) + sidePadding).toInt()
-                    hull.addPoint((((xout ) ) + sidePadding).toInt(), (((yout ) ) + sidePadding).toInt())
-//                    println("-------------------")
-//                    //println("$p0")
-//                    println("a: $a, b: $b, c: $c, la: $la, lb: $lb")
-//                    //println("alfa: $alfa + lefta: $leftAngle")
-//                    println("alfa: $alfa")
-//                    println("leftAlfa: $leftAlfa")
-//                    println("sleftAlfa: $sleftAlfa, crightBeta: $cleftBeta")
-//                    g2.paint = Color.RED
-//                    g2.drawOval(xout.toInt() - 2, yout.toInt() - 2, 4, 4)
-//
-//                    line.addPoint((pp[i].x).toInt(), (pp[i].y).toInt())
-//
-//                    g2.paint = Color.BLUE
-//                    g2.drawOval((p0.x + p1.x).toInt() / 2 - 2, (p0.y + p1.y).toInt() / 2 - 2, 4, 4)
                 }
             }
+            // Add endpoints
+            for (i in rightHull.npoints-1 downTo 0) {
+                leftHull.addPoint(rightHull.xpoints[i], rightHull.ypoints[i])
+            }
             g2.paint = Color.RED
-            g2.draw(hull)
+            g2.fill(leftHull)
 
 //            g2.paint = Color.GREEN
 //            g2.draw(line)
