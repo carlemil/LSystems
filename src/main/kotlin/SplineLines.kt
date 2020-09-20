@@ -1,6 +1,7 @@
 import lSystem.PolyPoint
 import java.awt.*
 import java.awt.RenderingHints.*
+import java.awt.geom.GeneralPath
 import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
 import java.util.*
@@ -46,55 +47,59 @@ class SplineLines {
             return bufferedImage
         }
 
-        private fun trig(g2: Graphics2D, pp: List<PolyPoint>, size: Double, lineWidth: Double, sidePadding: Double) {
-            val leftHull = Polygon()
-            val rightHull = Polygon()
+        private fun trig(g2: Graphics2D, ppList: List<PolyPoint>, size: Double, lineWidth: Double, sidePadding: Double) {
+            val leftHull = mutableListOf<PolyPoint>()
+            val rightHull = mutableListOf<PolyPoint>()
 
-            for (i in pp.indices) {
-                if (i > 0) {
-                    val p0 = pp[i - 1]
-                    val p1 = pp[i]
+            for (i in 1 until ppList.size) {
+                val p0 = ppList[i - 1]
+                val p1 = ppList[i]
 
-                    val a = p0.x - p1.x
-                    val b = p0.y - p1.y
-                    val c = sqrt(a.pow(2.0) + b.pow(2.0))
-                    val alfa = asin(a / c)
+                val a = p0.x - p1.x
+                val b = p0.y - p1.y
+                val c = sqrt(a.pow(2.0) + b.pow(2.0))
 
-                    var leftAlfa = alfa + (PI / 2.0)
+                var alfaPlus90 = calculateAlfa(a, c, b, (PI / 2.0))
+                var alfaMinus90 = calculateAlfa(a, c, b, -(PI / 2.0))
 
-                    if (b < 0) leftAlfa = -leftAlfa
 
-                    val width = (p0.w + p1.w) / 2
+                val leftPPPP = calculatePerpendicularPolyPoint(p0, p1, size, lineWidth, alfaPlus90)
+                leftHull.add(leftPPPP)
 
-                    val xlout = (p0.x + p1.x) * size / 2.0 + lineWidth * sin(leftAlfa) * width
-                    val ylout = (p0.y + p1.y) * size / 2.0 + lineWidth * cos(leftAlfa) * width
-                    val xrout = (p0.x + p1.x) * size / 2.0 - lineWidth * sin(leftAlfa) * width
-                    val yrout = (p0.y + p1.y) * size / 2.0 - lineWidth * cos(leftAlfa) * width
-
-                    leftHull.addPoint((((xlout)) + sidePadding).toInt(), (((ylout)) + sidePadding).toInt())
-                    rightHull.addPoint((((xrout)) + sidePadding).toInt(), (((yrout)) + sidePadding).toInt())
-
-                }
+                val rightPPPP = calculatePerpendicularPolyPoint(p0, p1, size, lineWidth, alfaMinus90)
+                rightHull.add(rightPPPP)
             }
-            // Add endpoints
-            for (i in rightHull.npoints-1 downTo 0) {
-                leftHull.addPoint(rightHull.xpoints[i], rightHull.ypoints[i])
+
+            val hull = mutableListOf<PolyPoint>()
+            hull.addAll(leftHull)
+            hull.addAll(rightHull.reversed())
+
+            val path = GeneralPath()
+            //path.quadTo(205f, 250f, 340f, 300f)
+
+            path.moveTo(ppList[0].x + sidePadding, ppList[0].y + sidePadding)
+            for (pp in hull) {
+                path.lineTo(pp.x + sidePadding, pp.y + sidePadding)
             }
             g2.paint = Color.RED
-            g2.fill(leftHull)
-
-//            g2.paint = Color.GREEN
-//            g2.draw(line)
-//
-//            g2.paint = Color.RED
-//            g2.drawOval(pp[0].x.toInt() - 2, pp[0].y.toInt() - 2, 4, 4)
-//
-//            g2.paint = Color.MAGENTA
-//            g2.drawLine(80, 150, 220, 150)
-//            g2.drawLine(150, 80, 150, 220)
-
+            path.closePath()
+            g2.fill(path)
         }
 
+        private fun calculatePerpendicularPolyPoint(p0: PolyPoint, p1: PolyPoint, size: Double, lineWidth: Double, alfaPlus90: Double): PolyPoint {
+            val width = (p0.w + p1.w) / 2
+            val x = (p0.x + p1.x) * size / 2.0 + lineWidth * width * sin(alfaPlus90)
+            val y = (p0.y + p1.y) * size / 2.0 + lineWidth * width * cos(alfaPlus90)
+            return PolyPoint(x, y)
+        }
+
+        private fun calculateAlfa(a: Double, c: Double, b: Double, angle: Double): Double {
+            val alfa = asin(a / c)
+            var alfaPlus90 = alfa + angle
+            // Take care of special case when adjacent side is negative
+            if (b < 0) alfaPlus90 = -alfaPlus90
+            return alfaPlus90
+        }
 
         private fun createImage(size: Int): BufferedImage {
             val buffImg = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB_PRE)
@@ -202,10 +207,10 @@ class SplineLines {
                         (t.pow(2.0) * pp3.w)) * lineWidth)
 
                 // Crate a circle at the right spot and size
-                val circle = Rectangle2D.Double(
-                        ((x * size) - width / 2) + sidePadding,
-                        ((y * size) - width / 2) + sidePadding,
-                        width, width)
+//                val circle = Rectangle2D.Double(
+//                        ((x * size) - width / 2) + sidePadding,
+//                        ((y * size) - width / 2) + sidePadding,
+//                        width, width)
 
                 // Calculate the color of the circle for this step.
                 var color: Color = when {
