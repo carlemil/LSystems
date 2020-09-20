@@ -31,7 +31,7 @@ fun main(args: Array<String>): Unit = mainBody {
         readLSystemDefinitions("KochSnowFlake")?.let { lSystem ->
             //for (iterations in lSystem.maxIterations-3..lSystem.maxIterations) {
             renderLSystem(lSystem,
-                    1, //iterations,
+                    2, //iterations,
                     "",
                     "str.jpg",
                     400.0,

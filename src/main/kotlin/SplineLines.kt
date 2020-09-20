@@ -1,6 +1,7 @@
 import lSystem.PolyPoint
 import java.awt.*
 import java.awt.RenderingHints.*
+import java.awt.geom.AffineTransform
 import java.awt.geom.GeneralPath
 import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
@@ -55,13 +56,10 @@ class SplineLines {
                 val p0 = ppList[i - 1]
                 val p1 = ppList[i]
 
-                val a = p0.x - p1.x
-                val b = p0.y - p1.y
-                val c = sqrt(a.pow(2.0) + b.pow(2.0))
+                val (a, b, c) = calculateSidesOfTriangle(p0, p1)
 
                 var alfaPlus90 = calculateAlfa(a, c, b, (PI / 2.0))
                 var alfaMinus90 = calculateAlfa(a, c, b, -(PI / 2.0))
-
 
                 val leftPPPP = calculatePerpendicularPolyPoint(p0, p1, size, lineWidth, alfaPlus90)
                 leftHull.add(leftPPPP)
@@ -75,15 +73,29 @@ class SplineLines {
             hull.addAll(rightHull.reversed())
 
             val path = GeneralPath()
-            //path.quadTo(205f, 250f, 340f, 300f)
+            path.moveTo(hull[0].x, hull[0].y)
 
-            path.moveTo(ppList[0].x + sidePadding, ppList[0].y + sidePadding)
-            for (pp in hull) {
-                path.lineTo(pp.x + sidePadding, pp.y + sidePadding)
+            for (i in 1 until hull.size) {
+                val b = hull[i - 1]
+                val c = hull[i]
+                val bc = PolyPoint((b.x + c.x) / 2, (b.y + c.y) / 2)
+                path.quadTo(b.x, b.y, bc.x, bc.y)
             }
+
             g2.paint = Color.RED
+
             path.closePath()
+            val at = AffineTransform()
+            at.translate(sidePadding, sidePadding)
+            path.transform(at)
             g2.fill(path)
+        }
+
+        private fun calculateSidesOfTriangle(p0: PolyPoint, p1: PolyPoint): Triple<Double, Double, Double> {
+            val a = p0.x - p1.x
+            val b = p0.y - p1.y
+            val c = sqrt(a.pow(2.0) + b.pow(2.0))
+            return Triple(a, b, c)
         }
 
         private fun calculatePerpendicularPolyPoint(p0: PolyPoint, p1: PolyPoint, size: Double, lineWidth: Double, alfaPlus90: Double): PolyPoint {
