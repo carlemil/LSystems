@@ -28,13 +28,13 @@ fun main(args: Array<String>): Unit = mainBody {
             renderLSystem(readLSystemDefinitions(lsystem), iterations, hueImageName, brightnessImageName, outputImageSize, lineWidth, bold)
         }
     } else {
-        readLSystemDefinitions("KochSnowFlake")?.let { lSystem ->
+        readLSystemDefinitions("Hilbert")?.let { lSystem ->
             //for (iterations in lSystem.maxIterations-3..lSystem.maxIterations) {
             renderLSystem(lSystem,
-                    2, //iterations,
+                    5, //iterations,
                     "",
                     "str.jpg",
-                    400.0,
+                    800.0,
                     1.0,
                     0.0)
             //}

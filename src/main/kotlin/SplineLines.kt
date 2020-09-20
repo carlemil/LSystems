@@ -32,7 +32,7 @@ class SplineLines {
             val t1 = System.currentTimeMillis()
             print("Prepare data for drawing: " + (t1 - t0) + "ms\n")
 
-            drawThePolygon(g2, polygonWithColor, hueImage, size, lineWidth, sidePadding)
+           // drawThePolygon(g2, polygonWithColor, hueImage, size, lineWidth, sidePadding)
 
             val t2 = System.currentTimeMillis()
             print("Draw splines: " + (t2 - t1) + "ms\n")
@@ -82,7 +82,7 @@ class SplineLines {
                 path.quadTo(b.x, b.y, bc.x, bc.y)
             }
 
-            g2.paint = Color.RED
+            g2.paint = Color.BLACK
 
             path.closePath()
             val at = AffineTransform()
