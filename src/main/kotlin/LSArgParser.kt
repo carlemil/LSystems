@@ -14,10 +14,6 @@ class LSArgParser(parser: ArgParser) {
             "-o", "--outputSize",
             help = "Size of the output svg image (in pixels)") { trim().toDouble() }.default(800.0)
 
-    val hueImageName by parser.storing(
-            "-u", "--hue",
-            help = "The path to the hue input image") { trim() }.default("")
-
     val brightnessImageName by parser.storing(
             "-b", "--bri",
             help = "The path to the brightness input image") { trim() }.default("")
@@ -37,7 +33,6 @@ class LSArgParser(parser: ArgParser) {
     private fun getLSystemNames(): String? {
         val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())
         val systems = lSystemInfo?.systems
-        val names = systems?.map { it.name }?.joinToString { it }
-        return names
+        return systems?.map { it.name }?.joinToString { it }
     }
 }

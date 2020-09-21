@@ -1,12 +1,16 @@
-import lSystem.*
 import com.beust.klaxon.Klaxon
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
+import lSystem.LSystemDefinition
+import lSystem.LSystemInfo
+import lSystem.PolyPoint
+import lSystem.computeLSystem
+import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
+import java.util.*
 import javax.imageio.ImageIO
-import kotlin.math.*
-import kotlin.math.sin
+import kotlin.math.pow
 import kotlin.system.exitProcess
 
 /**
@@ -25,14 +29,13 @@ fun main(args: Array<String>): Unit = mainBody {
 
     if (args.isNotEmpty()) {
         ArgParser(args).parseInto(::LSArgParser).run {
-            renderLSystem(readLSystemDefinitions(lsystem), iterations, hueImageName, brightnessImageName, outputImageSize, lineWidth, bold)
+            renderLSystem(readLSystemDefinitions(lsystem), iterations, brightnessImageName, outputImageSize, lineWidth, bold)
         }
     } else {
         readLSystemDefinitions("Hilbert")?.let { lSystem ->
             //for (iterations in lSystem.maxIterations-3..lSystem.maxIterations) {
             renderLSystem(lSystem,
-                    5, //iterations,
-                    "",
+                    5,
                     "str.jpg",
                     800.0,
                     1.0,
@@ -44,7 +47,6 @@ fun main(args: Array<String>): Unit = mainBody {
 
 private fun renderLSystem(lSystem: LSystemDefinition?,
                           iterations: Int,
-                          hueImageName: String,
                           brightnessImageName: String,
                           outputImageSize: Double,
                           lineWidthMod: Double,
@@ -53,10 +55,8 @@ private fun renderLSystem(lSystem: LSystemDefinition?,
 
     println("Rendering " + lSystem?.name + ".")
 
-    val hueImage = if (hueImageName.isNotEmpty()) readImageFile(hueImageName) else null
-    val lightnessImage = if (brightnessImageName.isNotEmpty()) readImageFile(brightnessImageName) else null
+    val brightnessImage = if (brightnessImageName.isNotEmpty()) readImageFile(brightnessImageName) else null
     val fileName = lSystem?.name + "_" + iterations +
-            (if (hueImageName.isNotEmpty()) "_hue_" + hueImageName.subSequence(0, hueImageName.lastIndexOf(".")) else "") +
             (if (brightnessImageName.isNotEmpty()) "_bri_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf(".")) else "") +
             "_scale_" + lSystem?.scaling +
             "_size_" + outputImageSize.toInt()
@@ -69,14 +69,49 @@ private fun renderLSystem(lSystem: LSystemDefinition?,
 
     val sidePadding = lineWidthScaling + outputImageSize / 20
 
-    val bufferedImage = SplineLines.drawPolygonAsSplines(coordList, hueImage, lightnessImage, outputImageSize,
+    val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding)
+
+    val polygon = adjustWidthAccordingToImage(coordList, brightnessImage)
+
+    VariableWidthPolygon.drawPolygonToBufferedImage(polygon, g2, outputImageSize,
             lSystem.lineWidth * lineWidthMod * lineWidthScaling, sidePadding)
 
+    val t1 = System.currentTimeMillis()
+    println("Write image to file: " + (t1 - t0) + "ms\n")
     writeImageToPngFile(bufferedImage, pngFileName)
 
-    val t1 = System.currentTimeMillis()
+    val t2 = System.currentTimeMillis()
+    println("Done after: " + (t2 - t1) + "ms\n")
+}
 
-    println("Done after: " + (t1 - t0) + "ms\n")
+private fun adjustWidthAccordingToImage(polygon: List<PolyPoint>, image: BufferedImage?): List<PolyPoint> {
+    val ppList = ArrayList<PolyPoint>()
+    for (element in polygon) {
+        var p = element
+        // Use the inverted brightness as width of the line we drawSpline.
+        val c = (1 - ColorUtils.getBrightnessFromImage(p.x, p.y, image))
+        ppList.add(PolyPoint(p.x, p.y, p.w * c))
+    }
+    return ppList
+}
+
+private fun setupGraphics(size: Double, sidePadding: Double): Pair<BufferedImage, Graphics2D> {
+    val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
+            BufferedImage.TYPE_INT_RGB)
+
+    val g2 = bufferedImage.createGraphics()
+    val rh = mutableMapOf<RenderingHints.Key, Any>()
+    rh[RenderingHints.KEY_ANTIALIASING] = RenderingHints.VALUE_ANTIALIAS_ON
+    rh[RenderingHints.KEY_ALPHA_INTERPOLATION] = RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
+    rh[RenderingHints.KEY_COLOR_RENDERING] = RenderingHints.VALUE_COLOR_RENDER_QUALITY
+    rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
+    rh[RenderingHints.KEY_STROKE_CONTROL] = RenderingHints.VALUE_STROKE_PURE
+    g2.setRenderingHints(rh)
+
+    g2.stroke = BasicStroke(2f)
+    g2.color = Color.WHITE
+    g2.fill(Rectangle(0, 0, bufferedImage.width, bufferedImage.height))
+    return Pair(bufferedImage, g2)
 }
 
 private fun writeImageToPngFile(bufferedImage: BufferedImage, pngFileName: String) {
