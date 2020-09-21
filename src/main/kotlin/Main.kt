@@ -35,10 +35,10 @@ fun main(args: Array<String>): Unit = mainBody {
         readLSystemDefinitions("Hilbert")?.let { lSystem ->
             //for (iterations in lSystem.maxIterations-3..lSystem.maxIterations) {
             renderLSystem(lSystem,
-                    5,
+                    8,
                     "str.jpg",
-                    800.0,
-                    1.0,
+                    1200.0,
+                    1.1,
                     0.0)
             //}
         }
@@ -52,8 +52,6 @@ private fun renderLSystem(lSystem: LSystemDefinition?,
                           lineWidthMod: Double,
                           boldWidth: Double) {
     val t0 = System.currentTimeMillis()
-
-    println("Rendering " + lSystem?.name + ".")
 
     val brightnessImage = if (brightnessImageName.isNotEmpty()) readImageFile(brightnessImageName) else null
     val fileName = lSystem?.name + "_" + iterations +
@@ -73,15 +71,20 @@ private fun renderLSystem(lSystem: LSystemDefinition?,
 
     val polygon = adjustWidthAccordingToImage(coordList, brightnessImage)
 
+    val t1 = System.currentTimeMillis()
+    println("Rendering " + lSystem.name + ": " + (t1 - t0) + "ms\n")
+
     VariableWidthPolygon.drawPolygonToBufferedImage(polygon, g2, outputImageSize,
             lSystem.lineWidth * lineWidthMod * lineWidthScaling, sidePadding)
-
-    val t1 = System.currentTimeMillis()
-    println("Write image to file: " + (t1 - t0) + "ms\n")
-    writeImageToPngFile(bufferedImage, pngFileName)
-
     val t2 = System.currentTimeMillis()
-    println("Done after: " + (t2 - t1) + "ms\n")
+    println("Render polygon in total: " + (t2 - t1) + "ms\n")
+
+    writeImageToPngFile(bufferedImage, pngFileName)
+    val t3 = System.currentTimeMillis()
+    println("Write image to file: " + (t3 - t2) + "ms\n")
+
+    val t4 = System.currentTimeMillis()
+    println("Done after: " + (t4 - t3) + "ms\n")
 }
 
 private fun adjustWidthAccordingToImage(polygon: List<PolyPoint>, image: BufferedImage?): List<PolyPoint> {

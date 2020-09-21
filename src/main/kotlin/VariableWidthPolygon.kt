@@ -24,6 +24,8 @@ class VariableWidthPolygon {
             print("Draw polygon: " + (t2 - t1) + "ms\n")
 
             tearDownGraphics(g2)
+            val t3 = System.currentTimeMillis()
+            print("Tear down graphics: " + (t3 - t2) + "ms\n")
         }
 
         private fun tearDownGraphics(g2: Graphics2D) {
