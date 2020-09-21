@@ -29,33 +29,39 @@ fun main(args: Array<String>): Unit = mainBody {
 
     if (args.isNotEmpty()) {
         ArgParser(args).parseInto(::LSArgParser).run {
-            renderLSystem(readLSystemDefinitions(lsystem), iterations, brightnessImageName, outputImageSize, lineWidth, bold)
+            renderLSystem(
+                    readLSystemDefinitions(lsystem),
+                    iterations,
+                    brightnessImageName,
+                    null,
+                    outputImageSize,
+                    lineWidth,
+                    bold)
         }
     } else {
         readLSystemDefinitions("Hilbert")?.let { lSystem ->
-            //for (iterations in lSystem.maxIterations-3..lSystem.maxIterations) {
             renderLSystem(lSystem,
-                    8,
+                    9,
                     "str.jpg",
-                    1200.0,
-                    1.1,
-                    0.0)
-            //}
+                    null,
+                    1500.0)
         }
     }
 }
 
-private fun renderLSystem(lSystem: LSystemDefinition?,
-                          iterations: Int,
-                          brightnessImageName: String,
-                          outputImageSize: Double,
-                          lineWidthMod: Double,
-                          boldWidth: Double) {
+fun renderLSystem(lSystem: LSystemDefinition?,
+                  iterations: Int,
+                  brightnessImageName: String?,
+                  brightnessImage_: BufferedImage?,
+                  outputImageSize: Double,
+                  lineWidthMod: Double = 1.0,
+                  boldWidth: Double = 0.0) {
     val t0 = System.currentTimeMillis()
 
-    val brightnessImage = if (brightnessImageName.isNotEmpty()) readImageFile(brightnessImageName) else null
+    val brightnessImage = if (brightnessImageName?.isNotEmpty() == true) readImageFile(brightnessImageName) else brightnessImage_
+
     val fileName = lSystem?.name + "_" + iterations +
-            (if (brightnessImageName.isNotEmpty()) "_bri_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf(".")) else "") +
+            getFirstPartOfImageName(brightnessImageName) +
             "_scale_" + lSystem?.scaling +
             "_size_" + outputImageSize.toInt()
 
@@ -85,6 +91,22 @@ private fun renderLSystem(lSystem: LSystemDefinition?,
 
     val t4 = System.currentTimeMillis()
     println("Done after: " + (t4 - t3) + "ms\n")
+}
+
+fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
+    val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())!!
+    if (lSystemInfo.systems.isEmpty()) {
+        println("Failed to read LSystem definitions.")
+        exitProcess(-1)
+    }
+    return lSystemInfo.systems.find { lsd -> lsd.name.startsWith(lSystemName, true) }
+}
+
+private fun getFirstPartOfImageName(brightnessImageName: String?): String {
+    return if (brightnessImageName?.isNotEmpty() == true)
+        "_bri_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf("."))
+    else
+        ""
 }
 
 private fun adjustWidthAccordingToImage(polygon: List<PolyPoint>, image: BufferedImage?): List<PolyPoint> {
@@ -120,15 +142,6 @@ private fun setupGraphics(size: Double, sidePadding: Double): Pair<BufferedImage
 private fun writeImageToPngFile(bufferedImage: BufferedImage, pngFileName: String) {
     val file = File(pngFileName)
     ImageIO.write(bufferedImage, "png", file)
-}
-
-private fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
-    val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())!!
-    if (lSystemInfo.systems.isEmpty()) {
-        println("Failed to read LSystem definitions.")
-        exitProcess(-1)
-    }
-    return lSystemInfo.systems.find { lsd -> lsd.name.startsWith(lSystemName, true) }
 }
 
 private fun readImageFile(file: String): BufferedImage {
