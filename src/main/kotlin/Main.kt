@@ -39,12 +39,15 @@ fun main(args: Array<String>): Unit = mainBody {
                     bold)
         }
     } else {
-        readLSystemDefinitions("Hilbert")?.let { lSystem ->
-            renderLSystem(lSystem,
-                    9,
-                    "str.jpg",
-                    null,
-                    1500.0)
+        for (imageName in listOf("che2.jpg", "che3.jpg", "che4.jpg")) {
+            for (systemName in listOf("Hilbert", "Peano", "SnowFlake")) {
+                readLSystemDefinitions(systemName)?.let { lSystem ->
+                    for (i in (lSystem.maxIterations - 1)..lSystem.maxIterations) {
+                        println("$imageName - $systemName - $i")
+                        renderLSystem(lSystem, i, imageName, null, 1200.0)
+                    }
+                }
+            }
         }
     }
 }
@@ -60,8 +63,9 @@ fun renderLSystem(lSystem: LSystemDefinition?,
 
     val brightnessImage = if (brightnessImageName?.isNotEmpty() == true) readImageFile(brightnessImageName) else brightnessImage_
 
-    val fileName = lSystem?.name + "_" + iterations +
-            getFirstPartOfImageName(brightnessImageName) +
+    val fileName = lSystem?.name +
+            "_" + iterations +
+            "_" + getFirstPartOfImageName(brightnessImageName) +
             "_scale_" + lSystem?.scaling +
             "_size_" + outputImageSize.toInt()
 
@@ -104,7 +108,7 @@ fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
 
 private fun getFirstPartOfImageName(brightnessImageName: String?): String {
     return if (brightnessImageName?.isNotEmpty() == true)
-        "_bri_" + brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf("."))
+        brightnessImageName.subSequence(0, brightnessImageName.lastIndexOf(".")).toString()
     else
         ""
 }

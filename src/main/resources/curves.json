@@ -34,7 +34,7 @@
       "angle": 1.57079632679,
       "scaling": 2.3,
       "lineWidth": 8.0,
-      "maxIterations": 5,
+      "maxIterations": 9,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"
@@ -79,7 +79,7 @@
       "angle": 1.0471975512,
       "scaling": 3.6,
       "lineWidth": 9.0,
-      "maxIterations": 5,
+      "maxIterations": 6,
       "rules": {
         "A": "A-B--B+A++AA+B-",
         "B": "+A-BB--B-A++A+B"
@@ -93,7 +93,7 @@
       "name": "Peano",
       "angle": 1.57079632679,
       "scaling": 4.0,
-      "lineWidth": 11.0,
+      "lineWidth": 6.0,
       "maxIterations": 5,
       "rules": {
         "L": "LFRFL-F-RFLFR+F+LFRFL",
