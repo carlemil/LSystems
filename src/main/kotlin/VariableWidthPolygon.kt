@@ -11,9 +11,11 @@ class VariableWidthPolygon {
         fun drawPolygonToBufferedImage(polygon: List<PolyPoint>,
                                        g2: Graphics2D,
                                        size: Double,
-                                       lineWidth: Double,
+                //lineWidth: Double,
                                        sidePadding: Double) {
             val t0 = System.currentTimeMillis()
+
+            val lineWidth = 1.0
 
             val hull = buildPolygon(polygon, size, lineWidth)
             val t1 = System.currentTimeMillis()
@@ -26,6 +28,13 @@ class VariableWidthPolygon {
             tearDownGraphics(g2)
             val t3 = System.currentTimeMillis()
             print("Tear down graphics: " + (t3 - t2) + "ms\n")
+        }
+
+        fun calculateSidesOfTriangle(p0: PolyPoint, p1: PolyPoint): Triple<Double, Double, Double> {
+            val a = p0.x - p1.x
+            val b = p0.y - p1.y
+            val c = sqrt(a.pow(2.0) + b.pow(2.0))
+            return Triple(a, b, c)
         }
 
         private fun tearDownGraphics(g2: Graphics2D) {
@@ -57,13 +66,14 @@ class VariableWidthPolygon {
 
         private fun drawPolygon(hull: MutableList<PolyPoint>, g2: Graphics2D, sidePadding: Double) {
             val path = GeneralPath()
-            path.moveTo(hull[0].x, hull[0].y)
+            val polygonInitialPP = PolyPoint.average(hull[hull.size - 1], hull[hull.size - 2])
+            path.moveTo(polygonInitialPP.x, polygonInitialPP.y)
 
-            for (i in 1 until hull.size) {
-                val b = hull[i - 1]
-                val c = hull[i]
-                val bc = PolyPoint((b.x + c.x) / 2, (b.y + c.y) / 2)
-                path.quadTo(b.x, b.y, bc.x, bc.y)
+            for (i in 0 until hull.size) {
+                val quadStartPP = hull[(if (i == 0) hull.size else i) - 1]
+                val nextQuadStartPP = hull[i]
+                val quadEndPP = PolyPoint.average(quadStartPP, nextQuadStartPP)
+                path.quadTo(quadStartPP.x, quadStartPP.y, quadEndPP.x, quadEndPP.y)
             }
 
             g2.paint = Color.BLACK
@@ -75,17 +85,11 @@ class VariableWidthPolygon {
             g2.fill(path)
         }
 
-        private fun calculateSidesOfTriangle(p0: PolyPoint, p1: PolyPoint): Triple<Double, Double, Double> {
-            val a = p0.x - p1.x
-            val b = p0.y - p1.y
-            val c = sqrt(a.pow(2.0) + b.pow(2.0))
-            return Triple(a, b, c)
-        }
-
-        private fun calculatePerpendicularPolyPoint(p0: PolyPoint, p1: PolyPoint, size: Double, lineWidth: Double, alfaPlus90: Double): PolyPoint {
-            val width = (p0.w + p1.w) / 2
-            val x = (p0.x + p1.x) * size / 2.0 + lineWidth * width * sin(alfaPlus90)
-            val y = (p0.y + p1.y) * size / 2.0 + lineWidth * width * cos(alfaPlus90)
+        private fun calculatePerpendicularPolyPoint(p0: PolyPoint, p1: PolyPoint, size: Double, ji: Double, alfaPlus90: Double): PolyPoint {
+            val (_, _, c) = calculateSidesOfTriangle(p0, p1)
+            val width = (size * c * (p0.w + p1.w) / 2 * 0.8 + 0.1) / 2
+            val x = (p0.x + p1.x) * size / 2.0 + width * sin(alfaPlus90)
+            val y = (p0.y + p1.y) * size / 2.0 + width * cos(alfaPlus90)
             return PolyPoint(x, y)
         }
 
@@ -96,6 +100,5 @@ class VariableWidthPolygon {
             if (b < 0) alfaPlus90 = -alfaPlus90
             return alfaPlus90
         }
-
     }
 }
