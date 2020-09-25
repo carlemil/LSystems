@@ -84,7 +84,7 @@ class VariableWidthPolygon {
 
         private fun calculatePerpendicularPolyPoint(p0: PolyPoint, p1: PolyPoint, size: Double, alfaPlus90: Double): PolyPoint {
             val (_, _, c) = calculateSidesOfTriangle(p0, p1)
-            val width = (size * c * (p0.w + p1.w) / 2 * 0.8 + 0.1) / 2
+            val width = (size * c * (p0.w + p1.w) / 2 * 0.7 + 0.2) / 2
             val x = (p0.x + p1.x) * size / 2.0 + width * sin(alfaPlus90)
             val y = (p0.y + p1.y) * size / 2.0 + width * cos(alfaPlus90)
             return PolyPoint(x, y)
