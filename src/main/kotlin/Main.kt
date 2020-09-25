@@ -22,11 +22,11 @@ fun main(args: Array<String>): Unit = mainBody {
     println("Init")
     val t0 = System.currentTimeMillis()
 
-    for (imageName in listOf("che2.jpg")) {//"che2.jpg", "che3.jpg", "che4.jpg")) {
+    for (imageName in listOf("che2.jpg", "che3.jpg", "che4.jpg")) {
         val image = readImageFile(imageName)
-        for (systemName in listOf("SnowFlake")) {//, "Hilbert", "Peano", "SnowFlake")) {
+        for (systemName in listOf("Hilbert", "Peano", "SnowFlake")) {
             readLSystemDefinitions(systemName)?.let { lSystem ->
-                for (i in 1..lSystem.maxIterations) {//(lSystem.maxIterations - 1)..lSystem.maxIterations) {
+                for (i in (lSystem.maxIterations - 1)..lSystem.maxIterations) {
                     println("$imageName - $systemName - $i")
                     renderLSystem(lSystem, i, imageName, image, 1200.0)
                 }
