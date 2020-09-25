@@ -11,13 +11,10 @@ class VariableWidthPolygon {
         fun drawPolygonToBufferedImage(polygon: List<PolyPoint>,
                                        g2: Graphics2D,
                                        size: Double,
-                //lineWidth: Double,
                                        sidePadding: Double) {
             val t0 = System.currentTimeMillis()
 
-            val lineWidth = 1.0
-
-            val hull = buildPolygon(polygon, size, lineWidth)
+            val hull = buildPolygon(polygon, size)
             val t1 = System.currentTimeMillis()
             print("Build polygon: " + (t1 - t0) + "ms\n")
 
@@ -41,7 +38,7 @@ class VariableWidthPolygon {
             g2.dispose()
         }
 
-        private fun buildPolygon(ppList: List<PolyPoint>, size: Double, lineWidth: Double): MutableList<PolyPoint> {
+        private fun buildPolygon(ppList: List<PolyPoint>, size: Double): MutableList<PolyPoint> {
             val leftHull = mutableListOf<PolyPoint>()
             val rightHull = mutableListOf<PolyPoint>()
 
@@ -54,8 +51,8 @@ class VariableWidthPolygon {
                 val alfaPlus90 = calculateAlfa(a, c, b, (PI / 2.0))
                 val alfaMinus90 = calculateAlfa(a, c, b, -(PI / 2.0))
 
-                leftHull.add(calculatePerpendicularPolyPoint(p0, p1, size, lineWidth, alfaPlus90))
-                rightHull.add(calculatePerpendicularPolyPoint(p0, p1, size, lineWidth, alfaMinus90))
+                leftHull.add(calculatePerpendicularPolyPoint(p0, p1, size, alfaPlus90))
+                rightHull.add(calculatePerpendicularPolyPoint(p0, p1, size, alfaMinus90))
             }
 
             val hull = mutableListOf<PolyPoint>()
@@ -85,7 +82,7 @@ class VariableWidthPolygon {
             g2.fill(path)
         }
 
-        private fun calculatePerpendicularPolyPoint(p0: PolyPoint, p1: PolyPoint, size: Double, ji: Double, alfaPlus90: Double): PolyPoint {
+        private fun calculatePerpendicularPolyPoint(p0: PolyPoint, p1: PolyPoint, size: Double, alfaPlus90: Double): PolyPoint {
             val (_, _, c) = calculateSidesOfTriangle(p0, p1)
             val width = (size * c * (p0.w + p1.w) / 2 * 0.8 + 0.1) / 2
             val x = (p0.x + p1.x) * size / 2.0 + width * sin(alfaPlus90)

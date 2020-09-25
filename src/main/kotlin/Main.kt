@@ -16,52 +16,35 @@ import kotlin.system.exitProcess
 /**
  * Created by carlemil on 4/10/17.
  *
- *  TODO Args parser and docs are outdated, update some day.
- *
- *  ./gradlew run -PlsArgs="['-s SnowFlake', '-i 3', '-o 400', '-b che_b.png', '-u che_h.png' ]"
- *
- *  gradle run -PlsArgs="['-s b', '-i 4', '-o 800', '-b str.jpg', '-u str.jpg', '-B 1.5' ]"
- *
  */
 
 fun main(args: Array<String>): Unit = mainBody {
     println("Init")
+    val t0 = System.currentTimeMillis()
 
-    if (args.isNotEmpty()) {
-        ArgParser(args).parseInto(::LSArgParser).run {
-            renderLSystem(
-                    readLSystemDefinitions(lsystem),
-                    iterations,
-                    brightnessImageName,
-                    null,
-                    outputImageSize,
-                    lineWidth,
-                    bold)
-        }
-    } else {
-        for (imageName in listOf("che2.jpg", "che3.jpg", "che4.jpg")) {
-            for (systemName in listOf("Hilbert", "Peano", "SnowFlake")) {
-                readLSystemDefinitions(systemName)?.let { lSystem ->
-                    for (i in (lSystem.maxIterations - 1)..lSystem.maxIterations) {
-                        println("$imageName - $systemName - $i")
-                        renderLSystem(lSystem, i, imageName, null, 1200.0)
-                    }
+    for (imageName in listOf("che2.jpg")) {//"che2.jpg", "che3.jpg", "che4.jpg")) {
+        val image = readImageFile(imageName)
+        for (systemName in listOf("SnowFlake")) {//, "Hilbert", "Peano", "SnowFlake")) {
+            readLSystemDefinitions(systemName)?.let { lSystem ->
+                for (i in 1..lSystem.maxIterations) {//(lSystem.maxIterations - 1)..lSystem.maxIterations) {
+                    println("$imageName - $systemName - $i")
+                    renderLSystem(lSystem, i, imageName, image, 1200.0)
                 }
             }
         }
     }
+
+    val t1 = System.currentTimeMillis()
+    println("Done after: " + (t1 - t0) + "ms\n")
 }
 
 fun renderLSystem(lSystem: LSystemDefinition?,
                   iterations: Int,
-                  brightnessImageName: String?,
-                  brightnessImage_: BufferedImage?,
+                  brightnessImageName: String,
+                  brightnessImage: BufferedImage,
                   outputImageSize: Double,
-                  lineWidthMod: Double = 1.0,
-                  boldWidth: Double = 0.0) {
+                  boldWidth: Double = 1.0) {
     val t0 = System.currentTimeMillis()
-
-    val brightnessImage = if (brightnessImageName?.isNotEmpty() == true) readImageFile(brightnessImageName) else brightnessImage_
 
     val fileName = lSystem?.name +
             "_" + iterations +
@@ -73,9 +56,7 @@ fun renderLSystem(lSystem: LSystemDefinition?,
 
     val coordList = computeLSystem(lSystem!!, iterations, boldWidth)
 
-    val lineWidthScaling = (outputImageSize / lSystem.scaling.pow(iterations.toDouble())) / 5.0
-
-    val sidePadding = lineWidthScaling + outputImageSize / 20
+    val sidePadding = outputImageSize / 40
 
     val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding)
 
@@ -84,17 +65,13 @@ fun renderLSystem(lSystem: LSystemDefinition?,
     val t1 = System.currentTimeMillis()
     println("Rendering " + lSystem.name + ": " + (t1 - t0) + "ms\n")
 
-    VariableWidthPolygon.drawPolygonToBufferedImage(polygon, g2, outputImageSize,
-            lSystem.lineWidth * lineWidthMod * lineWidthScaling, sidePadding)
+    VariableWidthPolygon.drawPolygonToBufferedImage(polygon, g2, outputImageSize, sidePadding)
     val t2 = System.currentTimeMillis()
     println("Render polygon in total: " + (t2 - t1) + "ms\n")
 
     writeImageToPngFile(bufferedImage, pngFileName)
     val t3 = System.currentTimeMillis()
     println("Write image to file: " + (t3 - t2) + "ms\n")
-
-    val t4 = System.currentTimeMillis()
-    println("Done after: " + (t4 - t3) + "ms\n")
 }
 
 fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
@@ -119,7 +96,7 @@ private fun adjustWidthAccordingToImage(polygon: List<PolyPoint>, image: Buffere
         var p = element
         // Use the inverted brightness as width of the line we drawSpline.
         val c = (1 - ColorUtils.getBrightnessFromImage(p.x, p.y, image))
-        ppList.add(PolyPoint(p.x, p.y, p.w * c))
+        ppList.add(PolyPoint(p.x, p.y, c))
     }
     return ppList
 }
