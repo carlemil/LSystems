@@ -25,32 +25,28 @@ Production rules:
 L → −RF+LFL+FR−
 R → +LF−RFR−FL+
 
-Twindragon
 
-It can be also written as a Lindenmayer system – it only needs adding another section in initial string:
+The Sierpiński curve can be expressed by a rewrite system (L-system).
 
-angle 90°
-initial string FX+FX+
-string rewriting rules
-X ↦ X+YF
-Y ↦ FX−Y.
-
-Twindragon curve.
-
-angle 120°
-initial string F
-string rewriting rules
-F ↦ F+F−F.
-
+Alphabet: F, G, X
+Constants: F, G, +, −
+Axiom: F--XF--F--XF
+Production rules:
+X → XF+G+XF--F--XF+G+X
+Angle: 45
+Here, both F and G mean “draw forward”
  */
 
 fun main(args: Array<String>): Unit = mainBody {
     println("Init")
     val t0 = System.currentTimeMillis()
 
-    for (imageName in listOf("che2.jpg", "che3.jpg", "che4.jpg")) {
+//  for (imageName in listOf("che2.jpg", "che3.jpg", "che4.jpg")) {
+//  for (systemName in listOf("Peano", "Hilbert", "SnowFlake")) {
+
+    for (imageName in listOf("che2.jpg")) {
         val image = readImageFile("input/$imageName")
-        for (systemName in listOf("Peano", "Hilbert", "SnowFlake")) {
+        for (systemName in listOf("Boldinski")) {
             readLSystemDefinitions(systemName)?.let { lSystem ->
                 for (i in 1..lSystem.maxIterations) {
                     println("----------- $imageName - $systemName - $i ----------- ")
@@ -72,12 +68,10 @@ fun renderLSystem(lSystem: LSystemDefinition?,
                   boldWidth: Double = 1.0) {
     val t0 = System.currentTimeMillis()
 
-    val fileName =
-            "_" + getFirstPartOfImageName(brightnessImageName) +
-                    "_" + lSystem?.name +
-                    "_scale_" + lSystem?.scaling +
-                    "_" + iterations +
-                    "_size_" + outputImageSize.toInt()
+    val fileName = getFirstPartOfImageName(brightnessImageName) +
+            "_" + lSystem?.name +
+            "_iterations_" + iterations +
+            "_size_" + outputImageSize.toInt()
 
     val pngFileName = "output/$fileName.png"
 
