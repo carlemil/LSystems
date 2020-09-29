@@ -1,5 +1,4 @@
 import com.beust.klaxon.Klaxon
-import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import lSystem.LSystemDefinition
 import lSystem.LSystemInfo
@@ -10,7 +9,6 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
-import kotlin.math.pow
 import kotlin.system.exitProcess
 
 /**
@@ -56,7 +54,7 @@ fun main(args: Array<String>): Unit = mainBody {
             readLSystemDefinitions(systemName)?.let { lSystem ->
                 for (i in 1..lSystem.maxIterations) {
                     println("----------- $imageName - $systemName - $i ----------- ")
-                    renderLSystem(lSystem, i, imageName, image, 12600.0)
+                    renderLSystem(lSystem, i, imageName, image, 600.0)
                 }
             }
         }
@@ -123,10 +121,9 @@ private fun getFirstPartOfImageName(brightnessImageName: String?): String {
 private fun adjustWidthAccordingToImage(polygon: List<PolyPoint>, image: BufferedImage?): List<PolyPoint> {
     val ppList = ArrayList<PolyPoint>()
     for (element in polygon) {
-        var p = element
         // Use the inverted brightness as width of the line we drawSpline.
-        val c = (1 - ColorUtils.getBrightnessFromImage(p.x, p.y, image))
-        ppList.add(PolyPoint(p.x, p.y, c))
+        val c = (1 - ColorUtils.getBrightnessFromImage(element.x, element.y, image))
+        ppList.add(PolyPoint(element.x, element.y, c))
     }
     return ppList
 }
