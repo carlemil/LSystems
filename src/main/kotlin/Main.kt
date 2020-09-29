@@ -16,19 +16,47 @@ import kotlin.system.exitProcess
 /**
  * Created by carlemil on 4/10/17.
  *
+ * >magick montage -tile x8 -background #aaaaaa *.jpg ../montage.jpg
+ *
+ *
+Moore curve
+Alphabet: L, R
+Constants: F, +, −
+Axiom: LFL+F+LFL
+Production rules:
+L → −RF+LFL+FR−
+R → +LF−RFR−FL+
+
+Twindragon
+
+It can be also written as a Lindenmayer system – it only needs adding another section in initial string:
+
+angle 90°
+initial string FX+FX+
+string rewriting rules
+X ↦ X+YF
+Y ↦ FX−Y.
+
+Twindragon curve.
+
+angle 120°
+initial string F
+string rewriting rules
+F ↦ F+F−F.
+
  */
 
 fun main(args: Array<String>): Unit = mainBody {
     println("Init")
     val t0 = System.currentTimeMillis()
 
-    for (imageName in listOf("ioa1.png", "ce-profil-bild.jpg")) {
+    for (imageName in listOf("che2.jpg", "che3.jpg", "che4.jpg")) {
         val image = readImageFile("input/$imageName")
-        for (systemName in listOf("Hilbert", "Peano", "SnowFlake")) {
+        for (systemName in listOf("Peano", "Hilbert", "SnowFlake")) {
             readLSystemDefinitions(systemName)?.let { lSystem ->
                 for (i in 1..lSystem.maxIterations) {
-                    println("$imageName - $systemName - $i")
-                    renderLSystem(lSystem, i, imageName, image, 1200.0)
+                    println("----------- $imageName - $systemName - $i ----------- ")
+                    renderLSystem(lSystem, i, imageName, image, 12600.0)
                 }
             }
         }
@@ -57,11 +85,12 @@ fun renderLSystem(lSystem: LSystemDefinition?,
 
     val coordList = computeLSystem(lSystem!!, iterations, boldWidth)
 
-    val sidePadding = outputImageSize / 40
+    val polygon = adjustWidthAccordingToImage(coordList, brightnessImage)
+
+    val sidePadding = VariableWidthPolygon.calculateSidesOfTriangle(polygon[0], polygon[1]).third *
+            outputImageSize / 2 + outputImageSize / 60
 
     val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding)
-
-    val polygon = adjustWidthAccordingToImage(coordList, brightnessImage)
 
     val t1 = System.currentTimeMillis()
     println("Rendering " + lSystem.name + ": " + (t1 - t0) + "ms\n")
