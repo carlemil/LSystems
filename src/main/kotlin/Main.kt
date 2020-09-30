@@ -23,7 +23,7 @@ fun main(args: Array<String>): Unit = mainBody {
     val t0 = System.currentTimeMillis()
 
     val renderAllSystems = false
-    val fixIteration = 7
+    val fixIteration = 0
 
     readLSystemDefinitions()?.let { lSystems ->
         val listOfSystemsToRender = if (renderAllSystems) {
@@ -43,7 +43,7 @@ fun main(args: Array<String>): Unit = mainBody {
                     }
                     for (i in 1..iterations) {
                         println("----------- $imageName - $systemName - $i ----------- ")
-                        renderLSystem(lSystem, i, imageName, image, 600.0)
+                        renderLSystem(lSystem, i, imageName, image, 12600.0)
                     }
                 }
             }
@@ -74,7 +74,7 @@ fun renderLSystem(lSystem: LSystemDefinition?,
     val polygon = adjustWidthAccordingToImage(coordList, brightnessImage)
 
     val sidePadding = VariableWidthPolygon.calculateSidesOfTriangle(polygon[0], polygon[1]).third *
-            outputImageSize / 2 + outputImageSize / 60
+            outputImageSize / 5 + outputImageSize / 60
 
     val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding)
 
