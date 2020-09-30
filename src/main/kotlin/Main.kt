@@ -14,7 +14,7 @@ import kotlin.system.exitProcess
 /**
  * Created by carlemil on 4/10/17.
  *
- * >magick montage -tile x8 -background #aaaaaa *.jpg ../montage.jpg
+ * $ magick montage -tile x7 *.png ./montage.jpg
  *
  */
 
@@ -23,6 +23,7 @@ fun main(args: Array<String>): Unit = mainBody {
     val t0 = System.currentTimeMillis()
 
     val renderAllSystems = false
+    val fixIteration = 7
 
     readLSystemDefinitions()?.let { lSystems ->
         val listOfSystemsToRender = if (renderAllSystems) {
@@ -35,9 +36,14 @@ fun main(args: Array<String>): Unit = mainBody {
             val image = readImageFile("input/$imageName")
             for (systemName in listOfSystemsToRender) {
                 getLSystemByName(systemName, lSystems)?.let { lSystem ->
-                    for (i in 1..lSystem.maxIterations) {
+                    val iterations = if (fixIteration > 0) {
+                        fixIteration
+                    } else {
+                        lSystem.maxIterations
+                    }
+                    for (i in 1..iterations) {
                         println("----------- $imageName - $systemName - $i ----------- ")
-                        renderLSystem(lSystem, i, imageName, image, 12600.0)
+                        renderLSystem(lSystem, i, imageName, image, 600.0)
                     }
                 }
             }
