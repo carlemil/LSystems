@@ -1,5 +1,5 @@
 package lSystem
 
-class LSystemInfo(
+class LSystemDefinitionList(
    val systems: List<LSystemDefinition>
 )

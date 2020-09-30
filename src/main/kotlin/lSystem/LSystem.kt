@@ -12,7 +12,7 @@ fun computeLSystem(lSystem: LSystemDefinition, iterations: Int, bold: Double): L
     val instructions = generate(lSystem.axiom, lSystem.rules, iterations, lSystem.forwardChars)
     val t1 = System.currentTimeMillis()
     print("Generated fractal in: " + (t1 - t0) + "ms\n")
-    val xyList = convertToPolyPointList(instructions.toString(), lSystem.angle, lSystem.forwardChars, bold)
+    val xyList = convertToPolyPointList(instructions.toString(), lSystem.getAngleInRadians(), lSystem.forwardChars, bold)
     val t2 = System.currentTimeMillis()
     print("Convert to XY in: " + (t2 - t1) + "ms\n")
     val svg = scalePolyPointList(xyList)

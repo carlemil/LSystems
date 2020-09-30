@@ -2,7 +2,7 @@
   "systems": [
     {
       "name": "KochSnowFlake",
-      "angle": 1.57079632679,
+      "angle": 90,
       "maxIterations": 5,
       "rules": {
         "F": "F-F+F+FF-F-F+F"
@@ -14,7 +14,7 @@
     },
     {
       "name": "Dragon",
-      "angle": 1.57079632679,
+      "angle": 90,
       "maxIterations": 12,
       "rules": {
         "A": "A+BF",
@@ -27,7 +27,7 @@
     },
     {
       "name": "TwinDragon",
-      "angle": 1.57079632679,
+      "angle": 90,
       "maxIterations": 8,
       "rules": {
         "A": "A+BF",
@@ -39,8 +39,20 @@
       "axiom": "FA+FA+"
     },
     {
+      "name": "Fudgeflake",
+      "angle": 30,
+      "maxIterations": 8,
+      "rules": {
+        "F": "+F----F++++F-"
+      },
+      "forwardChars": [
+        "F"
+      ],
+      "axiom": "F++++F++++F"
+    },
+    {
       "name": "Hilbert",
-      "angle": 1.57079632679,
+      "angle": 90,
       "maxIterations": 9,
       "rules": {
         "A": "-BF+AFA+FB-",
@@ -53,7 +65,7 @@
     },
     {
       "name": "SierpinskiTriangle",
-      "angle": 1.0471975512,
+      "angle": 60,
       "maxIterations": 8,
       "rules": {
         "A": "BF-AF-B",
@@ -66,7 +78,7 @@
     },
     {
       "name": "SierpinskiCurve",
-      "angle": 0.785398,
+      "angle": 45,
       "maxIterations": 6,
       "rules": {
         "X": "XF+G+XF--F--XF+G+X"
@@ -79,7 +91,7 @@
     },
     {
       "name": "SierpinskiSquare",
-      "angle": 1.57079632679,
+      "angle": 90,
       "maxIterations": 6,
       "rules": {
         "X": "XF-F+F-XF+F+XF-F+F-X"
@@ -91,7 +103,7 @@
     },
     {
       "name": "Gosper",
-      "angle": 1.0471975512,
+      "angle": 60,
       "maxIterations": 6,
       "rules": {
         "A": "A-B--B+A++AA+B-",
@@ -105,7 +117,7 @@
     },
     {
       "name": "Peano",
-      "angle": 1.57079632679,
+      "angle": 90,
       "maxIterations": 6,
       "rules": {
         "L": "LFRFL-F-RFLFR+F+LFRFL",
@@ -118,7 +130,7 @@
     },
     {
       "name": "Moore",
-      "angle": 1.57079632679,
+      "angle": 90,
       "maxIterations": 5,
       "rules": {
         "A": "-BF+AFA+FB-",

@@ -1,7 +1,7 @@
 import com.beust.klaxon.Klaxon
 import com.xenomachina.argparser.mainBody
 import lSystem.LSystemDefinition
-import lSystem.LSystemInfo
+import lSystem.LSystemDefinitionList
 import lSystem.PolyPoint
 import lSystem.computeLSystem
 import java.awt.*
@@ -44,13 +44,16 @@ fun main(args: Array<String>): Unit = mainBody {
 //  for (imageName in listOf("che2.jpg", "che3.jpg", "che4.jpg")) {
 //  for (systemName in listOf("Peano", "Hilbert", "SnowFlake")) {
 
-    for (imageName in listOf("che2.jpg")) {
-        val image = readImageFile("input/$imageName")
-        for (systemName in listOf("Boldinski")) {
-            readLSystemDefinitions(systemName)?.let { lSystem ->
-                for (i in 1..lSystem.maxIterations) {
-                    println("----------- $imageName - $systemName - $i ----------- ")
-                    renderLSystem(lSystem, i, imageName, image, 600.0)
+    readLSystemDefinitions()?.let { lSystems ->
+
+        for (imageName in listOf("che2.jpg")) {
+            val image = readImageFile("input/$imageName")
+            for (systemName in lSystems.map { it.name }){ //listOf("Moore")) {
+                getLSystemByName(systemName, lSystems)?.let { lSystem ->
+                    for (i in 1..lSystem.maxIterations) {
+                        println("----------- $imageName - $systemName - $i ----------- ")
+                        renderLSystem(lSystem, i, imageName, image, 600.0)
+                    }
                 }
             }
         }
@@ -96,13 +99,17 @@ fun renderLSystem(lSystem: LSystemDefinition?,
     println("Write image to file: " + (t3 - t2) + "ms\n")
 }
 
-fun readLSystemDefinitions(lSystemName: String): LSystemDefinition? {
-    val lSystemInfo = Klaxon().parse<LSystemInfo>(File("src/main/resources/curves.json").readText())!!
-    if (lSystemInfo.systems.isEmpty()) {
-        println("Failed to read LSystem definitions.")
+fun readLSystemDefinitions(): List<LSystemDefinition>? {
+    val lSystems = Klaxon().parse<LSystemDefinitionList>(File("src/main/resources/curves.json").readText())!!
+    if (lSystems.systems.isEmpty()) {
+        println("---------------------- Failed to read LSystem definitions ----------------------")
         exitProcess(-1)
     }
-    return lSystemInfo.systems.find { lsd -> lsd.name.startsWith(lSystemName, true) }
+    return lSystems.systems
+}
+
+fun getLSystemByName(lSystemName: String, lSystems: List<LSystemDefinition>): LSystemDefinition? {
+    return lSystems.find { lsd -> lsd.name.startsWith(lSystemName, true) }
 }
 
 private fun getFirstPartOfImageName(brightnessImageName: String?): String {
