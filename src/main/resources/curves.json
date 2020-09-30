@@ -28,7 +28,7 @@
     {
       "name": "TwinDragon",
       "angle": 90,
-      "maxIterations": 8,
+      "maxIterations": 12,
       "rules": {
         "A": "A+BF",
         "B": "FA-B"
@@ -53,7 +53,7 @@
     {
       "name": "Hilbert",
       "angle": 90,
-      "maxIterations": 9,
+      "maxIterations": 8,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"
@@ -104,7 +104,7 @@
     {
       "name": "Gosper",
       "angle": 60,
-      "maxIterations": 6,
+      "maxIterations": 5,
       "rules": {
         "A": "A-B--B+A++AA+B-",
         "B": "+A-BB--B-A++A+B"
@@ -118,7 +118,7 @@
     {
       "name": "Peano",
       "angle": 90,
-      "maxIterations": 6,
+      "maxIterations": 5,
       "rules": {
         "L": "LFRFL-F-RFLFR+F+LFRFL",
         "R": "RFLFR+F+LFRFL-F-RFLFR"
@@ -131,7 +131,7 @@
     {
       "name": "Moore",
       "angle": 90,
-      "maxIterations": 5,
+      "maxIterations": 6,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"

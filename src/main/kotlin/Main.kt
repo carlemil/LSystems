@@ -16,43 +16,28 @@ import kotlin.system.exitProcess
  *
  * >magick montage -tile x8 -background #aaaaaa *.jpg ../montage.jpg
  *
- *
-Moore curve
-Alphabet: L, R
-Constants: F, +, −
-Axiom: LFL+F+LFL
-Production rules:
-L → −RF+LFL+FR−
-R → +LF−RFR−FL+
-
-
-The Sierpiński curve can be expressed by a rewrite system (L-system).
-
-Alphabet: F, G, X
-Constants: F, G, +, −
-Axiom: F--XF--F--XF
-Production rules:
-X → XF+G+XF--F--XF+G+X
-Angle: 45
-Here, both F and G mean “draw forward”
  */
 
 fun main(args: Array<String>): Unit = mainBody {
     println("Init")
     val t0 = System.currentTimeMillis()
 
-//  for (imageName in listOf("che2.jpg", "che3.jpg", "che4.jpg")) {
-//  for (systemName in listOf("Peano", "Hilbert", "SnowFlake")) {
+    val renderAllSystems = false
 
     readLSystemDefinitions()?.let { lSystems ->
-
+        val listOfSystemsToRender = if (renderAllSystems) {
+            lSystems.map { it.name }
+        } else {
+            listOf("TwinDragon", "SierpinskiCurve", "Hilbert",
+                    "Peano", "Moore", "Gosper", "Fudgeflake")
+        }
         for (imageName in listOf("che2.jpg")) {
             val image = readImageFile("input/$imageName")
-            for (systemName in lSystems.map { it.name }){ //listOf("Moore")) {
+            for (systemName in listOfSystemsToRender) {
                 getLSystemByName(systemName, lSystems)?.let { lSystem ->
                     for (i in 1..lSystem.maxIterations) {
                         println("----------- $imageName - $systemName - $i ----------- ")
-                        renderLSystem(lSystem, i, imageName, image, 600.0)
+                        renderLSystem(lSystem, i, imageName, image, 12600.0)
                     }
                 }
             }
