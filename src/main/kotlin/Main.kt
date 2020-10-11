@@ -22,17 +22,19 @@ fun main(args: Array<String>): Unit = mainBody {
     println("Init")
     val t0 = System.currentTimeMillis()
 
-    val renderAllSystems = false
     val fixIteration = 0
+    var listOfSystemsToRender = listOf("TwinDragon", "SierpinskiCurve", "Hilbert",
+            "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
-        val listOfSystemsToRender = if (renderAllSystems) {
-            lSystems.map { it.name }
-        } else {
-            listOf("TwinDragon", "SierpinskiCurve", "Hilbert",
-                    "Peano", "Moore", "Gosper", "Fudgeflake")
+        if (listOfSystemsToRender.size == 0) {
+            listOfSystemsToRender = lSystems.map { it.name }
         }
-        for (imageName in listOf("che2.jpg")) {
+        val imageNames = listOf("str.jpg")
+        val nbrOfImagesToRender = getNbrOfImagesToRender(listOfSystemsToRender, lSystems, imageNames.size, fixIteration)
+        var imageNbr = 0.0
+
+        for (imageName in imageNames) {
             val image = readImageFile("input/$imageName")
             for (systemName in listOfSystemsToRender) {
                 getLSystemByName(systemName, lSystems)?.let { lSystem ->
@@ -42,8 +44,9 @@ fun main(args: Array<String>): Unit = mainBody {
                         lSystem.maxIterations
                     }
                     for (i in 1..iterations) {
-                        println("----------- $imageName - $systemName - $i ----------- ")
-                        renderLSystem(lSystem, i, imageName, image, 12600.0)
+                        val progress = ((++imageNbr / nbrOfImagesToRender) * 100).toInt()
+                        println("----------- $imageName - $systemName - $i - $progress% ----------- ")
+                        renderLSystem(lSystem, i, imageName, image, 600.0)
                     }
                 }
             }
@@ -52,6 +55,21 @@ fun main(args: Array<String>): Unit = mainBody {
 
     val t1 = System.currentTimeMillis()
     println("Done after: " + (t1 - t0) + "ms\n")
+}
+
+fun getNbrOfImagesToRender(listOfSystemsToRender: List<String>,
+                           lSystems: List<LSystemDefinition>,
+                           nbrOfInputImages: Int,
+                           fixIteration: Int): Int {
+    var totalIterations = 0
+    for (systemName in listOfSystemsToRender) {
+        if (fixIteration > 0) {
+            totalIterations += fixIteration
+        } else {
+            totalIterations += getLSystemByName(systemName, lSystems)?.maxIterations ?: 0
+        }
+    }
+    return totalIterations * nbrOfInputImages
 }
 
 fun renderLSystem(lSystem: LSystemDefinition?,
