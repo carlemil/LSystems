@@ -3,10 +3,10 @@ package lSystem
 import java.awt.Color
 
 class PolyPoint(x: Double, y: Double, width: Double = 1.0, color: Color = Color.BLACK) {
-    val x = x
-    val y = y
-    val w = width
-    val c = color
+    var x = x
+    var y = y
+    var w = width
+    var c = color
 
     companion object {
         fun average(p0: PolyPoint, p1: PolyPoint): PolyPoint {
@@ -15,6 +15,6 @@ class PolyPoint(x: Double, y: Double, width: Double = 1.0, color: Color = Color.
     }
 
     override fun toString(): String {
-        return "x: %.2f".format(x) + ", y: %.2f".format(y) + " c: " + c
+        return "x: %.2f".format(x) + ", y: %.2f".format(y) + " w: %.2f".format(w)
     }
 }

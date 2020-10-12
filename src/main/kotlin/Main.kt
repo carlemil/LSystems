@@ -22,15 +22,15 @@ fun main(args: Array<String>): Unit = mainBody {
     println("Init")
     val t0 = System.currentTimeMillis()
 
-    val fixIteration = 0
-    var listOfSystemsToRender = listOf("TwinDragon", "SierpinskiCurve", "Hilbert",
-            "Peano", "Moore", "Gosper", "Fudgeflake")
+    val fixIteration = 3
+    var listOfSystemsToRender = listOf("TwinDragon")//, "SierpinskiCurve", "Hilbert",
+//            "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
         if (listOfSystemsToRender.size == 0) {
             listOfSystemsToRender = lSystems.map { it.name }
         }
-        val imageNames = listOf("str.jpg")
+        val imageNames = listOf("debug.jpg")
         val nbrOfImagesToRender = getNbrOfImagesToRender(listOfSystemsToRender, lSystems, imageNames.size, fixIteration)
         var imageNbr = 0.0
 
@@ -85,11 +85,11 @@ fun renderLSystem(lSystem: LSystemDefinition?,
             "_iterations_" + iterations +
             "_size_" + outputImageSize.toInt()
 
-    val pngFileName = "output/$fileName.png"
+    val pngFileName = "output/15_+$fileName.png"
 
-    val coordList = computeLSystem(lSystem!!, iterations, boldWidth)
+    val polygon = computeLSystem(lSystem!!, iterations, boldWidth)
 
-    val polygon = adjustWidthAccordingToImage(coordList, brightnessImage)
+    adjustWidthAccordingToImage(polygon, brightnessImage)
 
     val sidePadding = VariableWidthPolygon.calculateSidesOfTriangle(polygon[0], polygon[1]).third *
             outputImageSize / 5 + outputImageSize / 60
@@ -99,7 +99,8 @@ fun renderLSystem(lSystem: LSystemDefinition?,
     val t1 = System.currentTimeMillis()
     println("Rendering " + lSystem.name + ": " + (t1 - t0) + "ms\n")
 
-    VariableWidthPolygon.drawPolygonToBufferedImage(polygon, g2, outputImageSize, sidePadding)
+    //VariableWidthPolygon.drawPolygonToBufferedImage(polygon, g2, outputImageSize, sidePadding)
+    VariableWidthPolygon.drawDebugPolygon(polygon, g2, outputImageSize, sidePadding)
     val t2 = System.currentTimeMillis()
     println("Render polygon in total: " + (t2 - t1) + "ms\n")
 
@@ -128,14 +129,12 @@ private fun getFirstPartOfImageName(brightnessImageName: String?): String {
         ""
 }
 
-private fun adjustWidthAccordingToImage(polygon: List<PolyPoint>, image: BufferedImage?): List<PolyPoint> {
-    val ppList = ArrayList<PolyPoint>()
+private fun adjustWidthAccordingToImage(polygon: List<PolyPoint>, image: BufferedImage?) {
     for (element in polygon) {
         // Use the inverted brightness as width of the line we drawSpline.
         val c = (1 - ColorUtils.getBrightnessFromImage(element.x, element.y, image))
-        ppList.add(PolyPoint(element.x, element.y, c))
+        element.w = c
     }
-    return ppList
 }
 
 private fun setupGraphics(size: Double, sidePadding: Double): Pair<BufferedImage, Graphics2D> {

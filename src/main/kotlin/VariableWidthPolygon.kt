@@ -1,5 +1,4 @@
 import lSystem.PolyPoint
-import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.geom.AffineTransform
@@ -26,6 +25,21 @@ class VariableWidthPolygon {
             tearDownGraphics(g2)
             val t3 = System.currentTimeMillis()
             print("Tear down graphics: " + (t3 - t2) + "ms\n")
+        }
+
+        fun drawDebugPolygon(polygon: List<PolyPoint>,
+                             g2: Graphics2D,
+                             size: Double,
+                             sidePadding: Double) {
+            val c = Color(1f, 0f, 0f, .3f)
+            g2.paint =c
+            val width = 15
+            polygon.forEach { polypoint ->
+                val x = polypoint.x
+                val y = polypoint.y
+                g2.fillOval((x * size).toInt(), (y * size).toInt(), width, width)
+            }
+
         }
 
         fun calculateSidesOfTriangle(p0: PolyPoint, p1: PolyPoint): Triple<Double, Double, Double> {
@@ -85,7 +99,10 @@ class VariableWidthPolygon {
 
         private fun calculatePerpendicularPolyPoint(p0: PolyPoint, p1: PolyPoint, size: Double, alfaPlus90: Double): PolyPoint {
             val (_, _, c) = calculateSidesOfTriangle(p0, p1)
-            val width = (size * c * ((p0.w + p1.w) / 2 * 0.75 + 0.10)) / 2
+            // * 0.75 (0.75 + 0.10 == 0.85) to set a max width that is close to touching the nearest line.
+            // + 0.10 to set a min width that is still visible.
+            // * 3 since we use 3 intermediate points when we generate the polygon (the smooth step adds them)
+            val width = (size * c *( ((p0.w + p1.w) / 2) * 0.75 + 0.10)) / 2 * 3
             val x = (p0.x + p1.x) * size / 2.0 + width * sin(alfaPlus90)
             val y = (p0.y + p1.y) * size / 2.0 + width * cos(alfaPlus90)
             return PolyPoint(x, y)
