@@ -22,9 +22,8 @@ fun main(args: Array<String>): Unit = mainBody {
     println("Init")
     val t0 = System.currentTimeMillis()
 
-    val fixIteration = 3
-    var listOfSystemsToRender = listOf("TwinDragon")//, "SierpinskiCurve", "Hilbert",
-//            "Peano", "Moore", "Gosper", "Fudgeflake")
+    val fixIteration = 0
+    var listOfSystemsToRender = listOf("TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
         if (listOfSystemsToRender.size == 0) {
@@ -85,13 +84,13 @@ fun renderLSystem(lSystem: LSystemDefinition?,
             "_iterations_" + iterations +
             "_size_" + outputImageSize.toInt()
 
-    val pngFileName = "output/15_+$fileName.png"
+    val pngFileName = "output/$fileName.png"
 
     val polygon = computeLSystem(lSystem!!, iterations, boldWidth)
 
     adjustWidthAccordingToImage(polygon, brightnessImage)
 
-    val sidePadding = VariableWidthPolygon.calculateSidesOfTriangle(polygon[0], polygon[1]).third *
+    val sidePadding = VariableWidthPolygon.calculateSidesOfTriangle(polygon[2], polygon[3]).third *
             outputImageSize / 5 + outputImageSize / 60
 
     val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding)
@@ -99,8 +98,10 @@ fun renderLSystem(lSystem: LSystemDefinition?,
     val t1 = System.currentTimeMillis()
     println("Rendering " + lSystem.name + ": " + (t1 - t0) + "ms\n")
 
-    //VariableWidthPolygon.drawPolygonToBufferedImage(polygon, g2, outputImageSize, sidePadding)
-    VariableWidthPolygon.drawDebugPolygon(polygon, g2, outputImageSize, sidePadding)
+    VariableWidthPolygon.drawPolygonToBufferedImage(polygon, g2, outputImageSize, sidePadding)
+    // VariableWidthPolygon.drawDebugPolygon(polygon, g2, outputImageSize, sidePadding)
+    VariableWidthPolygon.tearDownGraphics(g2)
+
     val t2 = System.currentTimeMillis()
     println("Render polygon in total: " + (t2 - t1) + "ms\n")
 
@@ -132,8 +133,7 @@ private fun getFirstPartOfImageName(brightnessImageName: String?): String {
 private fun adjustWidthAccordingToImage(polygon: List<PolyPoint>, image: BufferedImage?) {
     for (element in polygon) {
         // Use the inverted brightness as width of the line we drawSpline.
-        val c = (1 - ColorUtils.getBrightnessFromImage(element.x, element.y, image))
-        element.w = c
+        element.w = (1 - ColorUtils.getBrightnessFromImage(element.x, element.y, image))
     }
 }
 

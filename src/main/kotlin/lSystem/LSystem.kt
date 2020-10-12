@@ -18,10 +18,14 @@ fun computeLSystem(lSystem: LSystemDefinition, iterations: Int, bold: Double): L
     val t2 = System.currentTimeMillis()
     print("Convert to XY in: " + (t2 - t1) + "ms\n")
 
-    val scaledList = scalePolyPointList(xyList)
+    var scaledList = scalePolyPointList(xyList)
     val t3 = System.currentTimeMillis()
     print("Scale XY list in: " + (t3 - t2) + "ms\n")
 
+    //scaledList.add(0,scaledList[0])
+    //scaledList.removeAt(0)
+
+    scaledList.add(scaledList[scaledList.size-1])
     val smoothenList = smoothenTheLine(scaledList)
     val t4 = System.currentTimeMillis()
     print("Smoothen list in: " + (t4 - t3) + "ms\n")
@@ -86,7 +90,8 @@ private fun convertToPolyPointList(instructions: String, systemAngle: Double, fo
     return list
 }
 
-private fun scalePolyPointList(list: List<PolyPoint>): List<PolyPoint> {
+// TODO inside
+private fun scalePolyPointList(list: List<PolyPoint>): MutableList<PolyPoint> {
     var minX = Double.MAX_VALUE
     var maxX = Double.MIN_VALUE
     var minY = Double.MAX_VALUE
@@ -103,36 +108,36 @@ private fun scalePolyPointList(list: List<PolyPoint>): List<PolyPoint> {
     val scaleX = 1 / (maxX - minX)
     val scaleY = 1 / (maxY - minY)
 
+    // TODO use the smallest scale and center everything
+    // val scale = kotlin.math.min(scaleX, scaleY)
+
     val scaledList: MutableList<PolyPoint> = mutableListOf()
     for (p in list) {
         scaledList.add(PolyPoint((p.x - minX) * scaleX, (p.y - minY) * scaleY, p.w))
     }
-
     return scaledList
 }
 
 private fun smoothenTheLine(list: List<PolyPoint>): List<PolyPoint> {
     val smoothedList: MutableList<PolyPoint> = mutableListOf()
-    smoothedList.add(list[0])
-    val lastIndex = list.size - 1
-    for (i in 0 until lastIndex) {
-        val p01 = list[(i - 1).coerceAtLeast(0)]
-        val p02 = list[i]
-        val p03 = list[(i + 1).coerceAtMost(lastIndex)]
+    for (i in -1 until list.size ) {
+        val p01 = list[max(i - 1, 0)]
+        val p02 = list[max(i, 0)]
+        val p03 = list[min(i + 1, list.size - 1)]
         addSplineBetweenPoints(
                 PolyPoint.average(p01, p02),
                 p02,
                 PolyPoint.average(p02, p03),
                 smoothedList)
     }
-    smoothedList.add(list[lastIndex])
     return smoothedList
 }
 
 private fun addSplineBetweenPoints(pp1: PolyPoint, pp2: PolyPoint, pp3: PolyPoint,
                                    outputList: MutableList<PolyPoint>) {
+    val tincrement = 1.0 / 3.0
     var t = 0.0
-    while (t < 1.0) {
+    while (t < (1.0 - (tincrement / 2.0))) {
         // The bezier square spline is calculated using this formula from wikipedia.
         // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
 
@@ -148,6 +153,6 @@ private fun addSplineBetweenPoints(pp1: PolyPoint, pp2: PolyPoint, pp3: PolyPoin
 
         // Calculate the t value used in the Bezier calculations above.
         // Dont change the / X value here without updating in VariableWidthPolygon.calculatePerpendicularPolyPoint()
-        t += 1.0 / 3
+        t += tincrement
     }
 }
