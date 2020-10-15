@@ -18,14 +18,10 @@ fun computeLSystem(lSystem: LSystemDefinition, iterations: Int, bold: Double): L
     val t2 = System.currentTimeMillis()
     print("Convert to XY in: " + (t2 - t1) + "ms\n")
 
-    var scaledList = scalePolyPointList(xyList)
+    val scaledList = scalePolyPointList(xyList)
     val t3 = System.currentTimeMillis()
     print("Scale XY list in: " + (t3 - t2) + "ms\n")
 
-    //scaledList.add(0,scaledList[0])
-    //scaledList.removeAt(0)
-
-    scaledList.add(scaledList[scaledList.size-1])
     val smoothenList = smoothenTheLine(scaledList)
     val t4 = System.currentTimeMillis()
     print("Smoothen list in: " + (t4 - t3) + "ms\n")
@@ -90,7 +86,6 @@ private fun convertToPolyPointList(instructions: String, systemAngle: Double, fo
     return list
 }
 
-// TODO inside
 private fun scalePolyPointList(list: List<PolyPoint>): MutableList<PolyPoint> {
     var minX = Double.MAX_VALUE
     var maxX = Double.MIN_VALUE
@@ -108,19 +103,24 @@ private fun scalePolyPointList(list: List<PolyPoint>): MutableList<PolyPoint> {
     val scaleX = 1 / (maxX - minX)
     val scaleY = 1 / (maxY - minY)
 
-    // TODO use the smallest scale and center everything
-    // val scale = kotlin.math.min(scaleX, scaleY)
+    val scale = kotlin.math.min(scaleX, scaleY)
+
+    val xSpace = maxX - minX
+    val ySpace = maxY - minY
+    val offsetX = if (xSpace < ySpace) (ySpace - xSpace) / 2.0 else 0.0
+    val offsetY = if (ySpace < xSpace) (xSpace - ySpace) / 2.0 else 0.0
 
     val scaledList: MutableList<PolyPoint> = mutableListOf()
     for (p in list) {
-        scaledList.add(PolyPoint((p.x - minX) * scaleX, (p.y - minY) * scaleY, p.w))
+        scaledList.add(PolyPoint((p.x - minX + offsetX) * scale, (p.y - minY + offsetY) * scale, p.w))
     }
+
     return scaledList
 }
 
 private fun smoothenTheLine(list: List<PolyPoint>): List<PolyPoint> {
     val smoothedList: MutableList<PolyPoint> = mutableListOf()
-    for (i in -1 until list.size ) {
+    for (i in -1 until list.size) {
         val p01 = list[max(i - 1, 0)]
         val p02 = list[max(i, 0)]
         val p03 = list[min(i + 1, list.size - 1)]

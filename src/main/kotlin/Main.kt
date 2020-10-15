@@ -23,13 +23,13 @@ fun main(args: Array<String>): Unit = mainBody {
     val t0 = System.currentTimeMillis()
 
     val fixIteration = 0
-    var listOfSystemsToRender = listOf("TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
+    var listOfSystemsToRender = listOf<String>("TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
-        if (listOfSystemsToRender.size == 0) {
+        if (listOfSystemsToRender.isEmpty()) {
             listOfSystemsToRender = lSystems.map { it.name }
         }
-        val imageNames = listOf("debug.jpg")
+        val imageNames = listOf("str.jpg")
         val nbrOfImagesToRender = getNbrOfImagesToRender(listOfSystemsToRender, lSystems, imageNames.size, fixIteration)
         var imageNbr = 0.0
 

@@ -1,5 +1,6 @@
 import java.awt.*
 import java.awt.image.BufferedImage
+import java.lang.Exception
 
 object ColorUtils {
 
@@ -24,7 +25,10 @@ object ColorUtils {
         if (image != null) {
             val x = (x_ * (image.width - 1))
             val y = (y_ * (image.height - 1))
-            color = image.getRGB(x.toInt(), y.toInt())
+            try {
+                color = image.getRGB(x.toInt(), y.toInt())
+            } catch (e: Exception) {
+            }
         }
         var c = FloatArray(3)
         Color.RGBtoHSB(
