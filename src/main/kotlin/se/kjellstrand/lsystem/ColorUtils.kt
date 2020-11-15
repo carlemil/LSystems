@@ -1,3 +1,5 @@
+package se.kjellstrand.lsystem
+
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.lang.Exception

@@ -1,4 +1,4 @@
-package lSystem
+package se.kjellstrand.lsystem.model
 
 import kotlin.math.PI
 

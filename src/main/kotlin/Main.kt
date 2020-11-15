@@ -1,13 +1,14 @@
 import com.beust.klaxon.Klaxon
 import com.xenomachina.argparser.mainBody
-import lSystem.LSystemDefinition
-import lSystem.LSystemDefinitionList
-import lSystem.PolyPoint
-import lSystem.computeLSystem
+import se.kjellstrand.lsystem.ColorUtils
+import se.kjellstrand.lsystem.LSystem
+import se.kjellstrand.lsystem.model.LSystemDefinition
+import se.kjellstrand.lsystem.model.LSystemDefinitionList
+import se.kjellstrand.lsystem.polygon.PolygonPoint
+import se.kjellstrand.lsystem.polygon.VariableWidthPolygon
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
-import java.util.*
 import javax.imageio.ImageIO
 import kotlin.system.exitProcess
 
@@ -23,7 +24,7 @@ fun main(args: Array<String>): Unit = mainBody {
     val t0 = System.currentTimeMillis()
 
     val fixIteration = 0
-    var listOfSystemsToRender = listOf<String>("TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
+    var listOfSystemsToRender = listOf("TwinDragon" ) //, "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
         if (listOfSystemsToRender.isEmpty()) {
@@ -56,6 +57,10 @@ fun main(args: Array<String>): Unit = mainBody {
     println("Done after: " + (t1 - t0) + "ms\n")
 }
 
+//init
+
+//renderSystemFromImage. image, systemName, iteration,
+
 fun getNbrOfImagesToRender(listOfSystemsToRender: List<String>,
                            lSystems: List<LSystemDefinition>,
                            nbrOfInputImages: Int,
@@ -71,22 +76,22 @@ fun getNbrOfImagesToRender(listOfSystemsToRender: List<String>,
     return totalIterations * nbrOfInputImages
 }
 
-fun renderLSystem(lSystem: LSystemDefinition?,
+fun renderLSystem(lSystemDefinition: LSystemDefinition,
                   iterations: Int,
                   brightnessImageName: String,
                   brightnessImage: BufferedImage,
-                  outputImageSize: Double,
-                  boldWidth: Double = 1.0) {
+                  outputImageSize: Double) {
     val t0 = System.currentTimeMillis()
 
     val fileName = getFirstPartOfImageName(brightnessImageName) +
-            "_" + lSystem?.name +
+            "_" + lSystemDefinition.name +
             "_iterations_" + iterations +
             "_size_" + outputImageSize.toInt()
 
     val pngFileName = "output/$fileName.png"
+    val lSystem = LSystem(lSystemDefinition,iterations)
 
-    val polygon = computeLSystem(lSystem!!, iterations, boldWidth)
+    val polygon = lSystem.getPolygon()
 
     adjustWidthAccordingToImage(polygon, brightnessImage)
 
@@ -96,10 +101,10 @@ fun renderLSystem(lSystem: LSystemDefinition?,
     val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding)
 
     val t1 = System.currentTimeMillis()
-    println("Rendering " + lSystem.name + ": " + (t1 - t0) + "ms\n")
+    println("Rendering " + lSystemDefinition.name + ": " + (t1 - t0) + "ms\n")
 
     VariableWidthPolygon.drawPolygonToBufferedImage(polygon, g2, outputImageSize, sidePadding)
-    // VariableWidthPolygon.drawDebugPolygon(polygon, g2, outputImageSize, sidePadding)
+    // lSystem.polygon.VariableWidthPolygon.drawDebugPolygon(polygon, g2, outputImageSize, sidePadding)
     VariableWidthPolygon.tearDownGraphics(g2)
 
     val t2 = System.currentTimeMillis()
@@ -130,7 +135,7 @@ private fun getFirstPartOfImageName(brightnessImageName: String?): String {
         ""
 }
 
-private fun adjustWidthAccordingToImage(polygon: List<PolyPoint>, image: BufferedImage?) {
+private fun adjustWidthAccordingToImage(polygon: List<PolygonPoint>, image: BufferedImage?) {
     for (element in polygon) {
         // Use the inverted brightness as width of the line we drawSpline.
         element.w = (1 - ColorUtils.getBrightnessFromImage(element.x, element.y, image))
