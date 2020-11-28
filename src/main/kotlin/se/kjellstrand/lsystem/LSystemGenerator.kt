@@ -1,7 +1,7 @@
 package se.kjellstrand.lsystem
 
 import se.kjellstrand.lsystem.model.LSystemDefinition
-import se.kjellstrand.lsystem.polygon.PolygonPoint
+import se.kjellstrand.variablewidthpolygon.PolygonPoint
 import java.lang.Math.*
 import java.util.*
 import kotlin.math.pow
@@ -9,22 +9,15 @@ import kotlin.math.pow
 /**
  * Created by carlemil on 4/10/17.
  */
-class LSystem(private var lSystemDefinition: LSystemDefinition, private val iterations: Int) {
+class LSystemGenerator(private var lSystemDefinition: LSystemDefinition) {
 
-    private val instructions: StringBuilder
+    private lateinit var instructions: StringBuilder
 
-    init {
+    fun generatePolygon(iterations: Int): List<PolygonPoint> {
         val t0 = System.currentTimeMillis()
         instructions = generate(lSystemDefinition.axiom, lSystemDefinition.rules, iterations, lSystemDefinition.forwardChars)
         val t1 = System.currentTimeMillis()
-        print("Generated fractal in: " + (t1 - t0) + "ms\n")
-    }
-
-    fun getPolygon(): List<PolygonPoint> {
-        val t0 = System.currentTimeMillis()
-        val instructions = generate(lSystemDefinition.axiom, lSystemDefinition.rules, iterations, lSystemDefinition.forwardChars)
-        val t1 = System.currentTimeMillis()
-        print("Generated fractal in: " + (t1 - t0) + "ms\n")
+        print("Generated instructions in: " + (t1 - t0) + "ms\n")
 
         val xyList = convertToPolyPointList(instructions.toString(), lSystemDefinition.getAngleInRadians(), lSystemDefinition.forwardChars)
         val t2 = System.currentTimeMillis()
@@ -137,9 +130,9 @@ class LSystem(private var lSystemDefinition: LSystemDefinition, private val iter
             val p02 = list[i.coerceAtLeast(0)]
             val p03 = list[(i + 1).coerceAtMost(list.size - 1)]
             addSplineBetweenPoints(
-                    PolygonPoint.average(p01, p02),
+                    PolygonPoint.getMidPoint(p01, p02),
                     p02,
-                    PolygonPoint.average(p02, p03),
+                    PolygonPoint.getMidPoint(p02, p03),
                     smoothedList)
         }
         return smoothedList

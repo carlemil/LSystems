@@ -1,4 +1,4 @@
-package se.kjellstrand.lsystem.polygon
+package se.kjellstrand.variablewidthpolygon
 
 import java.awt.Color
 import java.awt.Graphics2D
@@ -74,13 +74,13 @@ class VariableWidthPolygon {
 
         private fun drawPolygon(hull: MutableList<PolygonPoint>, g2: Graphics2D, sidePadding: Double) {
             val path = GeneralPath()
-            val polygonInitialPP = PolygonPoint.average(hull[hull.size - 1], hull[hull.size - 2])
+            val polygonInitialPP = PolygonPoint.getMidPoint(hull[hull.size - 1], hull[hull.size - 2])
             path.moveTo(polygonInitialPP.x, polygonInitialPP.y)
 
             for (i in 0 until hull.size) {
                 val quadStartPP = hull[(if (i == 0) hull.size else i) - 1]
                 val nextQuadStartPP = hull[i]
-                val quadEndPP = PolygonPoint.average(quadStartPP, nextQuadStartPP)
+                val quadEndPP = PolygonPoint.getMidPoint(quadStartPP, nextQuadStartPP)
                 path.quadTo(quadStartPP.x, quadStartPP.y, quadEndPP.x, quadEndPP.y)
             }
 
