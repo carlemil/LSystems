@@ -1,4 +1,4 @@
-package se.kjellstrand.lsystem
+package se.kjellstrand.variablewidthline
 
 class LinePoint(var x: Double, var y: Double, var w: Double = 1.0) {
 

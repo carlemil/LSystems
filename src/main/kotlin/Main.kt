@@ -4,7 +4,7 @@ import se.kjellstrand.lsystem.LSystemGenerator
 import se.kjellstrand.lsystem.LSystemRenderer
 import se.kjellstrand.lsystem.model.LSystemDefinition
 import se.kjellstrand.lsystem.model.LSystemDefinitionList
-import se.kjellstrand.variablewidthpolygon.LinePoint
+import se.kjellstrand.variablewidthline.LinePoint
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO

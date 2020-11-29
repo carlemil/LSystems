@@ -1,4 +1,4 @@
-package se.kjellstrand.variablewidthpolygon
+package se.kjellstrand.variablewidthline
 
 import java.awt.Color
 import java.awt.Graphics2D

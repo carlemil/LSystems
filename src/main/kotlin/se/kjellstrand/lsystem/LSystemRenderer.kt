@@ -1,7 +1,7 @@
 package se.kjellstrand.lsystem
 
-import se.kjellstrand.variablewidthpolygon.LinePoint
-import se.kjellstrand.variablewidthpolygon.VariableWidthLine
+import se.kjellstrand.variablewidthline.LinePoint
+import se.kjellstrand.variablewidthline.VariableWidthLine
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.lang.Exception

@@ -10,7 +10,7 @@ import kotlin.math.pow
  */
 object LSystemGenerator {
 
-    fun generatePolygon(lSystemDefinition: LSystemDefinition, maxIterations: Int): List<LinePoint> {
+    fun generatePolygon(lSystemDefinition: LSystemDefinition, maxIterations: Int): List<Point> {
         val t0 = System.currentTimeMillis()
 
         val iterations = 1.coerceAtLeast(lSystemDefinition.maxIterations.coerceAtMost(maxIterations))
@@ -60,8 +60,8 @@ object LSystemGenerator {
         return instructions
     }
 
-    private fun convertToPolyPointList(instructions: String, systemAngle: Double, forwardChars: Set<String>): List<LinePoint> {
-        val list: MutableList<LinePoint> = mutableListOf()
+    private fun convertToPolyPointList(instructions: String, systemAngle: Double, forwardChars: Set<String>): List<Point> {
+        val list: MutableList<Point> = mutableListOf()
 
         var x = 0.0
         var y = 0.0
@@ -70,7 +70,7 @@ object LSystemGenerator {
 
         val stack: Stack<Pair<Double, Double>> = Stack()
 
-        list.add(LinePoint(x, y, width))
+        list.add(Point(x, y, width))
         for (c in instructions) {
             when (c.toString()) {
                 "-" -> angle -= systemAngle
@@ -87,14 +87,14 @@ object LSystemGenerator {
                 in forwardChars -> {
                     x += sin(angle)
                     y += cos(angle)
-                    list.add(LinePoint(x, y, width))
+                    list.add(Point(x, y, width))
                 }
             }
         }
         return list
     }
 
-    private fun scalePolyPointList(list: List<LinePoint>): MutableList<LinePoint> {
+    private fun scalePolyPointList(list: List<Point>): MutableList<Point> {
         var minX = Double.MAX_VALUE
         var maxX = Double.MIN_VALUE
         var minY = Double.MAX_VALUE
@@ -118,31 +118,31 @@ object LSystemGenerator {
         val offsetX = if (xSpace < ySpace) (ySpace - xSpace) / 2.0 else 0.0
         val offsetY = if (ySpace < xSpace) (xSpace - ySpace) / 2.0 else 0.0
 
-        val scaledList: MutableList<LinePoint> = mutableListOf()
+        val scaledList: MutableList<Point> = mutableListOf()
         for (p in list) {
-            scaledList.add(LinePoint((p.x - minX + offsetX) * scale, (p.y - minY + offsetY) * scale, p.w))
+            scaledList.add(Point((p.x - minX + offsetX) * scale, (p.y - minY + offsetY) * scale, p.w))
         }
 
         return scaledList
     }
 
-    private fun smoothenTheLine(list: List<LinePoint>): List<LinePoint> {
-        val smoothedList: MutableList<LinePoint> = mutableListOf()
+    private fun smoothenTheLine(list: List<Point>): List<Point> {
+        val smoothedList: MutableList<Point> = mutableListOf()
         for (i in -1 until list.size) {
             val p01 = list[(i - 1).coerceAtLeast(0)]
             val p02 = list[i.coerceAtLeast(0)]
             val p03 = list[(i + 1).coerceAtMost(list.size - 1)]
             addSplineBetweenPoints(
-                    LinePoint.getMidPoint(p01, p02),
+                    Point.getMidPoint(p01, p02),
                     p02,
-                    LinePoint.getMidPoint(p02, p03),
+                    Point.getMidPoint(p02, p03),
                     smoothedList)
         }
         return smoothedList
     }
 
-    private fun addSplineBetweenPoints(pp1: LinePoint, pp2: LinePoint, pp3: LinePoint,
-                                       outputList: MutableList<LinePoint>) {
+    private fun addSplineBetweenPoints(pp1: Point, pp2: Point, pp3: Point,
+                                       outputList: MutableList<Point>) {
         val tincrement = 1.0 / 3.0
         var t = 0.0
         while (t < (1.0 - (tincrement / 2.0))) {
@@ -157,7 +157,7 @@ object LSystemGenerator {
                     (2 * (1 - t) * t * pp2.y) +
                     (t.pow(2.0) * pp3.y)
 
-            outputList.add(LinePoint(x, y))
+            outputList.add(Point(x, y))
 
             // Calculate the t value used in the Bezier calculations above.
             // Dont change the / X value here without updating in lSystem.polygon.VariableWidthPolygon.calculatePerpendicularPolyPoint()
