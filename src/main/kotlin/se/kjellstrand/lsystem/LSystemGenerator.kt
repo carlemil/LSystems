@@ -66,11 +66,10 @@ object LSystemGenerator {
         var x = 0.0
         var y = 0.0
         var angle: Double = PI / 2
-        var width = 1.0
 
         val stack: Stack<Pair<Double, Double>> = Stack()
 
-        list.add(Point(x, y, width))
+        list.add(Point(x, y))
         for (c in instructions) {
             when (c.toString()) {
                 "-" -> angle -= systemAngle
@@ -82,12 +81,10 @@ object LSystemGenerator {
                     y = p.second
                     // Start a new list in list here to denote a new polyline
                 }
-//                    "w" -> width = width / bold
-//                    "W" -> width = width * bold
                 in forwardChars -> {
-                    x += sin(angle)
-                    y += cos(angle)
-                    list.add(Point(x, y, width))
+                    x += kotlin.math.sin(angle)
+                    y += kotlin.math.cos(angle)
+                    list.add(Point(x, y))
                 }
             }
         }
@@ -120,7 +117,7 @@ object LSystemGenerator {
 
         val scaledList: MutableList<Point> = mutableListOf()
         for (p in list) {
-            scaledList.add(Point((p.x - minX + offsetX) * scale, (p.y - minY + offsetY) * scale, p.w))
+            scaledList.add(Point((p.x - minX + offsetX) * scale, (p.y - minY + offsetY) * scale))
         }
 
         return scaledList
