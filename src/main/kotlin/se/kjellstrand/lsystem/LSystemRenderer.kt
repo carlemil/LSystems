@@ -1,27 +1,28 @@
 package se.kjellstrand.lsystem
 
-import se.kjellstrand.variablewidthpolygon.PolygonPoint
-import se.kjellstrand.variablewidthpolygon.VariableWidthPolygon
+import se.kjellstrand.variablewidthpolygon.LinePoint
+import se.kjellstrand.variablewidthpolygon.VariableWidthLine
 import java.awt.*
 import java.awt.image.BufferedImage
+import java.lang.Exception
 
 object LSystemRenderer {
 
-    fun renderLSystem(polygon: List<PolygonPoint>,
+    fun renderLSystem(line: List<LinePoint>,
                       brightnessImage: BufferedImage,
                       outputImageSize: Double): BufferedImage {
         val t0 = System.currentTimeMillis()
 
-        adjustWidthAccordingToImage(polygon, brightnessImage)
+        adjustWidthAccordingToImage(line, brightnessImage)
 
-        val sidePadding = VariableWidthPolygon.calculateSidesOfTriangle(polygon[2], polygon[3]).third *
+        val sidePadding = VariableWidthLine.calculateSidesOfTriangle(line[2], line[3]).third *
                 outputImageSize / 5 + outputImageSize / 60
 
         val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding)
 
-        VariableWidthPolygon.drawPolygonToBufferedImage(polygon, g2, outputImageSize, sidePadding)
+        VariableWidthLine.drawPolygonToBufferedImage(line, g2, outputImageSize, sidePadding)
         // lSystem.polygon.VariableWidthPolygon.drawDebugPolygon(polygon, g2, outputImageSize, sidePadding)
-        VariableWidthPolygon.tearDownGraphics(g2)
+        VariableWidthLine.tearDownGraphics(g2)
 
         val t1 = System.currentTimeMillis()
         println("Render polygon in total: " + (t1 - t0) + "ms\n")
@@ -29,11 +30,30 @@ object LSystemRenderer {
         return bufferedImage
     }
 
-    private fun adjustWidthAccordingToImage(polygon: List<PolygonPoint>, image: BufferedImage?) {
-        for (element in polygon) {
+    private fun adjustWidthAccordingToImage(line: List<LinePoint>, image: BufferedImage?) {
+        for (element in line) {
             // Use the inverted brightness as width of the line we drawSpline.
-            element.w = (1 - ColorUtils.getBrightnessFromImage(element.x, element.y, image))
+            element.w = (1 - getBrightnessFromImage(element.x, element.y, image))
         }
+    }
+
+    private fun getBrightnessFromImage(x_: Double, y_: Double, image: BufferedImage?): Double {
+        var color = 0x777777
+        if (image != null) {
+            val x = (x_ * (image.width - 1))
+            val y = (y_ * (image.height - 1))
+            try {
+                color = image.getRGB(x.toInt(), y.toInt())
+            } catch (e: Exception) {
+            }
+        }
+        var c = FloatArray(3)
+        Color.RGBtoHSB(
+                color shr 16 and 255,
+                color shr 8 and 255,
+                color and 255,
+                c)
+        return c[2].toDouble()
     }
 
     private fun setupGraphics(size: Double, sidePadding: Double): Pair<BufferedImage, Graphics2D> {

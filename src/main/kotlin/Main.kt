@@ -4,6 +4,7 @@ import se.kjellstrand.lsystem.LSystemGenerator
 import se.kjellstrand.lsystem.LSystemRenderer
 import se.kjellstrand.lsystem.model.LSystemDefinition
 import se.kjellstrand.lsystem.model.LSystemDefinitionList
+import se.kjellstrand.variablewidthpolygon.LinePoint
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -54,10 +55,6 @@ fun main(args: Array<String>): Unit = mainBody {
     println("Done after: " + (t1 - t0) + "ms\n")
 }
 
-//init
-
-//renderSystemFromImage. image, systemName, iteration,
-
 fun getNbrOfImagesToRender(listOfSystemsToRender: List<String>,
                            lSystems: List<LSystemDefinition>,
                            nbrOfInputImages: Int,
@@ -79,9 +76,10 @@ fun renderLSystem(lSystemDefinition: LSystemDefinition,
                   brightnessImage: BufferedImage,
                   outputImageSize: Double) {
 
-    val polygon = LSystemGenerator.generatePolygon(lSystemDefinition, iterations)
+    val line = LSystemGenerator.generatePolygon(lSystemDefinition, iterations)
+    val vwLine = line.map { linePoint -> LinePoint(linePoint.x, linePoint.y, 1.0) }
 
-    var bufferedImage = LSystemRenderer.renderLSystem(polygon, brightnessImage, outputImageSize)
+    var bufferedImage = LSystemRenderer.renderLSystem(vwLine, brightnessImage, outputImageSize)
 
     val t0 = System.currentTimeMillis()
 
