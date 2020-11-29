@@ -21,7 +21,7 @@ fun main(args: Array<String>): Unit = mainBody {
     val t0 = System.currentTimeMillis()
 
     val fixIteration = 4
-    var listOfSystemsToRender = listOf("Moore","TwinDragon") //, "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
+    var listOfSystemsToRender = listOf("Moore")//,"TwinDragon") //, "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
         if (listOfSystemsToRender.isEmpty()) {
@@ -43,7 +43,7 @@ fun main(args: Array<String>): Unit = mainBody {
                     for (i in 1..iterations) {
                         val progress = ((++imageNbr / nbrOfImagesToRender) * 100).toInt()
                         println("----------- $imageName - $systemName - $i - $progress% ----------- ")
-                        renderLSystem(lSystem, i, imageName, image, 6000.0)
+                        renderLSystem(lSystem, i, imageName, image, 600.0)
                     }
                 }
             }
@@ -79,11 +79,11 @@ fun renderLSystem(lSystemDefinition: LSystemDefinition,
                   brightnessImage: BufferedImage,
                   outputImageSize: Double) {
 
-    val lSystem = LSystemGenerator(lSystemDefinition)
+    val lSystemGenerator = LSystemGenerator(lSystemDefinition)
 
-    val polygon = lSystem.generatePolygon(iterations)
+    val polygon = lSystemGenerator.generatePolygon(iterations)
 
-    var bufferedImage = LSystemRenderer.renderLSystem(polygon, brightnessImage,outputImageSize)
+    var bufferedImage = LSystemRenderer.renderLSystem(polygon, brightnessImage, outputImageSize)
 
     val t0 = System.currentTimeMillis()
 

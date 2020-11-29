@@ -13,8 +13,9 @@ class LSystemGenerator(private var lSystemDefinition: LSystemDefinition) {
 
     private lateinit var instructions: StringBuilder
 
-    fun generatePolygon(iterations: Int): List<PolygonPoint> {
+    fun generatePolygon(maxIterations: Int): List<PolygonPoint> {
         val t0 = System.currentTimeMillis()
+        val iterations = 1.coerceAtLeast(lSystemDefinition.maxIterations.coerceAtMost(maxIterations))
         instructions = generate(lSystemDefinition.axiom, lSystemDefinition.rules, iterations, lSystemDefinition.forwardChars)
         val t1 = System.currentTimeMillis()
         print("Generated instructions in: " + (t1 - t0) + "ms\n")
