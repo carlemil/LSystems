@@ -79,9 +79,7 @@ fun renderLSystem(lSystemDefinition: LSystemDefinition,
                   brightnessImage: BufferedImage,
                   outputImageSize: Double) {
 
-    val lSystemGenerator = LSystemGenerator(lSystemDefinition)
-
-    val polygon = lSystemGenerator.generatePolygon(iterations)
+    val polygon = LSystemGenerator.generatePolygon(lSystemDefinition, iterations)
 
     var bufferedImage = LSystemRenderer.renderLSystem(polygon, brightnessImage, outputImageSize)
 
