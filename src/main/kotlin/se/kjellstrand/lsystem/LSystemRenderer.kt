@@ -3,9 +3,9 @@ package se.kjellstrand.lsystem
 import se.kjellstrand.variablewidthline.LinePoint
 import se.kjellstrand.variablewidthline.VariableWidthLine
 import java.awt.*
-import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
-import java.lang.Exception
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 object LSystemRenderer {
 
@@ -16,9 +16,9 @@ object LSystemRenderer {
 
         adjustWidthAccordingToImage(line, brightnessImage)
 
-        val sidePadding = VariableWidthLine.calculateSidesOfTriangle(line[20], line[21]).third + 0.02
+        val sidePadding = getDistanceBetweenPoints(line[20], line[21]) + 0.02
 
-        val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding*outputImageSize)
+        val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding * outputImageSize)
 
         line.forEach { lp ->
             lp.x += sidePadding
@@ -27,12 +27,23 @@ object LSystemRenderer {
 
         VariableWidthLine.drawLine(line, g2, outputImageSize)
 
-        VariableWidthLine.tearDownGraphics(g2)
+        tearDownGraphics(g2)
 
         val t1 = System.currentTimeMillis()
         println("Render polygon in total: " + (t1 - t0) + "ms\n")
 
         return bufferedImage
+    }
+
+    private fun getDistanceBetweenPoints(p0: LinePoint, p1: LinePoint): Double {
+        val a = p0.x - p1.x
+        val b = p0.y - p1.y
+        val c = sqrt(a.pow(2.0) + b.pow(2.0))
+        return c
+    }
+
+    private fun tearDownGraphics(g2: Graphics2D) {
+        g2.dispose()
     }
 
     private fun adjustWidthAccordingToImage(line: List<LinePoint>, image: BufferedImage?) {

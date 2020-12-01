@@ -23,26 +23,11 @@ class VariableWidthLine {
             print("Draw polygon: " + (t2 - t1) + "ms\n")
         }
 
-        fun calculateSidesOfTriangle(p0: LinePoint, p1: LinePoint): Triple<Double, Double, Double> {
+        private fun calculateSidesOfTriangle(p0: LinePoint, p1: LinePoint): Triple<Double, Double, Double> {
             val a = p0.x - p1.x
             val b = p0.y - p1.y
             val c = sqrt(a.pow(2.0) + b.pow(2.0))
             return Triple(a, b, c)
-        }
-
-        fun tearDownGraphics(g2: Graphics2D) {
-            g2.dispose()
-        }
-
-        fun drawDebugPolygonPoints(line: List<LinePoint>, g2: Graphics2D, size: Double, sidePadding: Double) {
-            g2.paint = Color(1f, 0f, 0f, .3f)
-            val width = 15
-            line.forEach { p ->
-                g2.fillOval((p.x * size).toInt(), (p.y * size).toInt(), width, width)
-            }
-            val p = line[line.size - 1]
-            g2.paint = Color(0f, 1f, 0f, .7f)
-            g2.fillOval((p.x * size).toInt(), (p.y * size).toInt(), width, width)
         }
 
         private fun buildHullFromPolygon(ppList: List<LinePoint>, size: Double): MutableList<LinePoint> {
