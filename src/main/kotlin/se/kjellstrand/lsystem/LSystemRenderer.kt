@@ -12,7 +12,6 @@ object LSystemRenderer {
     fun renderLSystem(line: List<LinePoint>,
                       brightnessImage: BufferedImage,
                       outputImageSize: Double): BufferedImage {
-        val t0 = System.currentTimeMillis()
 
         adjustWidthAccordingToImage(line, brightnessImage)
 
@@ -28,9 +27,6 @@ object LSystemRenderer {
         VariableWidthLine.drawLine(line, g2, outputImageSize)
 
         tearDownGraphics(g2)
-
-        val t1 = System.currentTimeMillis()
-        println("Render polygon in total: " + (t1 - t0) + "ms\n")
 
         return bufferedImage
     }

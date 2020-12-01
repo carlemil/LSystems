@@ -11,30 +11,19 @@ import kotlin.math.pow
 object LSystemGenerator {
 
     fun generatePolygon(lSystemDefinition: LSystemDefinition, maxIterations: Int): List<Point> {
-        val t0 = System.currentTimeMillis()
-
         val iterations = 1.coerceAtLeast(lSystemDefinition.maxIterations.coerceAtMost(maxIterations))
-        var instructions = generate(lSystemDefinition.axiom, lSystemDefinition.rules, iterations, lSystemDefinition.forwardChars)
+        var instructions =
+            generate(lSystemDefinition.axiom, lSystemDefinition.rules, iterations, lSystemDefinition.forwardChars)
 
-        val t1 = System.currentTimeMillis()
-        print("Generated instructions in: " + (t1 - t0) + "ms\n")
-
-        val xyList = convertToPolyPointList(instructions.toString(), lSystemDefinition.getAngleInRadians(), lSystemDefinition.forwardChars)
-
-        val t2 = System.currentTimeMillis()
-        print("Convert to XY in: " + (t2 - t1) + "ms\n")
+        val xyList = convertToPolyPointList(
+            instructions.toString(),
+            lSystemDefinition.getAngleInRadians(),
+            lSystemDefinition.forwardChars
+        )
 
         val scaledList = scalePolyPointList(xyList)
 
-        val t3 = System.currentTimeMillis()
-        print("Scale XY list in: " + (t3 - t2) + "ms\n")
-
-        val smoothenList = smoothenTheLine(scaledList)
-
-        val t4 = System.currentTimeMillis()
-        print("Smoothen list in: " + (t4 - t3) + "ms\n")
-
-        return smoothenList
+        return smoothenTheLine(scaledList)
     }
 
     private fun generate(axiom: String, rules: Map<String, String>, iterations: Int, forwardChars: Set<String>): StringBuilder {
