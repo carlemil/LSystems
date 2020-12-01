@@ -12,15 +12,7 @@ class VariableWidthLine {
         fun drawLine(line: List<LinePoint>,
                      g2: Graphics2D,
                      size: Double) {
-            val t0 = System.currentTimeMillis()
-
-            val hull = buildHullFromPolygon(line, size)
-            val t1 = System.currentTimeMillis()
-            print("Build polygon: " + (t1 - t0) + "ms\n")
-
-            drawPolygon(hull, g2)
-            val t2 = System.currentTimeMillis()
-            print("Draw polygon: " + (t2 - t1) + "ms\n")
+            drawPolygon(buildHullFromPolygon(line, size), g2)
         }
 
         private fun calculateSidesOfTriangle(p0: LinePoint, p1: LinePoint): Triple<Double, Double, Double> {
