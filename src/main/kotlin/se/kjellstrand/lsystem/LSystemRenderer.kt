@@ -3,6 +3,7 @@ package se.kjellstrand.lsystem
 import se.kjellstrand.variablewidthline.LinePoint
 import se.kjellstrand.variablewidthline.VariableWidthLine
 import java.awt.*
+import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import java.lang.Exception
 
@@ -15,13 +16,17 @@ object LSystemRenderer {
 
         adjustWidthAccordingToImage(line, brightnessImage)
 
-        val sidePadding = VariableWidthLine.calculateSidesOfTriangle(line[2], line[3]).third *
-                outputImageSize / 5 + outputImageSize / 60
+        val sidePadding = VariableWidthLine.calculateSidesOfTriangle(line[20], line[21]).third + 0.02
 
-        val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding)
+        val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding*outputImageSize)
 
-        VariableWidthLine.drawPolygonToBufferedImage(line, g2, outputImageSize, sidePadding)
-        // lSystem.polygon.VariableWidthPolygon.drawDebugPolygon(polygon, g2, outputImageSize, sidePadding)
+        line.forEach { lp ->
+            lp.x += sidePadding
+            lp.y += sidePadding
+        }
+
+        VariableWidthLine.drawLine(line, g2, outputImageSize)
+
         VariableWidthLine.tearDownGraphics(g2)
 
         val t1 = System.currentTimeMillis()

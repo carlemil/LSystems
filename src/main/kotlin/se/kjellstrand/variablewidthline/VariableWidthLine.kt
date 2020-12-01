@@ -9,17 +9,16 @@ import kotlin.math.*
 class VariableWidthLine {
 
     companion object {
-        fun drawPolygonToBufferedImage(line: List<LinePoint>,
-                                       g2: Graphics2D,
-                                       size: Double,
-                                       sidePadding: Double) {
+        fun drawLine(line: List<LinePoint>,
+                     g2: Graphics2D,
+                     size: Double) {
             val t0 = System.currentTimeMillis()
 
             val hull = buildHullFromPolygon(line, size)
             val t1 = System.currentTimeMillis()
             print("Build polygon: " + (t1 - t0) + "ms\n")
 
-            drawPolygon(hull, g2, sidePadding)
+            drawPolygon(hull, g2)
             val t2 = System.currentTimeMillis()
             print("Draw polygon: " + (t2 - t1) + "ms\n")
         }
@@ -35,10 +34,7 @@ class VariableWidthLine {
             g2.dispose()
         }
 
-        fun drawDebugPolygonPoints(line: List<LinePoint>,
-                                   g2: Graphics2D,
-                                   size: Double,
-                                   sidePadding: Double) {
+        fun drawDebugPolygonPoints(line: List<LinePoint>, g2: Graphics2D, size: Double, sidePadding: Double) {
             g2.paint = Color(1f, 0f, 0f, .3f)
             val width = 15
             line.forEach { p ->
@@ -72,7 +68,7 @@ class VariableWidthLine {
             return hull
         }
 
-        private fun drawPolygon(hull: MutableList<LinePoint>, g2: Graphics2D, sidePadding: Double) {
+        private fun drawPolygon(hull: MutableList<LinePoint>, g2: Graphics2D) {
             val path = GeneralPath()
             val polygonInitialPP = LinePoint.getMidPoint(hull[hull.size - 1], hull[hull.size - 2])
             path.moveTo(polygonInitialPP.x, polygonInitialPP.y)
@@ -87,9 +83,6 @@ class VariableWidthLine {
             g2.paint = Color.BLACK
 
             path.closePath()
-            val at = AffineTransform()
-            at.translate(sidePadding, sidePadding)
-            path.transform(at)
             g2.fill(path)
         }
 

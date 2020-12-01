@@ -140,7 +140,7 @@ object LSystemGenerator {
 
     private fun addSplineBetweenPoints(pp1: Point, pp2: Point, pp3: Point,
                                        outputList: MutableList<Point>) {
-        val tincrement = 1.0 / 3.0
+        val tincrement = 1.0 / 5.0
         var t = 0.0
         while (t < (1.0 - (tincrement / 2.0))) {
             // The bezier square spline is calculated using this formula from wikipedia.
