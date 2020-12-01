@@ -17,18 +17,18 @@ import kotlin.system.exitProcess
  *
  */
 
-fun main(args: Array<String>): Unit = mainBody {
+fun main(): Unit = mainBody {
     println("Init")
     val t0 = System.currentTimeMillis()
 
-    val fixIteration = 4
-    var listOfSystemsToRender = listOf("Moore")//,"TwinDragon") //, "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
+    val fixIteration = 6
+    var listOfSystemsToRender = listOf("Fudgeflake")//,"TwinDragon") //, "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
         if (listOfSystemsToRender.isEmpty()) {
             listOfSystemsToRender = lSystems.map { it.name }
         }
-        val imageNames = listOf("debug.jpg")
+        val imageNames = listOf("che2.jpg","che3.jpg","che4.jpg")
         val nbrOfImagesToRender = getNbrOfImagesToRender(listOfSystemsToRender, lSystems, imageNames.size, fixIteration)
         var imageNbr = 0.0
 

@@ -1,15 +1,12 @@
 assert hasProperty('javaHome'): "Set the property 'javaHome' in your your gradle.properties pointing to a Java 6 or 7 installation"
 assert hasProperty('targetJavaVersion'): "Set the property 'targetJavaVersion' in your your gradle.properties to '1.6' or '1.7'"
 
-//task wrapper(type: Wrapper) {
-//    gradleVersion = '2.0'
-//}
-
 buildscript {
     ext.kotlin_version = '1.4.20'
     ext.kotlin_argparser_version = '2.0.7'
 
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
     }
@@ -37,6 +34,7 @@ run {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     jcenter()
 }
@@ -51,6 +49,8 @@ dependencies {
     compile "org.apache.xmlgraphics:batik-transcoder:1.10"
 
     compile "org.apache.xmlgraphics:batik-codec:1.9"
+
+    compile "se.thinnikatech:vwline-lib:1.0-SNAPSHOT"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
