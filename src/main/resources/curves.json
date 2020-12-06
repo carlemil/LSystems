@@ -10,7 +10,8 @@
       "forwardChars": [
         "F"
       ],
-      "axiom": "F"
+      "axiom": "F",
+      "lineWidthExp": 2.0
     },
     {
       "name": "Dragon",
@@ -23,7 +24,8 @@
       "forwardChars": [
         "F"
       ],
-      "axiom": "FA"
+      "axiom": "FA",
+      "lineWidthExp": 2.0
     },
     {
       "name": "TwinDragon",
@@ -36,24 +38,26 @@
       "forwardChars": [
         "F"
       ],
-      "axiom": "FA+FA+"
+      "axiom": "FA+FA+",
+      "lineWidthExp": 1.4
     },
     {
       "name": "Fudgeflake",
       "angle": 30,
-      "maxIterations": 9,
+      "maxIterations": 8,
       "rules": {
         "F": "+F----F++++F-"
       },
       "forwardChars": [
         "F"
       ],
-      "axiom": "F++++F++++F"
+      "axiom": "F++++F++++F",
+      "lineWidthExp": 2.7
     },
     {
       "name": "Hilbert",
       "angle": 90,
-      "maxIterations": 9,
+      "maxIterations": 7,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"
@@ -61,7 +65,8 @@
       "forwardChars": [
         "F"
       ],
-      "axiom": "A"
+      "axiom": "A",
+      "lineWidthExp": 2.0
     },
     {
       "name": "SierpinskiTriangle",
@@ -74,12 +79,13 @@
       "forwardChars": [
         "F"
       ],
-      "axiom": "A"
+      "axiom": "A",
+      "lineWidthExp": 2.0
     },
     {
       "name": "SierpinskiCurve",
       "angle": 45,
-      "maxIterations": 6,
+      "maxIterations": 5,
       "rules": {
         "X": "XF+G+XF--F--XF+G+X"
       },
@@ -87,7 +93,8 @@
         "F",
         "G"
       ],
-      "axiom": "F--XF--F--XF"
+      "axiom": "F--XF--F--XF",
+      "lineWidthExp": 1.6
     },
     {
       "name": "SierpinskiSquare",
@@ -99,12 +106,13 @@
       "forwardChars": [
         "F"
       ],
-      "axiom": "F+XF+F+XF"
+      "axiom": "F+XF+F+XF",
+      "lineWidthExp": 2.0
     },
     {
       "name": "Gosper",
       "angle": 60,
-      "maxIterations": 6,
+      "maxIterations": 5,
       "rules": {
         "A": "A-B--B+A++AA+B-",
         "B": "+A-BB--B-A++A+B"
@@ -113,12 +121,13 @@
         "A",
         "B"
       ],
-      "axiom": "A"
+      "axiom": "A",
+      "lineWidthExp": 2.0
     },
     {
       "name": "Peano",
       "angle": 90,
-      "maxIterations": 6,
+      "maxIterations": 4,
       "rules": {
         "L": "LFRFL-F-RFLFR+F+LFRFL",
         "R": "RFLFR+F+LFRFL-F-RFLFR"
@@ -126,12 +135,13 @@
       "forwardChars": [
         "F"
       ],
-      "axiom": "L"
+      "axiom": "L",
+      "lineWidthExp": 1.8
     },
     {
       "name": "Moore",
       "angle": 90,
-      "maxIterations": 8,
+      "maxIterations": 6,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"
@@ -139,7 +149,8 @@
       "forwardChars": [
         "F"
       ],
-      "axiom": "AFA+F+AFA"
+      "axiom": "AFA+F+AFA",
+      "lineWidthExp": 2.0
     }
   ]
 }

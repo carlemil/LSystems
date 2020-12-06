@@ -2,6 +2,7 @@ import com.beust.klaxon.Klaxon
 import com.xenomachina.argparser.mainBody
 import se.kjellstrand.lsystem.LSystemGenerator
 import se.kjellstrand.lsystem.LSystemRenderer
+import se.kjellstrand.lsystem.Point
 import se.kjellstrand.lsystem.model.LSystemDefinition
 import se.kjellstrand.lsystem.model.LSystemDefinitionList
 import se.kjellstrand.variablewidthline.LinePoint
@@ -9,6 +10,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 import kotlin.math.pow
+import kotlin.math.sqrt
 import kotlin.system.exitProcess
 
 /**
@@ -24,7 +26,7 @@ fun main(): Unit = mainBody {
 
     val fixIteration = 0
     var listOfSystemsToRender =
-        listOf("Fudgeflake")//, "TwinDragon") //, "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
+        listOf("Fudgeflake")//, "TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
         if (listOfSystemsToRender.isEmpty()) {
@@ -54,23 +56,6 @@ fun main(): Unit = mainBody {
     println("Done after: " + (t1 - t0) + "ms\n")
 }
 
-fun getNbrOfImagesToRender(
-    listOfSystemsToRender: List<String>,
-    lSystems: List<LSystemDefinition>,
-    nbrOfInputImages: Int,
-    fixIteration: Int
-): Int {
-    var totalIterations = 0
-    for (systemName in listOfSystemsToRender) {
-        if (fixIteration > 0) {
-            totalIterations += fixIteration
-        } else {
-            totalIterations += getLSystemByName(systemName, lSystems)?.maxIterations ?: 0
-        }
-    }
-    return totalIterations * nbrOfInputImages
-}
-
 fun renderLSystem(
     lSystemDefinition: LSystemDefinition,
     iterations: Int,
@@ -78,18 +63,17 @@ fun renderLSystem(
     brightnessImage: BufferedImage,
     outputImageSize: Double
 ) {
+    val t0 = System.currentTimeMillis()
 
     val line = LSystemGenerator.generatePolygon(lSystemDefinition, iterations)
     val vwLine = line.map { linePoint -> LinePoint(linePoint.x, linePoint.y, 1.0) }
 
     val minMinWidth = 0.5
-    val maxWidth = minMinWidth + outputImageSize / 2.0.pow(iterations.toDouble()) / 3.0
+    val lineWidthExp = lSystemDefinition.lineWidthExp
+    val maxWidth = minMinWidth + outputImageSize/(iterations+1).toDouble().pow(lineWidthExp)
     val minWidth = minMinWidth + maxWidth / 10.0
 
     var bufferedImage = LSystemRenderer.renderLSystem(vwLine, brightnessImage, outputImageSize, minWidth, maxWidth)
-
-    val t0 = System.currentTimeMillis()
-
 
     val fileName = getFirstPartOfImageName(brightnessImageName) +
             "_" + lSystemDefinition.name +
@@ -100,7 +84,7 @@ fun renderLSystem(
 
     writeImageToPngFile(bufferedImage, pngFileName)
     val t1 = System.currentTimeMillis()
-    println("Write image to file: " + (t1 - t0) + "ms\n")
+    println("Rendering and writing to file took: " + (t1 - t0) + "ms\n")
 }
 
 fun readLSystemDefinitions(): List<LSystemDefinition>? {
