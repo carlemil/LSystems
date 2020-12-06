@@ -8,6 +8,7 @@ import se.kjellstrand.variablewidthline.LinePoint
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import kotlin.math.pow
 import kotlin.system.exitProcess
 
 /**
@@ -21,7 +22,7 @@ fun main(): Unit = mainBody {
     println("Init")
     val t0 = System.currentTimeMillis()
 
-    val fixIteration = 1
+    val fixIteration = 0
     var listOfSystemsToRender =
         listOf("Fudgeflake")//, "TwinDragon") //, "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
 
@@ -81,7 +82,11 @@ fun renderLSystem(
     val line = LSystemGenerator.generatePolygon(lSystemDefinition, iterations)
     val vwLine = line.map { linePoint -> LinePoint(linePoint.x, linePoint.y, 1.0) }
 
-    var bufferedImage = LSystemRenderer.renderLSystem(vwLine, brightnessImage, outputImageSize)
+    val minMinWidth = 0.5
+    val maxWidth = minMinWidth + outputImageSize / 2.0.pow(iterations.toDouble()) / 3.0
+    val minWidth = minMinWidth + maxWidth / 10.0
+
+    var bufferedImage = LSystemRenderer.renderLSystem(vwLine, brightnessImage, outputImageSize, minWidth, maxWidth)
 
     val t0 = System.currentTimeMillis()
 

@@ -11,7 +11,9 @@ object LSystemRenderer {
 
     fun renderLSystem(line: List<LinePoint>,
                       brightnessImage: BufferedImage,
-                      outputImageSize: Double): BufferedImage {
+                      outputImageSize: Double,
+                      minWidth: Double,
+                      maxWidth: Double): BufferedImage {
 
         adjustWidthAccordingToImage(line, brightnessImage)
 
@@ -24,7 +26,7 @@ object LSystemRenderer {
             lp.y += sidePadding
         }
 
-        VariableWidthLine.drawLine(line, g2, outputImageSize)
+        VariableWidthLine.drawLine(line, g2, outputImageSize, minWidth, maxWidth)
 
         tearDownGraphics(g2)
 
