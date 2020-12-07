@@ -23,7 +23,7 @@ fun main(): Unit = mainBody {
     val t0 = System.currentTimeMillis()
 
     var listOfSystemsToRender =
-        listOf("SierpinskiTriangle")//, "TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
+        listOf("Moore")//, "TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
         if (listOfSystemsToRender.isEmpty()) {
@@ -69,7 +69,7 @@ fun renderLSystem(
     val maxWidth = (outputImageSize / (iterations + 1).toDouble().pow(lineWidthExp))*widthBoldness
     val minWidth = maxWidth / 10.0
 
-    if (minWidth < 1) {
+    if (minWidth < 0.5) {
         return false
     }
 

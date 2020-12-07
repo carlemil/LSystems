@@ -93,8 +93,8 @@
         "G"
       ],
       "axiom": "F--XF--F--XF",
-      "lineWidthExp": 1.6,
-      "lineWidthBold": 1.0
+      "lineWidthExp": 3.2,
+      "lineWidthBold": 2.0
     },
     {
       "name": "SierpinskiSquare",
@@ -106,8 +106,8 @@
         "F"
       ],
       "axiom": "F+XF+F+XF",
-      "lineWidthExp": 2.0,
-      "lineWidthBold": 1.0
+      "lineWidthExp": 3.0,
+      "lineWidthBold": 1.2
     },
     {
       "name": "Gosper",
@@ -121,8 +121,8 @@
         "B"
       ],
       "axiom": "A",
-      "lineWidthExp": 2.0,
-      "lineWidthBold": 1.0
+      "lineWidthExp": 3.5,
+      "lineWidthBold": 2.3
     },
     {
       "name": "Peano",
@@ -135,8 +135,8 @@
         "F"
       ],
       "axiom": "L",
-      "lineWidthExp": 1.8,
-      "lineWidthBold": 1.0
+      "lineWidthExp": 4.0,
+      "lineWidthBold": 4.0
     },
     {
       "name": "Moore",
@@ -149,8 +149,8 @@
         "F"
       ],
       "axiom": "AFA+F+AFA",
-      "lineWidthExp": 2.0,
-      "lineWidthBold": 1.0
+      "lineWidthExp": 3.3,
+      "lineWidthBold": 3.0
     }
   ]
 }
