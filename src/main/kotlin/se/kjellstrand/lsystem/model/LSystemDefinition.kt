@@ -8,7 +8,8 @@ class LSystemDefinition(
     val rules: Map<String, String>,
     val forwardChars: Set<String>,
     val axiom: String,
-    val lineWidthExp: Double
+    val lineWidthExp: Double,
+    val lineWidthBold: Double
 ) {
 
     fun getAngleInRadians(): Double {

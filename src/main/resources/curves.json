@@ -10,7 +10,8 @@
         "F"
       ],
       "axiom": "F",
-      "lineWidthExp": 2.0
+      "lineWidthExp": 3.3,
+      "lineWidthBold": 1.0
     },
     {
       "name": "Dragon",
@@ -23,7 +24,8 @@
         "F"
       ],
       "axiom": "FA",
-      "lineWidthExp": 2.0
+      "lineWidthExp": 2.1,
+      "lineWidthBold": 1.0
     },
     {
       "name": "TwinDragon",
@@ -36,7 +38,8 @@
         "F"
       ],
       "axiom": "FA+FA+",
-      "lineWidthExp": 1.4
+      "lineWidthExp": 2.1,
+      "lineWidthBold": 1.0
     },
     {
       "name": "Fudgeflake",
@@ -48,7 +51,8 @@
         "F"
       ],
       "axiom": "F++++F++++F",
-      "lineWidthExp": 2.4
+      "lineWidthExp": 2.4,
+      "lineWidthBold": 1.0
     },
     {
       "name": "Hilbert",
@@ -61,7 +65,8 @@
         "F"
       ],
       "axiom": "A",
-      "lineWidthExp": 2.0
+      "lineWidthExp": 3.0,
+      "lineWidthBold": 1.0
     },
     {
       "name": "SierpinskiTriangle",
@@ -74,7 +79,8 @@
         "F"
       ],
       "axiom": "A",
-      "lineWidthExp": 2.0
+      "lineWidthExp": 3.2,
+      "lineWidthBold": 6.0
     },
     {
       "name": "SierpinskiCurve",
@@ -87,7 +93,8 @@
         "G"
       ],
       "axiom": "F--XF--F--XF",
-      "lineWidthExp": 1.6
+      "lineWidthExp": 1.6,
+      "lineWidthBold": 1.0
     },
     {
       "name": "SierpinskiSquare",
@@ -99,7 +106,8 @@
         "F"
       ],
       "axiom": "F+XF+F+XF",
-      "lineWidthExp": 2.0
+      "lineWidthExp": 2.0,
+      "lineWidthBold": 1.0
     },
     {
       "name": "Gosper",
@@ -113,7 +121,8 @@
         "B"
       ],
       "axiom": "A",
-      "lineWidthExp": 2.0
+      "lineWidthExp": 2.0,
+      "lineWidthBold": 1.0
     },
     {
       "name": "Peano",
@@ -126,7 +135,8 @@
         "F"
       ],
       "axiom": "L",
-      "lineWidthExp": 1.8
+      "lineWidthExp": 1.8,
+      "lineWidthBold": 1.0
     },
     {
       "name": "Moore",
@@ -139,7 +149,8 @@
         "F"
       ],
       "axiom": "AFA+F+AFA",
-      "lineWidthExp": 2.0
+      "lineWidthExp": 2.0,
+      "lineWidthBold": 1.0
     }
   ]
 }

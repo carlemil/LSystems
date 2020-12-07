@@ -23,13 +23,13 @@ fun main(): Unit = mainBody {
     val t0 = System.currentTimeMillis()
 
     var listOfSystemsToRender =
-        listOf("Fudgeflake")//, "TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
+        listOf("SierpinskiTriangle")//, "TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
         if (listOfSystemsToRender.isEmpty()) {
             listOfSystemsToRender = lSystems.map { it.name }
         }
-        val imageNames = listOf("che4.jpg")
+        val imageNames = listOf("debug.jpg")
 
         for (imageName in imageNames) {
             val image = readImageFile("input/$imageName")
@@ -65,7 +65,8 @@ fun renderLSystem(
     val vwLine = line.map { linePoint -> LinePoint(linePoint.x, linePoint.y, 1.0) }
 
     val lineWidthExp = lSystemDefinition.lineWidthExp
-    val maxWidth = outputImageSize / (iterations + 1).toDouble().pow(lineWidthExp)
+    val widthBoldness = lSystemDefinition.lineWidthBold
+    val maxWidth = (outputImageSize / (iterations + 1).toDouble().pow(lineWidthExp))*widthBoldness
     val minWidth = maxWidth / 10.0
 
     if (minWidth < 1) {
