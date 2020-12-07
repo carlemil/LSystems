@@ -4,22 +4,22 @@ import se.kjellstrand.variablewidthline.LinePoint
 import se.kjellstrand.variablewidthline.VariableWidthLine
 import java.awt.*
 import java.awt.image.BufferedImage
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 object LSystemRenderer {
 
-    fun renderLSystem(line: List<LinePoint>,
-                      brightnessImage: BufferedImage,
-                      outputImageSize: Double,
-                      minWidth: Double,
-                      maxWidth: Double): BufferedImage {
+    fun renderLSystem(
+        line: List<LinePoint>,
+        brightnessImage: BufferedImage,
+        outputImageSize: Double,
+        minWidth: Double,
+        maxWidth: Double
+    ): BufferedImage {
 
         adjustWidthAccordingToImage(line, brightnessImage)
 
-        val sidePadding = getDistanceBetweenPoints(line[20], line[21]) + 0.02
+        val sidePadding = (maxWidth / 2.0) / outputImageSize + 0.02
 
-        val (bufferedImage, g2) = setupGraphics(outputImageSize, sidePadding * outputImageSize)
+        val (bufferedImage, g2) = setupGraphics(outputImageSize + outputImageSize * sidePadding * 2.0)
 
         line.forEach { lp ->
             lp.x += sidePadding
@@ -31,13 +31,6 @@ object LSystemRenderer {
         tearDownGraphics(g2)
 
         return bufferedImage
-    }
-
-    private fun getDistanceBetweenPoints(p0: LinePoint, p1: LinePoint): Double {
-        val a = p0.x - p1.x
-        val b = p0.y - p1.y
-        val c = sqrt(a.pow(2.0) + b.pow(2.0))
-        return c
     }
 
     private fun tearDownGraphics(g2: Graphics2D) {
@@ -63,16 +56,16 @@ object LSystemRenderer {
         }
         var c = FloatArray(3)
         Color.RGBtoHSB(
-                color shr 16 and 255,
-                color shr 8 and 255,
-                color and 255,
-                c)
+            color shr 16 and 255,
+            color shr 8 and 255,
+            color and 255,
+            c
+        )
         return c[2].toDouble()
     }
 
-    private fun setupGraphics(size: Double, sidePadding: Double): Pair<BufferedImage, Graphics2D> {
-        val bufferedImage = BufferedImage((size + sidePadding * 2).toInt(), (size + sidePadding * 2).toInt(),
-                BufferedImage.TYPE_INT_RGB)
+    private fun setupGraphics(size: Double): Pair<BufferedImage, Graphics2D> {
+        val bufferedImage = BufferedImage((size).toInt(), (size).toInt(), BufferedImage.TYPE_INT_RGB)
 
         val g2 = bufferedImage.createGraphics()
         val rh = mutableMapOf<RenderingHints.Key, Any>()
@@ -88,5 +81,4 @@ object LSystemRenderer {
         g2.fill(Rectangle(0, 0, bufferedImage.width, bufferedImage.height))
         return Pair(bufferedImage, g2)
     }
-
 }

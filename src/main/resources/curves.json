@@ -3,7 +3,6 @@
     {
       "name": "KochSnowFlake",
       "angle": 90,
-      "maxIterations": 5,
       "rules": {
         "F": "F-F+F+FF-F-F+F"
       },
@@ -16,7 +15,6 @@
     {
       "name": "Dragon",
       "angle": 90,
-      "maxIterations": 12,
       "rules": {
         "A": "A+BF",
         "B": "FA-B"
@@ -30,7 +28,6 @@
     {
       "name": "TwinDragon",
       "angle": 90,
-      "maxIterations": 14,
       "rules": {
         "A": "A+BF",
         "B": "FA-B"
@@ -44,7 +41,6 @@
     {
       "name": "Fudgeflake",
       "angle": 30,
-      "maxIterations": 8,
       "rules": {
         "F": "+F----F++++F-"
       },
@@ -52,12 +48,11 @@
         "F"
       ],
       "axiom": "F++++F++++F",
-      "lineWidthExp": 2.7
+      "lineWidthExp": 2.4
     },
     {
       "name": "Hilbert",
       "angle": 90,
-      "maxIterations": 7,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"
@@ -71,7 +66,6 @@
     {
       "name": "SierpinskiTriangle",
       "angle": 60,
-      "maxIterations": 8,
       "rules": {
         "A": "BF-AF-B",
         "B": "AF+BF+A"
@@ -85,7 +79,6 @@
     {
       "name": "SierpinskiCurve",
       "angle": 45,
-      "maxIterations": 5,
       "rules": {
         "X": "XF+G+XF--F--XF+G+X"
       },
@@ -99,7 +92,6 @@
     {
       "name": "SierpinskiSquare",
       "angle": 90,
-      "maxIterations": 6,
       "rules": {
         "X": "XF-F+F-XF+F+XF-F+F-X"
       },
@@ -112,7 +104,6 @@
     {
       "name": "Gosper",
       "angle": 60,
-      "maxIterations": 5,
       "rules": {
         "A": "A-B--B+A++AA+B-",
         "B": "+A-BB--B-A++A+B"
@@ -127,7 +118,6 @@
     {
       "name": "Peano",
       "angle": 90,
-      "maxIterations": 4,
       "rules": {
         "L": "LFRFL-F-RFLFR+F+LFRFL",
         "R": "RFLFR+F+LFRFL-F-RFLFR"
@@ -141,7 +131,6 @@
     {
       "name": "Moore",
       "angle": 90,
-      "maxIterations": 6,
       "rules": {
         "A": "-BF+AFA+FB-",
         "B": "+AF-BFB-FA+"

@@ -1,7 +1,7 @@
 package se.kjellstrand.lsystem
 
 import se.kjellstrand.lsystem.model.LSystemDefinition
-import java.lang.Math.*
+import java.lang.Math.PI
 import java.util.*
 import kotlin.math.pow
 
@@ -10,8 +10,7 @@ import kotlin.math.pow
  */
 object LSystemGenerator {
 
-    fun generatePolygon(lSystemDefinition: LSystemDefinition, maxIterations: Int): List<Point> {
-        val iterations = 1.coerceAtLeast(lSystemDefinition.maxIterations.coerceAtMost(maxIterations))
+    fun generatePolygon(lSystemDefinition: LSystemDefinition, iterations: Int): List<Point> {
         var instructions =
             generate(lSystemDefinition.axiom, lSystemDefinition.rules, iterations, lSystemDefinition.forwardChars)
 
@@ -26,7 +25,12 @@ object LSystemGenerator {
         return smoothenTheLine(scaledList)
     }
 
-    private fun generate(axiom: String, rules: Map<String, String>, iterations: Int, forwardChars: Set<String>): StringBuilder {
+    private fun generate(
+        axiom: String,
+        rules: Map<String, String>,
+        iterations: Int,
+        forwardChars: Set<String>
+    ): StringBuilder {
         val tmp = StringBuilder()
         tmp.append(axiom)
         val instructions = StringBuilder()
@@ -49,7 +53,11 @@ object LSystemGenerator {
         return instructions
     }
 
-    private fun convertToPolyPointList(instructions: String, systemAngle: Double, forwardChars: Set<String>): List<Point> {
+    private fun convertToPolyPointList(
+        instructions: String,
+        systemAngle: Double,
+        forwardChars: Set<String>
+    ): List<Point> {
         val list: MutableList<Point> = mutableListOf()
 
         var x = 0.0
@@ -68,7 +76,6 @@ object LSystemGenerator {
                     val p = stack.pop()
                     x = p.first
                     y = p.second
-                    // Start a new list in list here to denote a new polyline
                 }
                 in forwardChars -> {
                     x += kotlin.math.sin(angle)
@@ -119,16 +126,19 @@ object LSystemGenerator {
             val p02 = list[i.coerceAtLeast(0)]
             val p03 = list[(i + 1).coerceAtMost(list.size - 1)]
             addSplineBetweenPoints(
-                    Point.getMidPoint(p01, p02),
-                    p02,
-                    Point.getMidPoint(p02, p03),
-                    smoothedList)
+                Point.getMidPoint(p01, p02),
+                p02,
+                Point.getMidPoint(p02, p03),
+                smoothedList
+            )
         }
         return smoothedList
     }
 
-    private fun addSplineBetweenPoints(pp1: Point, pp2: Point, pp3: Point,
-                                       outputList: MutableList<Point>) {
+    private fun addSplineBetweenPoints(
+        pp1: Point, pp2: Point, pp3: Point,
+        outputList: MutableList<Point>
+    ) {
         val tincrement = 1.0 / 5.0
         var t = 0.0
         while (t < (1.0 - (tincrement / 2.0))) {
