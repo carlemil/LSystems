@@ -39,7 +39,7 @@ object LSystemRenderer {
         val maxWidth = (size / (iteration + 1).toDouble()
             .pow(def.lineWidthExp)) * def.lineWidthBold
         val minWidth = maxWidth / 10.0
-        return Pair(maxWidth, minWidth)
+        return Pair(minWidth, maxWidth)
     }
 
     private fun tearDownGraphics(g2: Graphics2D) {
