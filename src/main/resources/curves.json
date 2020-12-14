@@ -24,7 +24,7 @@
         "F"
       ],
       "axiom": "FA",
-      "lineWidthExp": 2.1,
+      "lineWidthExp": 2.4,
       "lineWidthBold": 1.0
     },
     {
@@ -38,7 +38,7 @@
         "F"
       ],
       "axiom": "FA+FA+",
-      "lineWidthExp": 2.1,
+      "lineWidthExp": 2.4,
       "lineWidthBold": 1.0
     },
     {
@@ -51,8 +51,8 @@
         "F"
       ],
       "axiom": "F++++F++++F",
-      "lineWidthExp": 2.4,
-      "lineWidthBold": 1.0
+      "lineWidthExp": 3.0,
+      "lineWidthBold": 1.5
     },
     {
       "name": "Hilbert",
@@ -65,8 +65,8 @@
         "F"
       ],
       "axiom": "A",
-      "lineWidthExp": 3.0,
-      "lineWidthBold": 1.0
+      "lineWidthExp": 4.0,
+      "lineWidthBold": 16.0
     },
     {
       "name": "SierpinskiTriangle",
@@ -79,8 +79,8 @@
         "F"
       ],
       "axiom": "A",
-      "lineWidthExp": 3.2,
-      "lineWidthBold": 6.0
+      "lineWidthExp": 4.6,
+      "lineWidthBold": 40.0
     },
     {
       "name": "SierpinskiCurve",
@@ -93,7 +93,7 @@
         "G"
       ],
       "axiom": "F--XF--F--XF",
-      "lineWidthExp": 3.2,
+      "lineWidthExp": 3.34,
       "lineWidthBold": 2.0
     },
     {
@@ -106,8 +106,8 @@
         "F"
       ],
       "axiom": "F+XF+F+XF",
-      "lineWidthExp": 3.0,
-      "lineWidthBold": 1.2
+      "lineWidthExp": 3.4,
+      "lineWidthBold": 2.0
     },
     {
       "name": "Gosper",
@@ -121,8 +121,8 @@
         "B"
       ],
       "axiom": "A",
-      "lineWidthExp": 3.5,
-      "lineWidthBold": 2.3
+      "lineWidthExp": 4.5,
+      "lineWidthBold": 8.0
     },
     {
       "name": "Peano",
@@ -135,8 +135,8 @@
         "F"
       ],
       "axiom": "L",
-      "lineWidthExp": 4.0,
-      "lineWidthBold": 4.0
+      "lineWidthExp": 4.9,
+      "lineWidthBold": 16.0
     },
     {
       "name": "Moore",
@@ -149,8 +149,8 @@
         "F"
       ],
       "axiom": "AFA+F+AFA",
-      "lineWidthExp": 3.3,
-      "lineWidthBold": 3.0
+      "lineWidthExp": 3.8,
+      "lineWidthBold": 8.0
     }
   ]
 }

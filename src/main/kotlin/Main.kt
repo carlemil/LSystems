@@ -23,7 +23,7 @@ fun main(): Unit = mainBody {
     val t0 = System.currentTimeMillis()
 
     var listOfSystemsToRender =
-        listOf("Moore")//, "TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
+        listOf("Moore") //"TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
         if (listOfSystemsToRender.isEmpty()) {
@@ -40,7 +40,7 @@ fun main(): Unit = mainBody {
                     while (result) {
                         i++
                         println("----------- $imageName - $systemName - $i ----------- ")
-                        result = renderLSystem(lSystem, i, imageName, image, 1200.0)
+                        result = renderLSystem(lSystem, i, imageName, image, 8000.0)
                     }
                     println("Break at i = $i")
                 }
@@ -54,22 +54,22 @@ fun main(): Unit = mainBody {
 
 fun renderLSystem(
     lSystemDefinition: LSystemDefinition,
-    iterations: Int,
+    iteration: Int,
     brightnessImageName: String,
     brightnessImage: BufferedImage,
     outputImageSize: Double
 ): Boolean {
     val t0 = System.currentTimeMillis()
 
-    val line = LSystemGenerator.generatePolygon(lSystemDefinition, iterations)
+    val line = LSystemGenerator.generatePolygon(lSystemDefinition, iteration)
     val vwLine = line.map { linePoint -> LinePoint(linePoint.x, linePoint.y, 1.0) }
 
     val lineWidthExp = lSystemDefinition.lineWidthExp
     val widthBoldness = lSystemDefinition.lineWidthBold
-    val maxWidth = (outputImageSize / (iterations + 1).toDouble().pow(lineWidthExp))*widthBoldness
+    val maxWidth = (outputImageSize / (iteration + 1).toDouble().pow(lineWidthExp)) * widthBoldness
     val minWidth = maxWidth / 10.0
 
-    if (minWidth < 0.5) {
+    if (minWidth < 0.5 || minWidth < outputImageSize / 5000) {
         return false
     }
 
@@ -77,8 +77,9 @@ fun renderLSystem(
 
     val fileName = getFirstPartOfImageName(brightnessImageName) +
             "_" + lSystemDefinition.name +
-            "_iterations_" + iterations +
-            "_size_" + outputImageSize.toInt()
+            "_iterations_" + iteration +
+            "_size_" + outputImageSize.toInt() +
+            "_lwe_" + lineWidthExp
 
     val pngFileName = "output/$fileName.png"
 
