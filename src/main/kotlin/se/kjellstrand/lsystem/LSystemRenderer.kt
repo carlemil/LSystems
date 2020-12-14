@@ -1,9 +1,11 @@
 package se.kjellstrand.lsystem
 
+import se.kjellstrand.lsystem.model.LSystemDefinition
 import se.kjellstrand.variablewidthline.LinePoint
 import se.kjellstrand.variablewidthline.VariableWidthLine
 import java.awt.*
 import java.awt.image.BufferedImage
+import kotlin.math.pow
 
 object LSystemRenderer {
 
@@ -31,6 +33,13 @@ object LSystemRenderer {
         tearDownGraphics(g2)
 
         return bufferedImage
+    }
+
+    fun getMinAndMaxWidth(size: Double, iteration: Int, def: LSystemDefinition): Pair<Double, Double> {
+        val maxWidth = (size / (iteration + 1).toDouble()
+            .pow(def.lineWidthExp)) * def.lineWidthBold
+        val minWidth = maxWidth / 10.0
+        return Pair(maxWidth, minWidth)
     }
 
     private fun tearDownGraphics(g2: Graphics2D) {

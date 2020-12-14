@@ -22,20 +22,20 @@ fun main(): Unit = mainBody {
     println("Init")
     val t0 = System.currentTimeMillis()
 
-    var listOfSystemsToRender =
-        listOf("Moore") //"TwinDragon", "SierpinskiCurve", "Hilbert", "Peano", "Moore", "Gosper", "Fudgeflake")
+    var listOfSystemsToRender = //emptyList<String>()
+        listOf("Fudgeflake")
 
     readLSystemDefinitions()?.let { lSystems ->
         if (listOfSystemsToRender.isEmpty()) {
             listOfSystemsToRender = lSystems.map { it.name }
         }
-        val imageNames = listOf("debug.jpg")
+        val imageNames = listOf("ioa.png")
 
         for (imageName in imageNames) {
             val image = readImageFile("input/$imageName")
             for (systemName in listOfSystemsToRender) {
                 getLSystemByName(systemName, lSystems)?.let { lSystem ->
-                    var i = 0
+                    var i = 1
                     var result = true
                     while (result) {
                         i++
@@ -64,10 +64,7 @@ fun renderLSystem(
     val line = LSystemGenerator.generatePolygon(lSystemDefinition, iteration)
     val vwLine = line.map { linePoint -> LinePoint(linePoint.x, linePoint.y, 1.0) }
 
-    val lineWidthExp = lSystemDefinition.lineWidthExp
-    val widthBoldness = lSystemDefinition.lineWidthBold
-    val maxWidth = (outputImageSize / (iteration + 1).toDouble().pow(lineWidthExp)) * widthBoldness
-    val minWidth = maxWidth / 10.0
+    val (maxWidth, minWidth) = LSystemRenderer.getMinAndMaxWidth(outputImageSize, iteration, lSystemDefinition)
 
     if (minWidth < 0.5 || minWidth < outputImageSize / 5000) {
         return false
@@ -79,7 +76,7 @@ fun renderLSystem(
             "_" + lSystemDefinition.name +
             "_iterations_" + iteration +
             "_size_" + outputImageSize.toInt() +
-            "_lwe_" + lineWidthExp
+            "_lwe_" + lSystemDefinition.lineWidthExp
 
     val pngFileName = "output/$fileName.png"
 
