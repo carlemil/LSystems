@@ -1,6 +1,6 @@
 package se.kjellstrand.lsystem
 
-import se.kjellstrand.lsystem.model.LSystemDefinition
+import se.kjellstrand.lsystem.model.LSystem
 import java.lang.Math.PI
 import java.util.*
 import kotlin.math.pow
@@ -10,14 +10,14 @@ import kotlin.math.pow
  */
 object LSystemGenerator {
 
-    fun generatePolygon(lSystemDefinition: LSystemDefinition, iterations: Int): List<Point> {
+    fun generatePolygon(lSystem: LSystem, iterations: Int): List<Point> {
         var instructions =
-            generate(lSystemDefinition.axiom, lSystemDefinition.rules, iterations, lSystemDefinition.forwardChars)
+            generate(lSystem.axiom, lSystem.rules, iterations, lSystem.forwardChars)
 
         val xyList = convertToPolyPointList(
             instructions.toString(),
-            lSystemDefinition.getAngleInRadians(),
-            lSystemDefinition.forwardChars
+            lSystem.getAngleInRadians(),
+            lSystem.forwardChars
         )
 
         val scaledList = scalePolyPointList(xyList)

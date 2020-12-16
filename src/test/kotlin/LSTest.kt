@@ -1,14 +1,11 @@
-import com.beust.klaxon.Klaxon
 import org.junit.Test
 import se.kjellstrand.lsystem.LSystemGenerator
 import se.kjellstrand.lsystem.LSystemRenderer
-import se.kjellstrand.lsystem.model.LSystemDefinition
-import se.kjellstrand.lsystem.model.LSystemDefinitionList
+import se.kjellstrand.lsystem.model.LSystem
 import se.kjellstrand.variablewidthline.LinePoint
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
-import kotlin.system.exitProcess
 
 class LSTest {
 
@@ -20,35 +17,34 @@ class LSTest {
         var listOfSystemsToRender = //emptyList<String>()
             listOf("Fudgeflake")
 
-        readLSystemDefinitions()?.let { lSystems ->
-            if (listOfSystemsToRender.isEmpty()) {
-                listOfSystemsToRender = lSystems.map { it.name }
-            }
-            val imageNames = listOf("che2.jpg")
+        if (listOfSystemsToRender.isEmpty()) {
+            listOfSystemsToRender = LSystem.SYSTEMS.map { it.name }
+        }
+        val imageNames = listOf("che2.jpg")
 
-            for (imageName in imageNames) {
-                val image = readImageFile("input/$imageName")
-                for (systemName in listOfSystemsToRender) {
-                    getLSystemByName(systemName, lSystems)?.let { lSystem ->
-                        var i = 1
-                        var result = true
-                        while (result) {
-                            i++
-                            println("----------- $imageName - $systemName - $i ----------- ")
-                            result = renderLSystem(lSystem, i, imageName, image, 8000.0)
-                        }
-                        println("Break at i = $i")
+        for (imageName in imageNames) {
+            val image = readImageFile("input/$imageName")
+            for (systemName in listOfSystemsToRender) {
+                getLSystemByName(systemName, LSystem.SYSTEMS)?.let { lSystem ->
+                    var i = 1
+                    var result = true
+                    while (result) {
+                        i++
+                        println("----------- $imageName - $systemName - $i ----------- ")
+                        result = renderLSystem(lSystem, i, imageName, image, 800.0)
                     }
+                    println("Break at i = $i")
                 }
             }
         }
+
 
         val t1 = System.currentTimeMillis()
         println("Done after: " + (t1 - t0) + "ms\n")
     }
 
     fun renderLSystem(
-        lSystemDefinition: LSystemDefinition,
+        lSystem: LSystem,
         iteration: Int,
         brightnessImageName: String,
         brightnessImage: BufferedImage,
@@ -56,10 +52,10 @@ class LSTest {
     ): Boolean {
         val t0 = System.currentTimeMillis()
 
-        val line = LSystemGenerator.generatePolygon(lSystemDefinition, iteration)
+        val line = LSystemGenerator.generatePolygon(lSystem, iteration)
         val vwLine = line.map { linePoint -> LinePoint(linePoint.x, linePoint.y, 1.0) }
 
-        val (minWidth, maxWidth) = LSystemRenderer.getMinAndMaxWidth(outputImageSize, iteration, lSystemDefinition)
+        val (minWidth, maxWidth) = LSystemRenderer.getMinAndMaxWidth(outputImageSize, iteration, lSystem)
 
         if (minWidth < 0.5 || minWidth < outputImageSize / 5000) {
             return false
@@ -68,10 +64,10 @@ class LSTest {
         var bufferedImage = LSystemRenderer.renderLSystem(vwLine, brightnessImage, outputImageSize, minWidth, maxWidth)
 
         val fileName = getFirstPartOfImageName(brightnessImageName) +
-                "_" + lSystemDefinition.name +
+                "_" + lSystem.name +
                 "_iterations_" + iteration +
                 "_size_" + outputImageSize.toInt() +
-                "_lwe_" + lSystemDefinition.lineWidthExp
+                "_lwe_" + lSystem.lineWidthExp
 
         val pngFileName = "output/$fileName.png"
 
@@ -81,16 +77,7 @@ class LSTest {
         return true
     }
 
-    fun readLSystemDefinitions(): List<LSystemDefinition>? {
-        val lSystems = Klaxon().parse<LSystemDefinitionList>(File("src/main/resources/curves.json").readText())!!
-        if (lSystems.systems.isEmpty()) {
-            println("---------------------- Failed to read LSystem definitions ----------------------")
-            exitProcess(-1)
-        }
-        return lSystems.systems
-    }
-
-    fun getLSystemByName(lSystemName: String, lSystems: List<LSystemDefinition>): LSystemDefinition? {
+    fun getLSystemByName(lSystemName: String, lSystems: List<LSystem>): LSystem? {
         return lSystems.find { lsd -> lsd.name.startsWith(lSystemName, true) }
     }
 

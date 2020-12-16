@@ -1,6 +1,6 @@
 package se.kjellstrand.lsystem
 
-import se.kjellstrand.lsystem.model.LSystemDefinition
+import se.kjellstrand.lsystem.model.LSystem
 import se.kjellstrand.variablewidthline.LinePoint
 import se.kjellstrand.variablewidthline.VariableWidthLine
 import java.awt.*
@@ -35,7 +35,7 @@ object LSystemRenderer {
         return bufferedImage
     }
 
-    fun getMinAndMaxWidth(size: Double, iteration: Int, def: LSystemDefinition): Pair<Double, Double> {
+    fun getMinAndMaxWidth(size: Double, iteration: Int, def: LSystem): Pair<Double, Double> {
         val maxWidth = (size / (iteration + 1).toDouble()
             .pow(def.lineWidthExp)) * def.lineWidthBold
         val minWidth = maxWidth / 10.0

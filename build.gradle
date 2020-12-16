@@ -3,7 +3,6 @@ assert hasProperty('targetJavaVersion'): "Set the property 'targetJavaVersion' i
 
 buildscript {
     ext.kotlin_version = '1.4.20'
-    ext.kotlin_argparser_version = '2.0.7'
 
     repositories {
         mavenCentral()
@@ -19,39 +18,23 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
-// build.gradle
 apply plugin: 'application'
-
-mainClassName = 'MainKt'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
 
-run {
-    if (project.hasProperty("lsArgs")) {
-        args Eval.me(lsArgs)
-    }
-}
-
 repositories {
     maven { url 'https://jitpack.io' }
-    // mavenLocal()
+    mavenLocal()
     mavenCentral()
     jcenter()
 }
 
 dependencies {
-    implementation 'com.beust:klaxon:3.0.1'
-
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-
-    compile "com.xenomachina:kotlin-argparser:$kotlin_argparser_version"
-
-    compile "org.apache.xmlgraphics:batik-transcoder:1.10"
-
-    compile "org.apache.xmlgraphics:batik-codec:1.9"
-
-    compile "com.github.carlemil:VWLine:0.0.2"
-
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "com.github.carlemil:VWLine:0.0.2"
+    testCompile "org.apache.xmlgraphics:batik-transcoder:1.10"
+    testCompile "org.apache.xmlgraphics:batik-codec:1.9"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
@@ -60,4 +43,13 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'vwline-lib'
+            from components.java
+        }
+    }
 }
