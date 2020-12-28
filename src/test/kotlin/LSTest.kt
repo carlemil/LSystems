@@ -3,6 +3,7 @@ import se.kjellstrand.lsystem.LSystemGenerator
 import se.kjellstrand.lsystem.LSystemRenderer
 import se.kjellstrand.lsystem.model.LSystem
 import se.kjellstrand.variablewidthline.LinePoint
+import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -15,12 +16,12 @@ class LSTest {
         val t0 = System.currentTimeMillis()
 
         var listOfSystemsToRender = //emptyList<String>()
-            listOf("Fudgeflake")
+            listOf("Hilbert")
 
         if (listOfSystemsToRender.isEmpty()) {
             listOfSystemsToRender = LSystem.SYSTEMS.map { it.name }
         }
-        val imageNames = listOf("che2.jpg")
+        val imageNames = listOf("debug.jpg")
 
         for (imageName in imageNames) {
             val image = readImageFile("input/$imageName")
@@ -31,13 +32,12 @@ class LSTest {
                     while (result) {
                         i++
                         println("----------- $imageName - $systemName - $i ----------- ")
-                        result = renderLSystem(lSystem, i, imageName, image, 800.0)
+                        result = renderLSystem(lSystem, i, imageName, image, 2000)
                     }
                     println("Break at i = $i")
                 }
             }
         }
-
 
         val t1 = System.currentTimeMillis()
         println("Done after: " + (t1 - t0) + "ms\n")
@@ -48,14 +48,17 @@ class LSTest {
         iteration: Int,
         brightnessImageName: String,
         brightnessImage: BufferedImage,
-        outputImageSize: Double
+        outputImageSize: Int
     ): Boolean {
         val t0 = System.currentTimeMillis()
 
         val line = LSystemGenerator.generatePolygon(lSystem, iteration)
         val vwLine = line.map { linePoint -> LinePoint(linePoint.x, linePoint.y, 1.0) }
 
-        val (minWidth, maxWidth) = LSystemRenderer.getMinAndMaxWidth(outputImageSize, iteration, lSystem)
+        val (minWidth, maxWidth) = LSystemRenderer.getRecommendedMinAndMaxWidth(outputImageSize, iteration, lSystem)
+
+        val outputSideBuffer = outputImageSize / 50
+        adjustToOutputRectangle(outputImageSize, outputSideBuffer, vwLine)
 
         if (minWidth < 0.5 || minWidth < outputImageSize / 5000) {
             return false
@@ -75,6 +78,23 @@ class LSTest {
         val t1 = System.currentTimeMillis()
         println("Rendering and writing to file took: " + (t1 - t0) + "ms\n")
         return true
+    }
+
+    private fun adjustToOutputRectangle(
+        outputImageSize: Int,
+        outputSideBuffer: Int,
+        vwLine: List<LinePoint>
+    ) {
+        val r = Rectangle(
+            outputSideBuffer,
+            outputSideBuffer,
+            outputImageSize - outputSideBuffer * 2,
+            outputImageSize - outputSideBuffer * 2
+        )
+        vwLine.forEach { point ->
+            point.x = r.getX() + point.x.times(r.height)
+            point.y = r.getY() + point.y.times(r.width)
+        }
     }
 
     fun getLSystemByName(lSystemName: String, lSystems: List<LSystem>): LSystem? {

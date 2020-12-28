@@ -2,7 +2,7 @@ package se.kjellstrand.lsystem
 
 import se.kjellstrand.lsystem.model.LSystem
 import se.kjellstrand.variablewidthline.LinePoint
-import se.kjellstrand.variablewidthline.VariableWidthLine
+import se.kjellstrand.variablewidthline.drawVariableWidthCurve
 import java.awt.*
 import java.awt.image.BufferedImage
 import kotlin.math.pow
@@ -12,30 +12,23 @@ object LSystemRenderer {
     fun renderLSystem(
         line: List<LinePoint>,
         brightnessImage: BufferedImage,
-        outputImageSize: Double,
+        outputImageSize: Int,
         minWidth: Double,
         maxWidth: Double
     ): BufferedImage {
 
-        adjustWidthAccordingToImage(line, brightnessImage)
+        val (bufferedImage, g2) = setupGraphics(outputImageSize)
 
-        val sidePadding = (maxWidth / 2.0) / outputImageSize + 0.02
+        adjustWidthAccordingToImage(line, brightnessImage, outputImageSize)
 
-        val (bufferedImage, g2) = setupGraphics(outputImageSize + outputImageSize * sidePadding * 2.0)
-
-        line.forEach { lp ->
-            lp.x += sidePadding
-            lp.y += sidePadding
-        }
-
-        VariableWidthLine.drawLine(line, g2, outputImageSize, minWidth, maxWidth)
+        g2.drawVariableWidthCurve(line, minWidth, maxWidth)
 
         tearDownGraphics(g2)
 
         return bufferedImage
     }
 
-    fun getMinAndMaxWidth(size: Double, iteration: Int, def: LSystem): Pair<Double, Double> {
+    fun getRecommendedMinAndMaxWidth(size: Int, iteration: Int, def: LSystem): Pair<Double, Double> {
         val maxWidth = (size / (iteration + 1).toDouble()
             .pow(def.lineWidthExp)) * def.lineWidthBold
         val minWidth = maxWidth / 10.0
@@ -46,20 +39,24 @@ object LSystemRenderer {
         g2.dispose()
     }
 
-    private fun adjustWidthAccordingToImage(line: List<LinePoint>, image: BufferedImage?) {
+    private fun adjustWidthAccordingToImage(line: List<LinePoint>, image: BufferedImage?, outputImageSize: Int) {
+        val xScale = outputImageSize.toDouble() / (image?.width ?: 1)
+        val yScale = outputImageSize.toDouble() / (image?.height ?: 1)
         for (element in line) {
             // Use the inverted brightness as width of the line we drawSpline.
-            element.w = (1 - getBrightnessFromImage(element.x, element.y, image))
+            element.w =
+                (1 - getBrightnessFromImage(
+                    element.x.div(xScale).toInt(),
+                    element.y.div(yScale).toInt(), image
+                ))
         }
     }
 
-    private fun getBrightnessFromImage(x_: Double, y_: Double, image: BufferedImage?): Double {
+    private fun getBrightnessFromImage(x: Int, y: Int, image: BufferedImage?): Double {
         var color = 0x777777
         if (image != null) {
-            val x = (x_ * (image.width - 1))
-            val y = (y_ * (image.height - 1))
             try {
-                color = image.getRGB(x.toInt(), y.toInt())
+                color = image.getRGB(x, y)
             } catch (e: Exception) {
             }
         }
@@ -73,8 +70,8 @@ object LSystemRenderer {
         return c[2].toDouble()
     }
 
-    private fun setupGraphics(size: Double): Pair<BufferedImage, Graphics2D> {
-        val bufferedImage = BufferedImage((size).toInt(), (size).toInt(), BufferedImage.TYPE_INT_RGB)
+    private fun setupGraphics(size: Int): Pair<BufferedImage, Graphics2D> {
+        val bufferedImage = BufferedImage(size, size, BufferedImage.TYPE_INT_RGB)
 
         val g2 = bufferedImage.createGraphics()
         val rh = mutableMapOf<RenderingHints.Key, Any>()
