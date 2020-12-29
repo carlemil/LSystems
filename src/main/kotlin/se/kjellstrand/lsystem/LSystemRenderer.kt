@@ -19,9 +19,9 @@ object LSystemRenderer {
 
         val (bufferedImage, g2) = setupGraphics(outputImageSize)
 
-        adjustWidthAccordingToImage(line, brightnessImage, outputImageSize)
+        adjustWidthAccordingToImage(line, brightnessImage, outputImageSize, minWidth, maxWidth)
 
-        g2.drawVariableWidthCurve(line, minWidth, maxWidth)
+        g2.drawVariableWidthCurve(line)
 
         tearDownGraphics(g2)
 
@@ -39,16 +39,22 @@ object LSystemRenderer {
         g2.dispose()
     }
 
-    private fun adjustWidthAccordingToImage(line: List<LinePoint>, image: BufferedImage?, outputImageSize: Int) {
+    private fun adjustWidthAccordingToImage(
+        line: List<LinePoint>,
+        image: BufferedImage?,
+        outputImageSize: Int,
+        minWidth: Double,
+        maxWidth: Double
+    ) {
         val xScale = outputImageSize.toDouble() / (image?.width ?: 1)
         val yScale = outputImageSize.toDouble() / (image?.height ?: 1)
         for (element in line) {
             // Use the inverted brightness as width of the line we drawSpline.
-            element.w =
-                (1 - getBrightnessFromImage(
-                    element.x.div(xScale).toInt(),
-                    element.y.div(yScale).toInt(), image
-                ))
+            element.w = minWidth +
+                    ((1 - getBrightnessFromImage(
+                        element.x.div(xScale).toInt(),
+                        element.y.div(yScale).toInt(), image
+                    )) * (maxWidth - minWidth))
         }
     }
 
