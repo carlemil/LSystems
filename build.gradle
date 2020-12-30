@@ -49,7 +49,7 @@ compileTestKotlin {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'vwline-lib'
+            artifactId = 'lsystem'
             from components.java
         }
     }

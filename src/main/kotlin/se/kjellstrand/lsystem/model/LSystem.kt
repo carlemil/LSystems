@@ -11,8 +11,19 @@ class LSystem(
     val lineWidthExp: Double,
     val lineWidthBold: Double
 ) {
+    fun getAngleInRadians(): Double {
+        return angle / 180 * PI
+    }
+
     companion object {
-        val SYSTEMS: List<LSystem> = listOf(
+
+        fun getByName(name: String): LSystem? {
+            return this.getSystems().find { lsd -> lsd.name.startsWith(name, true) }
+        }
+
+        fun getSystems() = Companion.systems
+
+        private val systems: List<LSystem> = listOf(
             LSystem(
                 name = "KochSnowFlake",
                 angle = 90.0,
@@ -113,9 +124,5 @@ class LSystem(
                 lineWidthBold = 8.0
             )
         )
-    }
-
-    fun getAngleInRadians(): Double {
-        return angle / 180 * PI
     }
 }

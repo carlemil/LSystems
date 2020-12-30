@@ -19,14 +19,14 @@ class LSTest {
             listOf("Hilbert")
 
         if (listOfSystemsToRender.isEmpty()) {
-            listOfSystemsToRender = LSystem.SYSTEMS.map { it.name }
+            listOfSystemsToRender = LSystem.getSystems().map { it.name }
         }
         val imageNames = listOf("debug.jpg")
 
         for (imageName in imageNames) {
             val image = readImageFile("input/$imageName")
             for (systemName in listOfSystemsToRender) {
-                getLSystemByName(systemName, LSystem.SYSTEMS)?.let { lSystem ->
+                LSystem.getByName(systemName)?.let { lSystem ->
                     var i = 1
                     var result = true
                     while (result) {
@@ -97,10 +97,6 @@ class LSTest {
             point.x = r.getX() + point.x.times(r.height)
             point.y = r.getY() + point.y.times(r.width)
         }
-    }
-
-    private fun getLSystemByName(lSystemName: String, lSystems: List<LSystem>): LSystem? {
-        return lSystems.find { lsd -> lsd.name.startsWith(lSystemName, true) }
     }
 
     private fun getFirstPartOfImageName(brightnessImageName: String?): String {
