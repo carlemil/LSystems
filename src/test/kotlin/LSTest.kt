@@ -3,7 +3,9 @@ import se.kjellstrand.lsystem.LSystemGenerator
 import se.kjellstrand.lsystem.LSystemRenderer
 import se.kjellstrand.lsystem.model.LSystem
 import se.kjellstrand.variablewidthline.LinePoint
-import java.awt.Rectangle
+import se.kjellstrand.variablewidthline.buildHullFromPolygon
+import java.awt.*
+import java.awt.geom.GeneralPath
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -11,7 +13,7 @@ import javax.imageio.ImageIO
 class LSTest {
 
     @Test
-    internal fun renderLSystem() {
+    internal fun renderLSystems() {
         println("Init")
         val totalTime0 = System.currentTimeMillis()
 
@@ -21,7 +23,7 @@ class LSTest {
         if (listOfSystemsToRender.isEmpty()) {
             listOfSystemsToRender = LSystem.getSystems().map { it.name }
         }
-        val imageNames = listOf("debug.jpg")
+        val imageNames = listOf("noice.jpg")
 
         for (imageName in imageNames) {
             val image = readImageFile("input/$imageName")
@@ -57,6 +59,7 @@ class LSTest {
     ): Boolean {
 
         val line = LSystemGenerator.generatePolygon(lSystem, iteration)
+
         val vwLine = line.map { linePoint -> LinePoint(linePoint.x, linePoint.y, 1.0) }
 
         val (minWidth, maxWidth) = LSystemRenderer.getRecommendedMinAndMaxWidth(outputImageSize, iteration, lSystem)
@@ -68,7 +71,18 @@ class LSTest {
         val outputSideBuffer = outputImageSize / 50
         adjustToOutputRectangle(outputImageSize, outputSideBuffer, vwLine)
 
-        var bufferedImage = LSystemRenderer.renderLSystem(vwLine, brightnessImage, outputImageSize, minWidth, maxWidth)
+
+        val ly = Array(brightnessImage.height) { ByteArray(brightnessImage.width) }
+        for (y in 0 until brightnessImage.height) {
+            val lx = ByteArray(brightnessImage.width)
+            ly[y] = lx
+            for (x in 0 until brightnessImage.width) {
+                lx[x] = getBrightnessFromImage(y, x, brightnessImage)
+            }
+        }
+
+
+        val bufferedImage = generateBitmapFromLSystem(vwLine, ly, outputImageSize, minWidth, maxWidth)
 
         val fileName = getFirstPartOfImageName(brightnessImageName) +
                 "_" + lSystem.name +
@@ -80,6 +94,22 @@ class LSTest {
 
         writeImageToPngFile(bufferedImage, pngFileName)
         return true
+    }
+
+    private fun getBrightnessFromImage(x: Int, y: Int, image: BufferedImage): Byte {
+        var color = 0x777777
+        try {
+            color = image.getRGB(x, y)
+        } catch (e: Exception) {
+        }
+        var c = FloatArray(3)
+        Color.RGBtoHSB(
+            color shr 16 and 255,
+            color shr 8 and 255,
+            color and 255,
+            c
+        )
+        return (c[2] * 256).toInt().toByte()
     }
 
     private fun adjustToOutputRectangle(
@@ -113,5 +143,66 @@ class LSTest {
 
     private fun readImageFile(file: String): BufferedImage {
         return ImageIO.read(File(file))
+    }
+
+    private fun generateBitmapFromLSystem(
+        line: List<LinePoint>,
+        luminanceData: Array<ByteArray>,
+        outputImageSize: Int,
+        minWidth: Double,
+        maxWidth: Double
+    ): BufferedImage {
+
+        val (bufferedImage, g2) = setupGraphics(outputImageSize)
+
+        LSystemRenderer.adjustLineWidthAccordingToImage(line, luminanceData, outputImageSize, minWidth, maxWidth)
+
+        val vwLine = buildHullFromPolygon(line)
+
+        drawPolygon(vwLine, g2)
+
+        tearDownGraphics(g2)
+
+        return bufferedImage
+    }
+
+    private fun drawPolygon(hull: MutableList<LinePoint>, g2: Graphics2D) {
+        val path = GeneralPath()
+        val polygonInitialPP = LinePoint.getMidPoint(hull[hull.size - 1], hull[hull.size - 2])
+        path.moveTo(polygonInitialPP.x, polygonInitialPP.y)
+
+        for (i in 0 until hull.size) {
+            val quadStartPP = hull[(if (i == 0) hull.size else i) - 1]
+            val nextQuadStartPP = hull[i]
+            val quadEndPP = LinePoint.getMidPoint(quadStartPP, nextQuadStartPP)
+            path.quadTo(quadStartPP.x, quadStartPP.y, quadEndPP.x, quadEndPP.y)
+        }
+        path.closePath()
+
+        g2.paint = Color.BLACK
+
+        g2.fill(path)
+    }
+
+    private fun tearDownGraphics(g2: Graphics2D) {
+        g2.dispose()
+    }
+
+    private fun setupGraphics(size: Int): Pair<BufferedImage, Graphics2D> {
+        val bufferedImage = BufferedImage(size, size, BufferedImage.TYPE_INT_RGB)
+
+        val g2 = bufferedImage.createGraphics()
+        val rh = mutableMapOf<RenderingHints.Key, Any>()
+        rh[RenderingHints.KEY_ANTIALIASING] = RenderingHints.VALUE_ANTIALIAS_ON
+        rh[RenderingHints.KEY_ALPHA_INTERPOLATION] = RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
+        rh[RenderingHints.KEY_COLOR_RENDERING] = RenderingHints.VALUE_COLOR_RENDER_QUALITY
+        rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
+        rh[RenderingHints.KEY_STROKE_CONTROL] = RenderingHints.VALUE_STROKE_PURE
+        g2.setRenderingHints(rh)
+
+        g2.stroke = BasicStroke(2f)
+        g2.color = Color.WHITE
+        g2.fill(Rectangle(0, 0, bufferedImage.width, bufferedImage.height))
+        return Pair(bufferedImage, g2)
     }
 }
