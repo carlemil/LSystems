@@ -21,7 +21,7 @@ class LSTest {
             listOf("Hilbert")
 
         if (listOfSystemsToRender.isEmpty()) {
-            listOfSystemsToRender = LSystem.getSystems().map { it.name }
+            listOfSystemsToRender = LSystem.systems.map { it.name }
         }
         val imageNames = listOf("noice.jpg")
 
@@ -109,7 +109,7 @@ class LSTest {
             color and 255,
             c
         )
-        return (c[2] * 256).toInt().toByte()
+        return ((1f - c[2]) * 255-128).toInt().toByte()
     }
 
     private fun adjustToOutputRectangle(

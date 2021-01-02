@@ -18,12 +18,10 @@ class LSystem(
     companion object {
 
         fun getByName(name: String): LSystem? {
-            return this.getSystems().find { lsd -> lsd.name.startsWith(name, true) }
+            return this.systems.find { lsd -> lsd.name.startsWith(name, true) }
         }
 
-        fun getSystems() = Companion.systems
-
-        private val systems: List<LSystem> = listOf(
+        val systems: List<LSystem> = listOf(
             LSystem(
                 name = "KochSnowFlake",
                 angle = 90.0,

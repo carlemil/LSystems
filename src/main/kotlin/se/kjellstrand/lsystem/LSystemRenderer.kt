@@ -25,7 +25,7 @@ object LSystemRenderer {
         for (element in line) {
             // Use the inverted brightness as width of the line we drawSpline.
             element.w = minWidth +
-                    luminanceData[element.x.div(xScale).toInt()][element.y.div(yScale).toInt()] / 256.0 *
+                    ((luminanceData[element.x.div(xScale).toInt()][element.y.div(yScale).toInt()]+127) / 255.0) *
                     (maxWidth - minWidth)
         }
     }
