@@ -68,10 +68,6 @@ class LSTest {
             return false
         }
 
-        val outputSideBuffer = outputImageSize / 50
-        adjustToOutputRectangle(outputImageSize, outputSideBuffer, vwLine)
-
-
         val ly = Array(brightnessImage.height) { ByteArray(brightnessImage.width) }
         for (y in 0 until brightnessImage.height) {
             val lx = ByteArray(brightnessImage.width)
@@ -80,7 +76,6 @@ class LSTest {
                 lx[x] = getBrightnessFromImage(y, x, brightnessImage)
             }
         }
-
 
         val bufferedImage = generateBitmapFromLSystem(vwLine, ly, outputImageSize, minWidth, maxWidth)
 
@@ -109,7 +104,7 @@ class LSTest {
             color and 255,
             c
         )
-        return ((1f - c[2]) * 255-128).toInt().toByte()
+        return ((1f - c[2]) * 255 - 128).toInt().toByte()
     }
 
     private fun adjustToOutputRectangle(
@@ -117,15 +112,11 @@ class LSTest {
         outputSideBuffer: Int,
         vwLine: List<LinePoint>
     ) {
-        val r = Rectangle(
-            outputSideBuffer,
-            outputSideBuffer,
-            outputImageSize - outputSideBuffer * 2,
-            outputImageSize - outputSideBuffer * 2
-        )
-        vwLine.forEach { point ->
-            point.x = r.getX() + point.x.times(r.height)
-            point.y = r.getY() + point.y.times(r.width)
+        val buf = outputSideBuffer / outputImageSize.toDouble()
+        val scale = (outputImageSize - (outputSideBuffer * 2)) / outputImageSize.toDouble()
+        vwLine.forEach { p ->
+            p.x = buf + p.x * scale
+            p.y = buf + p.y * scale
         }
     }
 
@@ -155,11 +146,21 @@ class LSTest {
 
         val (bufferedImage, g2) = setupGraphics(outputImageSize)
 
-        LSystemRenderer.adjustLineWidthAccordingToImage(line, luminanceData, outputImageSize, minWidth, maxWidth)
+        LSystemRenderer.adjustLineWidthAccordingToImage(
+            line, luminanceData, minWidth, maxWidth
+        )
 
-        val vwLine = buildHullFromPolygon(line)
+        val outputSideBuffer = outputImageSize / 50
+        adjustToOutputRectangle(outputImageSize, outputSideBuffer, line)
 
-        drawPolygon(vwLine, g2)
+        val scaledLine = line.map { p ->
+            // TODO stop making new LinePoints
+            LinePoint(p.x * outputImageSize, p.y * outputImageSize, p.w)
+        }
+
+        val hull = buildHullFromPolygon(scaledLine)
+
+        drawPolygon(hull, g2)
 
         tearDownGraphics(g2)
 

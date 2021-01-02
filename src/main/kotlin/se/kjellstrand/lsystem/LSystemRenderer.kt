@@ -16,17 +16,15 @@ object LSystemRenderer {
     fun adjustLineWidthAccordingToImage(
         line: List<LinePoint>,
         luminanceData: Array<ByteArray>,
-        outputImageSize: Int,
         minWidth: Double,
         maxWidth: Double
     ) {
-        val xScale = outputImageSize.toDouble() / (luminanceData[0].size)
-        val yScale = outputImageSize.toDouble() / (luminanceData.size)
-        for (element in line) {
+        val xScale = luminanceData.size - 1
+        val yScale = luminanceData[0].size - 1
+        for (p in line) {
             // Use the inverted brightness as width of the line we drawSpline.
-            element.w = minWidth +
-                    ((luminanceData[element.x.div(xScale).toInt()][element.y.div(yScale).toInt()]+127) / 255.0) *
-                    (maxWidth - minWidth)
+            val lum = luminanceData[(p.x * xScale).toInt()][(p.y * yScale).toInt()]
+            p.w = minWidth + ((lum + 127) / 255.0) * (maxWidth - minWidth)
         }
     }
 }
