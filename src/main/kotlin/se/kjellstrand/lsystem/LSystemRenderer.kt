@@ -1,7 +1,6 @@
 package se.kjellstrand.lsystem
 
 import se.kjellstrand.lsystem.model.LSystem
-import se.kjellstrand.variablewidthline.LinePoint
 import kotlin.math.pow
 
 object LSystemRenderer {
@@ -13,18 +12,18 @@ object LSystemRenderer {
         return Pair(minWidth, maxWidth)
     }
 
-    fun adjustLineWidthAccordingToImage(
-        line: List<LinePoint>,
+    fun setLineWidthAccordingToImage(
+        line: List<Triple<Float, Float, Float>>,
         luminanceData: Array<ByteArray>,
         minWidth: Double,
         maxWidth: Double
-    ) {
+    ): List<Triple<Float, Float, Float>> {
         val xScale = luminanceData.size - 1
         val yScale = luminanceData[0].size - 1
-        for (p in line) {
+        return line.map { p ->
             // Use the inverted brightness as width of the line we drawSpline.
-            val lum = luminanceData[(p.x * xScale).toInt()][(p.y * yScale).toInt()]
-            p.w = minWidth + ((lum + 127) / 255.0) * (maxWidth - minWidth)
+            val lum = luminanceData[(p.first * xScale).toInt()][(p.second * yScale).toInt()]
+            Triple(p.first, p.second, (minWidth + ((lum + 127) / 255.0) * (maxWidth - minWidth)).toFloat())
         }
     }
 }

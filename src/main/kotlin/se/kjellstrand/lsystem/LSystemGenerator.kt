@@ -10,7 +10,7 @@ import kotlin.math.pow
  */
 object LSystemGenerator {
 
-    fun generatePolygon(lSystem: LSystem, iterations: Int): List<Point> {
+    fun generatePolygon(lSystem: LSystem, iterations: Int): List<Pair<Float, Float>> {
         var instructions =
             generate(lSystem.axiom, lSystem.rules, iterations, lSystem.forwardChars)
 
@@ -55,18 +55,18 @@ object LSystemGenerator {
 
     private fun convertToPolyPointList(
         instructions: String,
-        systemAngle: Double,
+        systemAngle: Float,
         forwardChars: Set<String>
-    ): List<Point> {
-        val list: MutableList<Point> = mutableListOf()
+    ): List<Pair<Float, Float>> {
+        val list: MutableList<Pair<Float, Float>> = mutableListOf()
 
-        var x = 0.0
-        var y = 0.0
-        var angle: Double = PI / 2
+        var x = 0.0F
+        var y = 0.0F
+        var angle: Float = (PI / 2).toFloat()
 
-        val stack: Stack<Pair<Double, Double>> = Stack()
+        val stack: Stack<Pair<Float, Float>> = Stack()
 
-        list.add(Point(x, y))
+        list.add(Pair(x, y))
         for (c in instructions) {
             when (c.toString()) {
                 "-" -> angle -= systemAngle
@@ -80,25 +80,25 @@ object LSystemGenerator {
                 in forwardChars -> {
                     x += kotlin.math.sin(angle)
                     y += kotlin.math.cos(angle)
-                    list.add(Point(x, y))
+                    list.add(Pair(x, y))
                 }
             }
         }
         return list
     }
 
-    private fun scalePolyPointList(list: List<Point>): MutableList<Point> {
-        var minX = Double.MAX_VALUE
-        var maxX = Double.MIN_VALUE
-        var minY = Double.MAX_VALUE
-        var maxY = Double.MIN_VALUE
+    private fun scalePolyPointList(list: List<Pair<Float, Float>>): MutableList<Pair<Float, Float>> {
+        var minX = Float.MAX_VALUE
+        var maxX = Float.MIN_VALUE
+        var minY = Float.MAX_VALUE
+        var maxY = Float.MIN_VALUE
 
         for (p in list) {
-            if (p.x < minX) minX = p.x
-            if (p.y < minY) minY = p.y
+            if (p.first < minX) minX = p.first
+            if (p.second < minY) minY = p.second
 
-            if (p.x > maxX) maxX = p.x
-            if (p.y > maxY) maxY = p.y
+            if (p.first > maxX) maxX = p.first
+            if (p.second > maxY) maxY = p.second
         }
 
         val scaleX = 1 / (maxX - minX)
@@ -108,36 +108,40 @@ object LSystemGenerator {
 
         val xSpace = maxX - minX
         val ySpace = maxY - minY
-        val offsetX = if (xSpace < ySpace) (ySpace - xSpace) / 2.0 else 0.0
-        val offsetY = if (ySpace < xSpace) (xSpace - ySpace) / 2.0 else 0.0
+        val offsetX = if (xSpace < ySpace) (ySpace - xSpace) / 2.0F else 0.0F
+        val offsetY = if (ySpace < xSpace) (xSpace - ySpace) / 2.0F else 0.0F
 
-        val scaledList: MutableList<Point> = mutableListOf()
+        val scaledList: MutableList<Pair<Float, Float>> = mutableListOf()
         for (p in list) {
-            scaledList.add(Point((p.x - minX + offsetX) * scale, (p.y - minY + offsetY) * scale))
+            scaledList.add(Pair((p.first - minX + offsetX) * scale, (p.second - minY + offsetY) * scale))
         }
 
         return scaledList
     }
 
-    private fun smoothenTheLine(list: List<Point>): List<Point> {
-        val smoothedList: MutableList<Point> = mutableListOf()
+    private fun smoothenTheLine(list: List<Pair<Float, Float>>): List<Pair<Float, Float>> {
+        val smoothedList: MutableList<Pair<Float, Float>> = mutableListOf()
         for (i in -1 until list.size) {
             val p01 = list[(i - 1).coerceAtLeast(0)]
             val p02 = list[i.coerceAtLeast(0)]
             val p03 = list[(i + 1).coerceAtMost(list.size - 1)]
             addSplineBetweenPoints(
-                Point.getMidPoint(p01, p02),
+                getMidPoint(p01, p02),
                 p02,
-                Point.getMidPoint(p02, p03),
+                getMidPoint(p02, p03),
                 smoothedList
             )
         }
         return smoothedList
     }
 
+    private fun getMidPoint(p0: Pair<Float, Float>, p1: Pair<Float, Float>): Pair<Float, Float> {
+        return Pair((p0.first + p1.first) / 2.0F, (p0.second + p1.second) / 2.0F)
+    }
+
     private fun addSplineBetweenPoints(
-        pp1: Point, pp2: Point, pp3: Point,
-        outputList: MutableList<Point>
+        pp1: Pair<Float, Float>, pp2: Pair<Float, Float>, pp3: Pair<Float, Float>,
+        outputList: MutableList<Pair<Float, Float>>
     ) {
         val tincrement = 1.0 / 5.0
         var t = 0.0
@@ -146,14 +150,14 @@ object LSystemGenerator {
             // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
 
             // Calculate the Bezier (x, y) coordinate for this step.
-            val x = ((1 - t).pow(2.0) * pp1.x) +
-                    (2 * (1 - t) * t * pp2.x) +
-                    (t.pow(2.0) * pp3.x)
-            val y = ((1 - t).pow(2.0) * pp1.y) +
-                    (2 * (1 - t) * t * pp2.y) +
-                    (t.pow(2.0) * pp3.y)
+            val x = ((1 - t).pow(2.0) * pp1.first) +
+                    (2 * (1 - t) * t * pp2.first) +
+                    (t.pow(2.0) * pp3.first)
+            val y = ((1 - t).pow(2.0) * pp1.second) +
+                    (2 * (1 - t) * t * pp2.second) +
+                    (t.pow(2.0) * pp3.second)
 
-            outputList.add(Point(x, y))
+            outputList.add(Pair(x.toFloat(), y.toFloat()))
 
             // Calculate the t value used in the Bezier calculations above.
             // Dont change the / X value here without updating in lSystem.polygon.VariableWidthPolygon.calculatePerpendicularPolyPoint()

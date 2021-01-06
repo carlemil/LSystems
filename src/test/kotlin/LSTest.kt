@@ -2,8 +2,8 @@ import org.junit.Test
 import se.kjellstrand.lsystem.LSystemGenerator
 import se.kjellstrand.lsystem.LSystemRenderer
 import se.kjellstrand.lsystem.model.LSystem
-import se.kjellstrand.variablewidthline.LinePoint
 import se.kjellstrand.variablewidthline.buildHullFromPolygon
+import se.kjellstrand.variablewidthline.getMidPoint
 import java.awt.*
 import java.awt.geom.GeneralPath
 import java.awt.image.BufferedImage
@@ -60,7 +60,7 @@ class LSTest {
 
         val line = LSystemGenerator.generatePolygon(lSystem, iteration)
 
-        val vwLine = line.map { linePoint -> LinePoint(linePoint.x, linePoint.y, 1.0) }
+        val vwLine = line.map { p -> Triple(p.first, p.second, 1F) }
 
         val (minWidth, maxWidth) = LSystemRenderer.getRecommendedMinAndMaxWidth(outputImageSize, iteration, lSystem)
 
@@ -110,13 +110,16 @@ class LSTest {
     private fun adjustToOutputRectangle(
         outputImageSize: Int,
         outputSideBuffer: Int,
-        vwLine: List<LinePoint>
-    ) {
+        vwLine: List<Triple<Float, Float, Float>>
+    ): List<Triple<Float, Float, Float>> {
         val buf = outputSideBuffer / outputImageSize.toDouble()
         val scale = (outputImageSize - (outputSideBuffer * 2)) / outputImageSize.toDouble()
-        vwLine.forEach { p ->
-            p.x = buf + p.x * scale
-            p.y = buf + p.y * scale
+        return vwLine.map { p ->
+            Triple(
+                (buf + p.first * scale).toFloat(),
+                (buf + p.second * scale).toFloat(),
+                p.third
+            )
         }
     }
 
@@ -137,7 +140,7 @@ class LSTest {
     }
 
     private fun generateBitmapFromLSystem(
-        line: List<LinePoint>,
+        line: List<Triple<Float, Float, Float>>,
         luminanceData: Array<ByteArray>,
         outputImageSize: Int,
         minWidth: Double,
@@ -146,16 +149,16 @@ class LSTest {
 
         val (bufferedImage, g2) = setupGraphics(outputImageSize)
 
-        LSystemRenderer.adjustLineWidthAccordingToImage(
+        val lineWithWidth = LSystemRenderer.setLineWidthAccordingToImage(
             line, luminanceData, minWidth, maxWidth
         )
 
         val outputSideBuffer = outputImageSize / 50
-        adjustToOutputRectangle(outputImageSize, outputSideBuffer, line)
+        val adjustedLine = adjustToOutputRectangle(outputImageSize, outputSideBuffer, lineWithWidth)
 
-        val scaledLine = line.map { p ->
+        val scaledLine = adjustedLine.map { p ->
             // TODO stop making new LinePoints
-            LinePoint(p.x * outputImageSize, p.y * outputImageSize, p.w)
+            Triple(p.first * outputImageSize, p.second * outputImageSize, p.third)
         }
 
         val hull = buildHullFromPolygon(scaledLine)
@@ -167,16 +170,16 @@ class LSTest {
         return bufferedImage
     }
 
-    private fun drawPolygon(hull: MutableList<LinePoint>, g2: Graphics2D) {
+    private fun drawPolygon(hull: MutableList<Triple<Float, Float, Float>>, g2: Graphics2D) {
         val path = GeneralPath()
-        val polygonInitialPP = LinePoint.getMidPoint(hull[hull.size - 1], hull[hull.size - 2])
-        path.moveTo(polygonInitialPP.x, polygonInitialPP.y)
+        val polygonInitialPP = getMidPoint(hull[hull.size - 1], hull[hull.size - 2])
+        path.moveTo(polygonInitialPP.first, polygonInitialPP.second)
 
         for (i in 0 until hull.size) {
             val quadStartPP = hull[(if (i == 0) hull.size else i) - 1]
             val nextQuadStartPP = hull[i]
-            val quadEndPP = LinePoint.getMidPoint(quadStartPP, nextQuadStartPP)
-            path.quadTo(quadStartPP.x, quadStartPP.y, quadEndPP.x, quadEndPP.y)
+            val quadEndPP = getMidPoint(quadStartPP, nextQuadStartPP)
+            path.quadTo(quadStartPP.first, quadStartPP.second, quadEndPP.first, quadEndPP.second)
         }
         path.closePath()
 

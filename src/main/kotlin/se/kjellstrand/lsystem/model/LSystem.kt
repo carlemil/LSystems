@@ -11,8 +11,8 @@ class LSystem(
     val lineWidthExp: Double,
     val lineWidthBold: Double
 ) {
-    fun getAngleInRadians(): Double {
-        return angle / 180 * PI
+    fun getAngleInRadians(): Float {
+        return (angle / 180 * PI).toFloat()
     }
 
     companion object {
