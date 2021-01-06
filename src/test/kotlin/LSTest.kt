@@ -1,5 +1,7 @@
 import org.junit.Test
 import se.kjellstrand.lsystem.LSystemGenerator
+import se.kjellstrand.lsystem.LSystemGenerator.getRecommendedMinAndMaxWidth
+import se.kjellstrand.lsystem.LSystemGenerator.setLineWidthAccordingToImage
 import se.kjellstrand.lsystem.LSystemRenderer
 import se.kjellstrand.lsystem.model.LSystem
 import se.kjellstrand.variablewidthline.buildHullFromPolygon
@@ -62,7 +64,7 @@ class LSTest {
 
         val vwLine = line.map { p -> Triple(p.first, p.second, 1F) }
 
-        val (minWidth, maxWidth) = LSystemRenderer.getRecommendedMinAndMaxWidth(outputImageSize, iteration, lSystem)
+        val (minWidth, maxWidth) = getRecommendedMinAndMaxWidth(outputImageSize, iteration, lSystem)
 
         if (minWidth < 0.5 || minWidth < outputImageSize / 5000) {
             return false
@@ -149,7 +151,7 @@ class LSTest {
 
         val (bufferedImage, g2) = setupGraphics(outputImageSize)
 
-        val lineWithWidth = LSystemRenderer.setLineWidthAccordingToImage(
+        val lineWithWidth = setLineWidthAccordingToImage(
             line, luminanceData, minWidth, maxWidth
         )
 
