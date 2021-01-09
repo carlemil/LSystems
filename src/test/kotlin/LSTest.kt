@@ -2,7 +2,6 @@ import org.junit.Test
 import se.kjellstrand.lsystem.LSystemGenerator
 import se.kjellstrand.lsystem.LSystemGenerator.getRecommendedMinAndMaxWidth
 import se.kjellstrand.lsystem.LSystemGenerator.setLineWidthAccordingToImage
-import se.kjellstrand.lsystem.LSystemRenderer
 import se.kjellstrand.lsystem.model.LSystem
 import se.kjellstrand.variablewidthline.buildHullFromPolygon
 import se.kjellstrand.variablewidthline.getMidPoint
