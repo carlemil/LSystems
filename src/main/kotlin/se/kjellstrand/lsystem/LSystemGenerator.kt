@@ -25,25 +25,24 @@ object LSystemGenerator {
         return smoothenTheLine(scaledList)
     }
 
-    fun getRecommendedMinAndMaxWidth(size: Int, iteration: Int, def: LSystem): Pair<Double, Double> {
-        val maxWidth = (size / (iteration + 1).toDouble()
-            .pow(def.lineWidthExp)) * def.lineWidthBold
+    fun getRecommendedMinAndMaxWidth(size: Int, iteration: Int, def: LSystem): Pair<Float, Float> {
+        val maxWidth = (size / (iteration + 1F).toDouble().pow(def.lineWidthExp)) * def.lineWidthBold
         val minWidth = maxWidth / 10.0
-        return Pair(minWidth, maxWidth)
+        return Pair(minWidth.toFloat(), maxWidth.toFloat())
     }
 
     fun setLineWidthAccordingToImage(
         line: List<Triple<Float, Float, Float>>,
-        luminanceData: Array<ByteArray>,
-        minWidth: Double,
-        maxWidth: Double
+        luminanceData: Array<FloatArray>,
+        minWidth: Float,
+        maxWidth: Float
     ): List<Triple<Float, Float, Float>> {
         val xScale = luminanceData.size - 1
         val yScale = luminanceData[0].size - 1
         return line.map { p ->
             // Use the inverted brightness as width of the line we drawSpline.
             val lum = luminanceData[(p.first * xScale).toInt()][(p.second * yScale).toInt()]
-            Triple(p.first, p.second, (minWidth + ((lum + 127) / 255.0) * (maxWidth - minWidth)).toFloat())
+            Triple(p.first, p.second, (minWidth + lum * (maxWidth - minWidth)))
         }
     }
 
@@ -157,6 +156,22 @@ object LSystemGenerator {
         return smoothedList
     }
 
+    fun adjustToOutputRectangle(
+        outputImageSize: Int,
+        outputSideBuffer: Int,
+        vwLine: List<Triple<Float, Float, Float>>
+    ): List<Triple<Float, Float, Float>> {
+        val buf = outputSideBuffer / outputImageSize.toFloat()
+        val scale = (outputImageSize - (outputSideBuffer * 2)) / outputImageSize.toFloat()
+        return vwLine.map { p ->
+            Triple(
+                (buf + p.first * scale).toFloat(),
+                (buf + p.second * scale).toFloat(),
+                p.third
+            )
+        }
+    }
+
     private fun getMidPoint(p0: Pair<Float, Float>, p1: Pair<Float, Float>): Pair<Float, Float> {
         return Pair((p0.first + p1.first) / 2.0F, (p0.second + p1.second) / 2.0F)
     }
@@ -186,5 +201,4 @@ object LSystemGenerator {
             t += tincrement
         }
     }
-
 }

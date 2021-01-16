@@ -69,16 +69,16 @@ class LSTest {
             return false
         }
 
-        val ly = Array(brightnessImage.height) { ByteArray(brightnessImage.width) }
+        val luminance = Array(brightnessImage.height) { FloatArray(brightnessImage.width) }
         for (y in 0 until brightnessImage.height) {
-            val lx = ByteArray(brightnessImage.width)
-            ly[y] = lx
+            val lx = FloatArray(brightnessImage.width)
+            luminance[y] = lx
             for (x in 0 until brightnessImage.width) {
                 lx[x] = getBrightnessFromImage(y, x, brightnessImage)
             }
         }
 
-        val bufferedImage = generateBitmapFromLSystem(vwLine, ly, outputImageSize, minWidth, maxWidth)
+        val bufferedImage = generateBitmapFromLSystem(vwLine, luminance, outputImageSize, minWidth, maxWidth)
 
         val fileName = getFirstPartOfImageName(brightnessImageName) +
                 "_" + lSystem.name +
@@ -92,7 +92,7 @@ class LSTest {
         return true
     }
 
-    private fun getBrightnessFromImage(x: Int, y: Int, image: BufferedImage): Byte {
+    private fun getBrightnessFromImage(x: Int, y: Int, image: BufferedImage): Float {
         var color = 0x777777
         try {
             color = image.getRGB(x, y)
@@ -105,23 +105,7 @@ class LSTest {
             color and 255,
             c
         )
-        return ((1f - c[2]) * 255 - 128).toInt().toByte()
-    }
-
-    private fun adjustToOutputRectangle(
-        outputImageSize: Int,
-        outputSideBuffer: Int,
-        vwLine: List<Triple<Float, Float, Float>>
-    ): List<Triple<Float, Float, Float>> {
-        val buf = outputSideBuffer / outputImageSize.toDouble()
-        val scale = (outputImageSize - (outputSideBuffer * 2)) / outputImageSize.toDouble()
-        return vwLine.map { p ->
-            Triple(
-                (buf + p.first * scale).toFloat(),
-                (buf + p.second * scale).toFloat(),
-                p.third
-            )
-        }
+        return 1f - c[2]
     }
 
     private fun getFirstPartOfImageName(brightnessImageName: String?): String {
@@ -142,10 +126,10 @@ class LSTest {
 
     private fun generateBitmapFromLSystem(
         line: List<Triple<Float, Float, Float>>,
-        luminanceData: Array<ByteArray>,
+        luminanceData: Array<FloatArray>,
         outputImageSize: Int,
-        minWidth: Double,
-        maxWidth: Double
+        minWidth: Float,
+        maxWidth: Float
     ): BufferedImage {
 
         val (bufferedImage, g2) = setupGraphics(outputImageSize)
@@ -155,7 +139,7 @@ class LSTest {
         )
 
         val outputSideBuffer = outputImageSize / 50
-        val adjustedLine = adjustToOutputRectangle(outputImageSize, outputSideBuffer, lineWithWidth)
+        val adjustedLine = LSystemGenerator.adjustToOutputRectangle(outputImageSize, outputSideBuffer, lineWithWidth)
 
         val scaledLine = adjustedLine.map { p ->
             // TODO stop making new LinePoints
