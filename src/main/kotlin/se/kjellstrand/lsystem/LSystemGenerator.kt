@@ -1,5 +1,6 @@
 package se.kjellstrand.lsystem
 
+import se.kjellstrand.lsystem.model.LSTriple
 import se.kjellstrand.lsystem.model.LSystem
 import java.lang.Math.PI
 import java.util.*
@@ -10,7 +11,7 @@ import kotlin.math.pow
  */
 object LSystemGenerator {
 
-    fun generatePolygon(lSystem: LSystem, iterations: Int): List<Pair<Float, Float>> {
+    fun generatePolygon(lSystem: LSystem, iterations: Int): MutableList<LSTriple> {
         var instructions =
             generate(lSystem.axiom, lSystem.rules, iterations, lSystem.forwardChars)
 
@@ -25,24 +26,24 @@ object LSystemGenerator {
         return smoothenTheLine(scaledList)
     }
 
-    fun getRecommendedMinAndMaxWidth(size: Int, iteration: Int, def: LSystem): Pair<Float, Float> {
+    fun getRecommendedMinAndMaxWidth(size: Int, iteration: Int, def: LSystem): LSTriple {
         val maxWidth = (size / (iteration + 1F).toDouble().pow(def.lineWidthExp)) * def.lineWidthBold
         val minWidth = maxWidth / 10.0
-        return Pair(minWidth.toFloat(), maxWidth.toFloat())
+        return LSTriple(minWidth.toFloat(), maxWidth.toFloat(), 1F)
     }
 
     fun setLineWidthAccordingToImage(
-        line: List<Triple<Float, Float, Float>>,
+        line: MutableList<LSTriple>,
         luminanceData: Array<FloatArray>,
         minWidth: Float,
         maxWidth: Float
-    ): List<Triple<Float, Float, Float>> {
+    ) {
         val xScale = luminanceData.size - 1
         val yScale = luminanceData[0].size - 1
-        return line.map { p ->
+        line.forEach { p ->
             // Use the inverted brightness as width of the line we drawSpline.
-            val lum = luminanceData[(p.first * xScale).toInt()][(p.second * yScale).toInt()]
-            Triple(p.first, p.second, (minWidth + lum * (maxWidth - minWidth)))
+            val lum = luminanceData[(p.x * xScale).toInt()][(p.y * yScale).toInt()]
+            p.w = minWidth + lum * (maxWidth - minWidth)
         }
     }
 
@@ -78,48 +79,48 @@ object LSystemGenerator {
         instructions: String,
         systemAngle: Float,
         forwardChars: Set<String>
-    ): List<Pair<Float, Float>> {
-        val list: MutableList<Pair<Float, Float>> = mutableListOf()
+    ): List<LSTriple> {
+        val list: MutableList<LSTriple> = mutableListOf()
 
         var x = 0.0F
         var y = 0.0F
         var angle: Float = (PI / 2).toFloat()
 
-        val stack: Stack<Pair<Float, Float>> = Stack()
+        val stack: Stack<LSTriple> = Stack()
 
-        list.add(Pair(x, y))
+        list.add(LSTriple(x, y, 1F))
         for (c in instructions) {
             when (c.toString()) {
                 "-" -> angle -= systemAngle
                 "+" -> angle += systemAngle
-                "[" -> stack.push(Pair(x, y))
+                "[" -> stack.push(LSTriple(x, y, 1F))
                 "]" -> {
                     val p = stack.pop()
-                    x = p.first
-                    y = p.second
+                    x = p.x
+                    y = p.y
                 }
                 in forwardChars -> {
                     x += kotlin.math.sin(angle)
                     y += kotlin.math.cos(angle)
-                    list.add(Pair(x, y))
+                    list.add(LSTriple(x, y, 1F))
                 }
             }
         }
         return list
     }
 
-    private fun scalePolyPointList(list: List<Pair<Float, Float>>): MutableList<Pair<Float, Float>> {
+    private fun scalePolyPointList(list: List<LSTriple>): MutableList<LSTriple> {
         var minX = Float.MAX_VALUE
         var maxX = Float.MIN_VALUE
         var minY = Float.MAX_VALUE
         var maxY = Float.MIN_VALUE
 
         for (p in list) {
-            if (p.first < minX) minX = p.first
-            if (p.second < minY) minY = p.second
+            if (p.x < minX) minX = p.x
+            if (p.y < minY) minY = p.y
 
-            if (p.first > maxX) maxX = p.first
-            if (p.second > maxY) maxY = p.second
+            if (p.x > maxX) maxX = p.x
+            if (p.y > maxY) maxY = p.y
         }
 
         val scaleX = 1 / (maxX - minX)
@@ -132,16 +133,16 @@ object LSystemGenerator {
         val offsetX = if (xSpace < ySpace) (ySpace - xSpace) / 2.0F else 0.0F
         val offsetY = if (ySpace < xSpace) (xSpace - ySpace) / 2.0F else 0.0F
 
-        val scaledList: MutableList<Pair<Float, Float>> = mutableListOf()
+        val scaledList: MutableList<LSTriple> = mutableListOf()
         for (p in list) {
-            scaledList.add(Pair((p.first - minX + offsetX) * scale, (p.second - minY + offsetY) * scale))
+            scaledList.add(LSTriple((p.x - minX + offsetX) * scale, (p.y - minY + offsetY) * scale, 1F))
         }
 
         return scaledList
     }
 
-    private fun smoothenTheLine(list: List<Pair<Float, Float>>): List<Pair<Float, Float>> {
-        val smoothedList: MutableList<Pair<Float, Float>> = mutableListOf()
+    private fun smoothenTheLine(list: MutableList<LSTriple>): MutableList<LSTriple> {
+        val smoothedList: MutableList<LSTriple> = mutableListOf()
         for (i in -1 until list.size) {
             val p01 = list[(i - 1).coerceAtLeast(0)]
             val p02 = list[i.coerceAtLeast(0)]
@@ -159,26 +160,23 @@ object LSystemGenerator {
     fun adjustToOutputRectangle(
         outputImageSize: Int,
         outputSideBuffer: Int,
-        vwLine: List<Triple<Float, Float, Float>>
-    ): List<Triple<Float, Float, Float>> {
+        vwLine: List<LSTriple>
+    ) {
         val buf = outputSideBuffer / outputImageSize.toFloat()
         val scale = (outputImageSize - (outputSideBuffer * 2)) / outputImageSize.toFloat()
-        return vwLine.map { p ->
-            Triple(
-                (buf + p.first * scale).toFloat(),
-                (buf + p.second * scale).toFloat(),
-                p.third
-            )
+        vwLine.forEach { p ->
+            p.x = buf + p.x * scale
+            p.y = buf + p.y * scale
         }
     }
 
-    private fun getMidPoint(p0: Pair<Float, Float>, p1: Pair<Float, Float>): Pair<Float, Float> {
-        return Pair((p0.first + p1.first) / 2.0F, (p0.second + p1.second) / 2.0F)
+    private fun getMidPoint(p0: LSTriple, p1: LSTriple): LSTriple {
+        return LSTriple((p0.x + p1.x) / 2.0F, (p0.y + p1.y) / 2.0F, 1F)
     }
 
     private fun addSplineBetweenPoints(
-        pp1: Pair<Float, Float>, pp2: Pair<Float, Float>, pp3: Pair<Float, Float>,
-        outputList: MutableList<Pair<Float, Float>>
+        pp1: LSTriple, pp2: LSTriple, pp3: LSTriple,
+        outputList: MutableList<LSTriple>
     ) {
         val tincrement = 1.0 / 5.0
         var t = 0.0
@@ -187,14 +185,14 @@ object LSystemGenerator {
             // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
 
             // Calculate the Bezier (x, y) coordinate for this step.
-            val x = ((1 - t).pow(2.0) * pp1.first) +
-                    (2 * (1 - t) * t * pp2.first) +
-                    (t.pow(2.0) * pp3.first)
-            val y = ((1 - t).pow(2.0) * pp1.second) +
-                    (2 * (1 - t) * t * pp2.second) +
-                    (t.pow(2.0) * pp3.second)
+            val x = ((1 - t).pow(2.0) * pp1.x) +
+                    (2 * (1 - t) * t * pp2.x) +
+                    (t.pow(2.0) * pp3.x)
+            val y = ((1 - t).pow(2.0) * pp1.y) +
+                    (2 * (1 - t) * t * pp2.y) +
+                    (t.pow(2.0) * pp3.y)
 
-            outputList.add(Pair(x.toFloat(), y.toFloat()))
+            outputList.add(LSTriple(x.toFloat(), y.toFloat(), 1F))
 
             // Calculate the t value used in the Bezier calculations above.
             // Dont change the / X value here without updating in lSystem.polygon.VariableWidthPolygon.calculatePerpendicularPolyPoint()
