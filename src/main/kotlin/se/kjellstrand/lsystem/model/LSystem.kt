@@ -17,8 +17,8 @@ class LSystem(
 
     companion object {
 
-        fun getByName(name: String): LSystem? {
-            return this.systems.find { lsd -> lsd.name.startsWith(name, true) }
+        fun getByName(name: String): LSystem {
+            return this.systems.find { lsd -> lsd.name.startsWith(name, true) }?: systems[0]
         }
 
         val systems: List<LSystem> = listOf(
