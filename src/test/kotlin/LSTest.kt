@@ -7,6 +7,7 @@ import se.kjellstrand.lsystem.getMidPoint
 import se.kjellstrand.lsystem.model.LSTriple
 import se.kjellstrand.lsystem.model.LSystem
 import java.awt.*
+import java.awt.geom.AffineTransform
 import java.awt.geom.GeneralPath
 import java.awt.image.BufferedImage
 import java.io.File
@@ -62,9 +63,9 @@ class LSTest {
 
         var line = LSystemGenerator.generatePolygon(lSystem, iteration)
 
-        val (minWidth, maxWidth) = getRecommendedMinAndMaxWidth(outputImageSize, iteration, lSystem)
+        val (minWidth, maxWidth) = getRecommendedMinAndMaxWidth(1f, iteration, lSystem)
 
-        if (minWidth < 0.5 || minWidth < outputImageSize / 5000) {
+        if (minWidth < 0.001 || minWidth < outputImageSize / 5000) {
             return false
         }
 
@@ -135,25 +136,20 @@ class LSTest {
 
         setLineWidthAccordingToImage(line, luminanceData, minWidth, maxWidth)
 
-        val outputSideBuffer = outputImageSize / 50
-        LSystemGenerator.adjustToOutputRectangle(outputImageSize, outputSideBuffer, line)
+        LSystemGenerator.addSideBuffer(maxWidth, line)
 
-        line.forEach { p ->
-            // TODO stop making new LinePoints
-            p.x=p.x * outputImageSize
-            p.y= p.y * outputImageSize
-        }
+        LSystemGenerator.smoothenWidthOfLine(line)
 
         val hull = buildHullFromPolygon(line)
 
-        drawPolygon(hull, g2)
+        drawPolygon(hull, g2, outputImageSize.toDouble())
 
         tearDownGraphics(g2)
 
         return bufferedImage
     }
 
-    private fun drawPolygon(hull: MutableList<LSTriple>, g2: Graphics2D) {
+    private fun drawPolygon(hull: MutableList<LSTriple>, g2: Graphics2D, outputImageSize: Double) {
         val path = GeneralPath()
         val polygonInitialPP = getMidPoint(hull[hull.size - 1], hull[hull.size - 2])
         path.moveTo(polygonInitialPP.x, polygonInitialPP.y)
@@ -168,6 +164,9 @@ class LSTest {
 
         g2.paint = Color.BLACK
 
+        val af = AffineTransform()
+        af.scale(outputImageSize, outputImageSize)
+        path.transform(af)
         g2.fill(path)
     }
 

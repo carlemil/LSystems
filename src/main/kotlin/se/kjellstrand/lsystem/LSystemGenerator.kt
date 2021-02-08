@@ -23,10 +23,10 @@ object LSystemGenerator {
 
         val scaledList = scalePolyPointList(xyList)
 
-        return smoothenTheLine(scaledList)
+        return smoothenCurvatureOfLine(scaledList)
     }
 
-    fun getRecommendedMinAndMaxWidth(size: Int, iteration: Int, def: LSystem): LSTriple {
+    fun getRecommendedMinAndMaxWidth(size: Float, iteration: Int, def: LSystem): LSTriple {
         val maxWidth = (size / (iteration + 1F).toDouble().pow(def.lineWidthExp)) * def.lineWidthBold
         val minWidth = maxWidth / 10.0
         return LSTriple(minWidth.toFloat(), maxWidth.toFloat(), 1F)
@@ -141,7 +141,7 @@ object LSystemGenerator {
         return scaledList
     }
 
-    private fun smoothenTheLine(list: MutableList<LSTriple>): MutableList<LSTriple> {
+    private fun smoothenCurvatureOfLine(list: MutableList<LSTriple>): MutableList<LSTriple> {
         val smoothedList: MutableList<LSTriple> = mutableListOf()
         for (i in -1 until list.size) {
             val p01 = list[(i - 1).coerceAtLeast(0)]
@@ -157,16 +157,29 @@ object LSystemGenerator {
         return smoothedList
     }
 
-    fun adjustToOutputRectangle(
-        outputImageSize: Int,
-        outputSideBuffer: Int,
-        vwLine: List<LSTriple>
-    ) {
-        val buf = outputSideBuffer / outputImageSize.toFloat()
-        val scale = (outputImageSize - (outputSideBuffer * 2)) / outputImageSize.toFloat()
+    fun smoothenWidthOfLine(list: MutableList<LSTriple>) {
+        for (i in 0 until list.size - 1) {
+            val p00 = list[(i - 3).coerceAtLeast(0)]
+            val p01 = list[(i - 2).coerceAtLeast(0)]
+            val p02 = list[(i - 1).coerceAtLeast(0)]
+            val p03 = list[i]
+            val p04 = list[(i + 1).coerceAtMost(list.size - 1)]
+            val p05 = list[(i + 2).coerceAtMost(list.size - 1)]
+            val p06 = list[(i + 3).coerceAtMost(list.size - 1)]
+            p03.w = p00.w * 0.05f +
+                    p01.w * 0.1f +
+                    p02.w * 0.2f +
+                    p03.w * 0.3f +
+                    p04.w * 0.2f +
+                    p05.w * 0.1f +
+                    p06.w * 0.05f
+        }
+    }
+
+    fun addSideBuffer(outputSideBuffer: Float, vwLine: List<LSTriple>) {
         vwLine.forEach { p ->
-            p.x = buf + p.x * scale
-            p.y = buf + p.y * scale
+            p.x = outputSideBuffer + p.x * (1 - 2 * outputSideBuffer)
+            p.y = outputSideBuffer + p.y * (1 - 2 * outputSideBuffer)
         }
     }
 
