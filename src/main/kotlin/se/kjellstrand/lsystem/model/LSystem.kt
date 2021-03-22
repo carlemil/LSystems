@@ -10,8 +10,8 @@ class LSystem(
     val axiom: String,
     val lineWidthExp: Double,
     val lineWidthBold: Double,
-    val minIterations: Int = 1,
-    val maxIterations: Int = 2
+    var minIterations: Int = 1,
+    var maxIterations: Int = 2
 ) {
     fun getAngleInRadians(): Float {
         return (angle / 180 * PI).toFloat()
