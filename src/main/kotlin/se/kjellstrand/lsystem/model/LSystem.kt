@@ -9,7 +9,9 @@ class LSystem(
     val forwardChars: Set<String>,
     val axiom: String,
     val lineWidthExp: Double,
-    val lineWidthBold: Double
+    val lineWidthBold: Double,
+    val minIterations: Int = 1,
+    val maxIterations: Int = 2
 ) {
     fun getAngleInRadians(): Float {
         return (angle / 180 * PI).toFloat()
@@ -18,7 +20,7 @@ class LSystem(
     companion object {
 
         fun getByName(name: String): LSystem {
-            return this.systems.find { lsd -> lsd.name.startsWith(name, true) }?: systems[0]
+            return this.systems.find { lsd -> lsd.name.startsWith(name, true) } ?: systems[0]
         }
 
         val systems: List<LSystem> = listOf(
