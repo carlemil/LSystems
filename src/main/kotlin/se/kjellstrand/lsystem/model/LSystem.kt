@@ -10,8 +10,8 @@ class LSystem(
     val axiom: String,
     val lineWidthExp: Double,
     val lineWidthBold: Double,
-    var minIterations: Int = 1,
-    var maxIterations: Int = 2
+    var minIterations: Int,
+    var maxIterations: Int
 ) {
     fun getAngleInRadians(): Float {
         return (angle / 180 * PI).toFloat()
@@ -31,7 +31,9 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "F",
                 lineWidthExp = 3.3,
-                lineWidthBold = 1.0
+                lineWidthBold = 1.0,
+                minIterations = 1,
+                maxIterations = 5
             ),
             LSystem(
                 name = "Dragon",
@@ -40,7 +42,9 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "FA",
                 lineWidthExp = 2.4,
-                lineWidthBold = 1.0
+                lineWidthBold = 1.0,
+                minIterations = 1,
+                maxIterations = 12
             ),
             LSystem(
                 name = "TwinDragon",
@@ -49,7 +53,9 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "FA+FA+",
                 lineWidthExp = 2.4,
-                lineWidthBold = 1.0
+                lineWidthBold = 1.0,
+                minIterations = 1,
+                maxIterations = 9
             ),
             LSystem(
                 name = "Fudgeflake",
@@ -58,7 +64,9 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "F++++F++++F",
                 lineWidthExp = 3.0,
-                lineWidthBold = 1.5
+                lineWidthBold = 1.5,
+                minIterations = 1,
+                maxIterations = 7
             ),
             LSystem(
                 name = "Hilbert",
@@ -67,7 +75,9 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "A",
                 lineWidthExp = 4.0,
-                lineWidthBold = 16.0
+                lineWidthBold = 16.0,
+                minIterations = 1,
+                maxIterations = 6
             ),
             LSystem(
                 name = "SierpinskiTriangle",
@@ -76,7 +86,9 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "A",
                 lineWidthExp = 4.6,
-                lineWidthBold = 40.0
+                lineWidthBold = 40.0,
+                minIterations = 1,
+                maxIterations = 8
             ),
             LSystem(
                 name = "SierpinskiCurve",
@@ -85,7 +97,9 @@ class LSystem(
                 forwardChars = setOf("F", "G"),
                 axiom = "F--XF--F--XF",
                 lineWidthExp = 3.34,
-                lineWidthBold = 2.0
+                lineWidthBold = 2.0,
+                minIterations = 1,
+                maxIterations = 8
             ),
             LSystem(
                 name = "SierpinskiSquare",
@@ -94,7 +108,9 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "F+XF+F+XF",
                 lineWidthExp = 3.4,
-                lineWidthBold = 2.0
+                lineWidthBold = 2.0,
+                minIterations = 1,
+                maxIterations = 8
             ),
             LSystem(
                 name = "Gosper",
@@ -103,7 +119,9 @@ class LSystem(
                 forwardChars = setOf("A", "B"),
                 axiom = "A",
                 lineWidthExp = 4.5,
-                lineWidthBold = 8.0
+                lineWidthBold = 8.0,
+                minIterations = 1,
+                maxIterations = 5
             ),
             LSystem(
                 name = "Peano",
@@ -112,7 +130,9 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "L",
                 lineWidthExp = 4.9,
-                lineWidthBold = 16.0
+                lineWidthBold = 16.0,
+                minIterations = 1,
+                maxIterations = 5
             ),
             LSystem(
                 name = "Moore",
@@ -121,7 +141,9 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "AFA+F+AFA",
                 lineWidthExp = 3.8,
-                lineWidthBold = 8.0
+                lineWidthBold = 8.0,
+                minIterations = 1,
+                maxIterations = 6
             )
         )
     }
