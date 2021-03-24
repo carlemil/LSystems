@@ -41,8 +41,8 @@ class LSystem(
                 rules = mapOf("A" to "A+BF", "B" to "FA-B"),
                 forwardChars = setOf("F"),
                 axiom = "FA",
-                lineWidthExp = 2.4,
-                lineWidthBold = 1.0,
+                lineWidthExp = 1.45,
+                lineWidthBold = 0.1,
                 minIterations = 1,
                 maxIterations = 12
             ),
@@ -52,8 +52,8 @@ class LSystem(
                 rules = mapOf("A" to "A+BF", "B" to "FA-B"),
                 forwardChars = setOf("F"),
                 axiom = "FA+FA+",
-                lineWidthExp = 2.4,
-                lineWidthBold = 1.0,
+                lineWidthExp = 1.45,
+                lineWidthBold = 0.1,
                 minIterations = 1,
                 maxIterations = 9
             ),
@@ -63,8 +63,8 @@ class LSystem(
                 rules = mapOf("F" to "+F----F++++F-"),
                 forwardChars = setOf("F"),
                 axiom = "F++++F++++F",
-                lineWidthExp = 3.0,
-                lineWidthBold = 1.5,
+                lineWidthExp = 1.667,
+                lineWidthBold = 0.1,
                 minIterations = 1,
                 maxIterations = 7
             ),
@@ -74,8 +74,8 @@ class LSystem(
                 rules = mapOf("A" to "-BF+AFA+FB-", "B" to "+AF-BFB-FA+"),
                 forwardChars = setOf("F"),
                 axiom = "A",
-                lineWidthExp = 4.0,
-                lineWidthBold = 16.0,
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.4,
                 minIterations = 1,
                 maxIterations = 6
             ),
@@ -85,8 +85,8 @@ class LSystem(
                 rules = mapOf("A" to "BF-AF-B", "B" to "AF+BF+A"),
                 forwardChars = setOf("F"),
                 axiom = "A",
-                lineWidthExp = 4.6,
-                lineWidthBold = 40.0,
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.4,
                 minIterations = 1,
                 maxIterations = 8
             ),
@@ -96,10 +96,10 @@ class LSystem(
                 rules = mapOf("X" to "XF+G+XF--F--XF+G+X"),
                 forwardChars = setOf("F", "G"),
                 axiom = "F--XF--F--XF",
-                lineWidthExp = 3.34,
-                lineWidthBold = 2.0,
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.15,
                 minIterations = 1,
-                maxIterations = 8
+                maxIterations = 6
             ),
             LSystem(
                 name = "SierpinskiSquare",
@@ -107,10 +107,10 @@ class LSystem(
                 rules = mapOf("X" to "XF-F+F-XF+F+XF-F+F-X"),
                 forwardChars = setOf("F"),
                 axiom = "F+XF+F+XF",
-                lineWidthExp = 3.4,
-                lineWidthBold = 2.0,
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.15,
                 minIterations = 1,
-                maxIterations = 8
+                maxIterations = 6
             ),
             LSystem(
                 name = "Gosper",
@@ -118,8 +118,8 @@ class LSystem(
                 rules = mapOf("A" to "A-B--B+A++AA+B-", "B" to "+A-BB--B-A++A+B"),
                 forwardChars = setOf("A", "B"),
                 axiom = "A",
-                lineWidthExp = 4.5,
-                lineWidthBold = 8.0,
+                lineWidthExp = 2.5,
+                lineWidthBold = 0.20,
                 minIterations = 1,
                 maxIterations = 5
             ),
@@ -129,8 +129,8 @@ class LSystem(
                 rules = mapOf("L" to "LFRFL-F-RFLFR+F+LFRFL", "R" to "RFLFR+F+LFRFL-F-RFLFR"),
                 forwardChars = setOf("F"),
                 axiom = "L",
-                lineWidthExp = 4.9,
-                lineWidthBold = 16.0,
+                lineWidthExp = 3.0,
+                lineWidthBold = 0.35,
                 minIterations = 1,
                 maxIterations = 5
             ),
@@ -140,8 +140,8 @@ class LSystem(
                 rules = mapOf("A" to "-BF+AFA+FB-", "B" to "+AF-BFB-FA+"),
                 forwardChars = setOf("F"),
                 axiom = "AFA+F+AFA",
-                lineWidthExp = 3.8,
-                lineWidthBold = 8.0,
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.2,
                 minIterations = 1,
                 maxIterations = 6
             )

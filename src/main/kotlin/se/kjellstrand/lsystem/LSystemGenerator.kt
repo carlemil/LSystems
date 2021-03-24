@@ -26,10 +26,10 @@ object LSystemGenerator {
         return smoothenCurvatureOfLine(scaledList)
     }
 
-    fun getRecommendedMinAndMaxWidth(size: Float, iteration: Int, def: LSystem): LSTriple {
-        val maxWidth = (size / (iteration + 1F).toDouble().pow(def.lineWidthExp)) * def.lineWidthBold
+    fun getRecommendedMinAndMaxWidth(iteration: Int, def: LSystem): Pair<Float, Float> {
+        val maxWidth = (1.0 / def.lineWidthExp.pow(iteration)) * def.lineWidthBold
         val minWidth = maxWidth / 10.0
-        return LSTriple(minWidth.toFloat(), maxWidth.toFloat(), 1F)
+        return Pair(minWidth.toFloat(), maxWidth.toFloat())
     }
 
     fun setLineWidthAccordingToImage(
