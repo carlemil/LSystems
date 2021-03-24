@@ -20,13 +20,13 @@ class LSTest {
         println("Init")
         val totalTime0 = System.currentTimeMillis()
 
-        var listOfSystemsToRender = //emptyList<String>()
-            listOf("Hilbert")
+        var listOfSystemsToRender = emptyList<String>()
+            //listOf("Hilbert")
 
         if (listOfSystemsToRender.isEmpty()) {
             listOfSystemsToRender = LSystem.systems.map { it.name }
         }
-        val imageNames = listOf("noice.jpg")
+        val imageNames = listOf("str.jpg")
 
         for (imageName in imageNames) {
             val image = readImageFile("input/$imageName")
@@ -63,7 +63,7 @@ class LSTest {
 
         var line = LSystemGenerator.generatePolygon(lSystem, iteration)
 
-        val (minWidth, maxWidth) = getRecommendedMinAndMaxWidth(1f, iteration, lSystem)
+        val (minWidth, maxWidth) = getRecommendedMinAndMaxWidth(iteration, lSystem)
 
         if (minWidth < 0.001 || minWidth < outputImageSize / 5000) {
             return false

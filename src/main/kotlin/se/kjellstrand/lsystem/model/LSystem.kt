@@ -11,7 +11,8 @@ class LSystem(
     val lineWidthExp: Double,
     val lineWidthBold: Double,
     var minIterations: Int,
-    var maxIterations: Int
+    var maxIterations: Int,
+    var intermediateSplines: Int
 ) {
     fun getAngleInRadians(): Float {
         return (angle / 180 * PI).toFloat()
@@ -30,10 +31,11 @@ class LSystem(
                 rules = mapOf("F" to "F-F+F+FF-F-F+F"),
                 forwardChars = setOf("F"),
                 axiom = "F",
-                lineWidthExp = 3.3,
-                lineWidthBold = 1.0,
+                lineWidthExp = 1.5,
+                lineWidthBold = 0.2,
                 minIterations = 1,
-                maxIterations = 5
+                maxIterations = 5,
+                intermediateSplines = 0
             ),
             LSystem(
                 name = "Dragon",
@@ -44,7 +46,8 @@ class LSystem(
                 lineWidthExp = 1.45,
                 lineWidthBold = 0.1,
                 minIterations = 1,
-                maxIterations = 12
+                maxIterations = 12,
+                intermediateSplines = 3
             ),
             LSystem(
                 name = "TwinDragon",
@@ -55,7 +58,8 @@ class LSystem(
                 lineWidthExp = 1.45,
                 lineWidthBold = 0.1,
                 minIterations = 1,
-                maxIterations = 9
+                maxIterations = 9,
+                intermediateSplines = 3
             ),
             LSystem(
                 name = "Fudgeflake",
@@ -66,7 +70,8 @@ class LSystem(
                 lineWidthExp = 1.667,
                 lineWidthBold = 0.1,
                 minIterations = 1,
-                maxIterations = 7
+                maxIterations = 7,
+                intermediateSplines = 3
             ),
             LSystem(
                 name = "Hilbert",
@@ -77,7 +82,8 @@ class LSystem(
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.4,
                 minIterations = 1,
-                maxIterations = 6
+                maxIterations = 7,
+                intermediateSplines = 0
             ),
             LSystem(
                 name = "SierpinskiTriangle",
@@ -88,7 +94,8 @@ class LSystem(
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.4,
                 minIterations = 1,
-                maxIterations = 8
+                maxIterations = 8,
+                intermediateSplines = 0
             ),
             LSystem(
                 name = "SierpinskiCurve",
@@ -99,7 +106,8 @@ class LSystem(
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.15,
                 minIterations = 1,
-                maxIterations = 6
+                maxIterations = 6,
+                intermediateSplines = 0
             ),
             LSystem(
                 name = "SierpinskiSquare",
@@ -110,7 +118,8 @@ class LSystem(
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.15,
                 minIterations = 1,
-                maxIterations = 6
+                maxIterations = 6,
+                intermediateSplines = 0
             ),
             LSystem(
                 name = "Gosper",
@@ -121,7 +130,8 @@ class LSystem(
                 lineWidthExp = 2.5,
                 lineWidthBold = 0.20,
                 minIterations = 1,
-                maxIterations = 5
+                maxIterations = 5,
+                intermediateSplines = 0
             ),
             LSystem(
                 name = "Peano",
@@ -132,7 +142,8 @@ class LSystem(
                 lineWidthExp = 3.0,
                 lineWidthBold = 0.35,
                 minIterations = 1,
-                maxIterations = 5
+                maxIterations = 5,
+                intermediateSplines = 0
             ),
             LSystem(
                 name = "Moore",
@@ -143,7 +154,8 @@ class LSystem(
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.2,
                 minIterations = 1,
-                maxIterations = 6
+                maxIterations = 6,
+                intermediateSplines = 0
             )
         )
     }

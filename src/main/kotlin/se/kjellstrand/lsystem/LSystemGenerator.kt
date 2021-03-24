@@ -22,8 +22,11 @@ object LSystemGenerator {
         )
 
         val scaledList = scalePolyPointList(xyList)
-
-        return smoothenCurvatureOfLine(scaledList)
+        return if (lSystem.intermediateSplines == 0) {
+            scaledList
+        } else {
+            smoothenCurvatureOfLine(scaledList, lSystem.intermediateSplines)
+        }
     }
 
     fun getRecommendedMinAndMaxWidth(iteration: Int, def: LSystem): Pair<Float, Float> {
@@ -141,7 +144,7 @@ object LSystemGenerator {
         return scaledList
     }
 
-    private fun smoothenCurvatureOfLine(list: MutableList<LSTriple>): MutableList<LSTriple> {
+    private fun smoothenCurvatureOfLine(list: MutableList<LSTriple>, intermediateSplines: Int): MutableList<LSTriple> {
         val smoothedList: MutableList<LSTriple> = mutableListOf()
         for (i in -1 until list.size) {
             val p01 = list[(i - 1).coerceAtLeast(0)]
@@ -151,7 +154,8 @@ object LSystemGenerator {
                 getMidPoint(p01, p02),
                 p02,
                 getMidPoint(p02, p03),
-                smoothedList
+                smoothedList,
+                intermediateSplines
             )
         }
         return smoothedList
@@ -189,11 +193,13 @@ object LSystemGenerator {
 
     private fun addSplineBetweenPoints(
         pp1: LSTriple, pp2: LSTriple, pp3: LSTriple,
-        outputList: MutableList<LSTriple>
+        outputList: MutableList<LSTriple>, intermediateSplines: Int
     ) {
-        val tincrement = 1.0 / 5.0
+        // Populate this from LSystem.systems
+        val tIncrement = 1.0 / intermediateSplines
+
         var t = 0.0
-        while (t < (1.0 - (tincrement / 2.0))) {
+        while (t < (1.0 - (tIncrement / 2.0))) {
             // The bezier square spline is calculated using this formula from wikipedia.
             // P = pow2(1−t)*P1 + 2(1−t)t*P2 + pow2(t)*P3
 
@@ -207,9 +213,8 @@ object LSystemGenerator {
 
             outputList.add(LSTriple(x.toFloat(), y.toFloat(), 1F))
 
-            // Calculate the t value used in the Bezier calculations above.
-            // Dont change the / X value here without updating in lSystem.polygon.VariableWidthPolygon.calculatePerpendicularPolyPoint()
-            t += tincrement
+            // Increment the t value used in the Bezier calculations above.
+            t += tIncrement
         }
     }
 }
