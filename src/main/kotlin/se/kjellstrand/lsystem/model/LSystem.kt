@@ -156,7 +156,83 @@ class LSystem(
                 minIterations = 1,
                 maxIterations = 7,
                 intermediateSplines = 0
-            )
+            ),
+            LSystem(
+                name = "QuadraticGosper",
+                angle = 90.0,
+                rules = mapOf("X" to "XFX-YF-YF+FX+FX-YF-YFFX+YF+FXFXYF-FX+YF+FXFX+YF-FXYF-YF-FX+FX+YFYF-",
+                    "Y" to "+FXFX-YF-YF+FX+FXYF+FX-YFYF-FX-YF+FXYFYF-FX-YFFX+FX+YF-YF-FX+FX+YFY"),
+                forwardChars = setOf("F"),
+                axiom = "-YF",
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.2,
+                minIterations = 1,
+                maxIterations = 3,
+                intermediateSplines = 0
+            ),
+            LSystem(
+                name = "Cross",
+                angle = 90.0,
+                rules = mapOf("F" to "F+FF++F+F"),
+                forwardChars = setOf("F"),
+                axiom = "F+F+F+F",
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.2,
+                minIterations = 1,
+                maxIterations = 4,
+                intermediateSplines = 3
+            ),
+            LSystem(
+                name = "Pentaplexity",
+                angle = 36.0,
+                rules = mapOf("F" to "F++F++F|F-F++F"),
+                forwardChars = setOf("F"),
+                axiom = "F++F++F++F++F",
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.2,
+                minIterations = 1,
+                maxIterations = 4,
+                intermediateSplines = 3
+            ),
+            LSystem(
+                name = "Tiles",
+                angle = 90.0,
+                rules = mapOf("F" to "FF+F-F+F+FF"),
+                forwardChars = setOf("F"),
+                axiom = "F+F+F+F",
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.2,
+                minIterations = 1,
+                maxIterations = 4,
+                intermediateSplines = 3
+            ),
+            LSystem(
+                name = "KrishnaAnklets",
+                angle = 45.0,
+                rules = mapOf("X" to "XFX--XFX"),
+                forwardChars = setOf("F"),
+                axiom = "-X--X",
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.2,
+                minIterations = 1,
+                maxIterations = 4,
+                intermediateSplines = 0
+            ),
+            LSystem(
+                name = "Kolam",
+                angle = 45.0,
+                rules = mapOf("A" to "F++FFFF--F--FFFF++F++FFFF--F",
+                    "B" to "F--FFFF++F++FFFF--F--FFFF++F",
+                    "C" to "BFA--BFA",
+                    "D" to "CFC--CFC"),
+                forwardChars = setOf("F"),
+                axiom = "-D--D",
+                lineWidthExp = 2.0,
+                lineWidthBold = 0.2,
+                minIterations = 1,
+                maxIterations = 4,
+                intermediateSplines = 0
+            ),
         )
     }
 }
