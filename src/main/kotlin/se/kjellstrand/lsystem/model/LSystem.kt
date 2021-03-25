@@ -46,7 +46,7 @@ class LSystem(
                 lineWidthExp = 1.45,
                 lineWidthBold = 0.1,
                 minIterations = 1,
-                maxIterations = 12,
+                maxIterations = 13,
                 intermediateSplines = 3
             ),
             LSystem(
@@ -58,7 +58,7 @@ class LSystem(
                 lineWidthExp = 1.45,
                 lineWidthBold = 0.1,
                 minIterations = 1,
-                maxIterations = 9,
+                maxIterations = 14,
                 intermediateSplines = 3
             ),
             LSystem(
@@ -68,10 +68,10 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "F++++F++++F",
                 lineWidthExp = 1.667,
-                lineWidthBold = 0.1,
+                lineWidthBold = 0.15,
                 minIterations = 1,
-                maxIterations = 7,
-                intermediateSplines = 3
+                maxIterations = 8,
+                intermediateSplines = 1
             ),
             LSystem(
                 name = "Hilbert",
@@ -82,7 +82,7 @@ class LSystem(
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.4,
                 minIterations = 1,
-                maxIterations = 7,
+                maxIterations = 8,
                 intermediateSplines = 0
             ),
             LSystem(
@@ -94,7 +94,7 @@ class LSystem(
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.4,
                 minIterations = 1,
-                maxIterations = 8,
+                maxIterations = 9,
                 intermediateSplines = 0
             ),
             LSystem(
@@ -106,7 +106,7 @@ class LSystem(
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.15,
                 minIterations = 1,
-                maxIterations = 6,
+                maxIterations = 7,
                 intermediateSplines = 0
             ),
             LSystem(
@@ -118,7 +118,7 @@ class LSystem(
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.15,
                 minIterations = 1,
-                maxIterations = 6,
+                maxIterations = 7,
                 intermediateSplines = 0
             ),
             LSystem(
@@ -154,7 +154,7 @@ class LSystem(
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.2,
                 minIterations = 1,
-                maxIterations = 6,
+                maxIterations = 7,
                 intermediateSplines = 0
             )
         )
