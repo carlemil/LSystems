@@ -29,17 +29,17 @@ object LSystemGenerator {
         }
     }
 
-    fun getRecommendedMinAndMaxWidth(iteration: Int, def: LSystem): Pair<Float, Float> {
+    fun getRecommendedMinAndMaxWidth(iteration: Int, def: LSystem): Pair<Double, Double> {
         val maxWidth = (1.0 / def.lineWidthExp.pow(iteration)) * def.lineWidthBold
         val minWidth = maxWidth / 10.0
-        return Pair(minWidth.toFloat(), maxWidth.toFloat())
+        return Pair(minWidth.toDouble(), maxWidth.toDouble())
     }
 
     fun setLineWidthAccordingToImage(
         line: MutableList<LSTriple>,
-        luminanceData: Array<FloatArray>,
-        minWidth: Float,
-        maxWidth: Float
+        luminanceData: Array<DoubleArray>,
+        minWidth: Double,
+        maxWidth: Double
     ) {
         val xScale = luminanceData.size - 1
         val yScale = luminanceData[0].size - 1
@@ -80,23 +80,23 @@ object LSystemGenerator {
 
     private fun convertToPolyPointList(
         instructions: String,
-        systemAngle: Float,
+        systemAngle: Double,
         forwardChars: Set<String>
     ): List<LSTriple> {
         val list: MutableList<LSTriple> = mutableListOf()
 
-        var x = 0.0F
-        var y = 0.0F
-        var angle: Float = (PI / 2).toFloat()
+        var x = 0.0
+        var y = 0.0
+        var angle: Double = (PI / 2)
 
         val stack: Stack<LSTriple> = Stack()
 
-        list.add(LSTriple(x, y, 1F))
+        list.add(LSTriple(x, y, 1.0))
         for (c in instructions) {
             when (c.toString()) {
                 "-" -> angle -= systemAngle
                 "+" -> angle += systemAngle
-                "[" -> stack.push(LSTriple(x, y, 1F))
+                "[" -> stack.push(LSTriple(x, y, 1.0))
                 "]" -> {
                     val p = stack.pop()
                     x = p.x
@@ -105,7 +105,7 @@ object LSystemGenerator {
                 in forwardChars -> {
                     x += kotlin.math.sin(angle)
                     y += kotlin.math.cos(angle)
-                    list.add(LSTriple(x, y, 1F))
+                    list.add(LSTriple(x, y, 1.0))
                 }
             }
         }
@@ -113,10 +113,10 @@ object LSystemGenerator {
     }
 
     private fun scalePolyPointList(list: List<LSTriple>): MutableList<LSTriple> {
-        var minX = Float.MAX_VALUE
-        var maxX = Float.MIN_VALUE
-        var minY = Float.MAX_VALUE
-        var maxY = Float.MIN_VALUE
+        var minX = Double.MAX_VALUE
+        var maxX = Double.MIN_VALUE
+        var minY = Double.MAX_VALUE
+        var maxY = Double.MIN_VALUE
 
         for (p in list) {
             if (p.x < minX) minX = p.x
@@ -133,12 +133,12 @@ object LSystemGenerator {
 
         val xSpace = maxX - minX
         val ySpace = maxY - minY
-        val offsetX = if (xSpace < ySpace) (ySpace - xSpace) / 2.0F else 0.0F
-        val offsetY = if (ySpace < xSpace) (xSpace - ySpace) / 2.0F else 0.0F
+        val offsetX = if (xSpace < ySpace) (ySpace - xSpace) / 2.0 else 0.0
+        val offsetY = if (ySpace < xSpace) (xSpace - ySpace) / 2.0 else 0.0
 
         val scaledList: MutableList<LSTriple> = mutableListOf()
         for (p in list) {
-            scaledList.add(LSTriple((p.x - minX + offsetX) * scale, (p.y - minY + offsetY) * scale, 1F))
+            scaledList.add(LSTriple((p.x - minX + offsetX) * scale, (p.y - minY + offsetY) * scale, 1.0))
         }
 
         return scaledList
@@ -170,17 +170,17 @@ object LSystemGenerator {
             val p04 = list[(i + 1).coerceAtMost(list.size - 1)]
             val p05 = list[(i + 2).coerceAtMost(list.size - 1)]
             val p06 = list[(i + 3).coerceAtMost(list.size - 1)]
-            p03.w = p00.w * 0.05f +
-                    p01.w * 0.1f +
-                    p02.w * 0.2f +
-                    p03.w * 0.3f +
-                    p04.w * 0.2f +
-                    p05.w * 0.1f +
-                    p06.w * 0.05f
+            p03.w = p00.w * 0.05 +
+                    p01.w * 0.1 +
+                    p02.w * 0.2 +
+                    p03.w * 0.3 +
+                    p04.w * 0.2 +
+                    p05.w * 0.1 +
+                    p06.w * 0.05
         }
     }
 
-    fun addSideBuffer(outputSideBuffer: Float, vwLine: List<LSTriple>) {
+    fun addSideBuffer(outputSideBuffer: Double, vwLine: List<LSTriple>) {
         vwLine.forEach { p ->
             p.x = outputSideBuffer + p.x * (1 - 2 * outputSideBuffer)
             p.y = outputSideBuffer + p.y * (1 - 2 * outputSideBuffer)
@@ -188,7 +188,7 @@ object LSystemGenerator {
     }
 
     private fun getMidPoint(p0: LSTriple, p1: LSTriple): LSTriple {
-        return LSTriple((p0.x + p1.x) / 2.0F, (p0.y + p1.y) / 2.0F, 1F)
+        return LSTriple((p0.x + p1.x) / 2.0, (p0.y + p1.y) / 2.0, 1.0)
     }
 
     private fun addSplineBetweenPoints(
@@ -211,7 +211,7 @@ object LSystemGenerator {
                     (2 * (1 - t) * t * pp2.y) +
                     (t.pow(2.0) * pp3.y)
 
-            outputList.add(LSTriple(x.toFloat(), y.toFloat(), 1F))
+            outputList.add(LSTriple(x.toDouble(), y.toDouble(), 1.0))
 
             // Increment the t value used in the Bezier calculations above.
             t += tIncrement

@@ -14,8 +14,8 @@ class LSystem(
     var maxIterations: Int,
     var intermediateSplines: Int
 ) {
-    fun getAngleInRadians(): Float {
-        return (angle / 180 * PI).toFloat()
+    fun getAngleInRadians(): Double {
+        return angle / 180 * PI
     }
 
     companion object {
@@ -164,7 +164,7 @@ class LSystem(
                     "Y" to "+FXFX-YF-YF+FX+FXYF+FX-YFYF-FX-YF+FXYFYF-FX-YFFX+FX+YF-YF-FX+FX+YFY"),
                 forwardChars = setOf("F"),
                 axiom = "-YF",
-                lineWidthExp = 2.0,
+                lineWidthExp = 3.0,
                 lineWidthBold = 0.2,
                 minIterations = 1,
                 maxIterations = 3,
@@ -177,22 +177,22 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "F+F+F+F",
                 lineWidthExp = 2.0,
-                lineWidthBold = 0.2,
+                lineWidthBold = 0.1,
                 minIterations = 1,
-                maxIterations = 4,
-                intermediateSplines = 3
+                maxIterations = 6,
+                intermediateSplines = 1
             ),
             LSystem(
                 name = "Pentaplexity",
                 angle = 36.0,
-                rules = mapOf("F" to "F++F++F|F-F++F"),
+                rules = mapOf("F" to "F++F++F+++++F-F++F"),
                 forwardChars = setOf("F"),
                 axiom = "F++F++F++F++F",
                 lineWidthExp = 2.0,
                 lineWidthBold = 0.2,
                 minIterations = 1,
-                maxIterations = 4,
-                intermediateSplines = 3
+                maxIterations = 5,
+                intermediateSplines = 0
             ),
             LSystem(
                 name = "Tiles",
@@ -201,9 +201,9 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "F+F+F+F",
                 lineWidthExp = 2.0,
-                lineWidthBold = 0.2,
+                lineWidthBold = 0.1,
                 minIterations = 1,
-                maxIterations = 4,
+                maxIterations = 5,
                 intermediateSplines = 3
             ),
             LSystem(
@@ -213,26 +213,11 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "-X--X",
                 lineWidthExp = 2.0,
-                lineWidthBold = 0.2,
+                lineWidthBold = 0.1,
                 minIterations = 1,
-                maxIterations = 4,
+                maxIterations = 7,
                 intermediateSplines = 0
-            ),
-            LSystem(
-                name = "Kolam",
-                angle = 45.0,
-                rules = mapOf("A" to "F++FFFF--F--FFFF++F++FFFF--F",
-                    "B" to "F--FFFF++F++FFFF--F--FFFF++F",
-                    "C" to "BFA--BFA",
-                    "D" to "CFC--CFC"),
-                forwardChars = setOf("F"),
-                axiom = "-D--D",
-                lineWidthExp = 2.0,
-                lineWidthBold = 0.2,
-                minIterations = 1,
-                maxIterations = 4,
-                intermediateSplines = 0
-            ),
+            )
         )
     }
 }

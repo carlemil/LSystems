@@ -13,8 +13,8 @@ fun buildHullFromPolygon(ppList: List<LSTriple>): MutableList<LSTriple> {
         rightHull = mutableListOf()
         // Initialize the left and right hull lists
         for (i in 0 until ppList.size-2) {
-            leftHull.add(LSTriple(0f, 0f, 1f))
-            rightHull.add(LSTriple(0f, 0f, 1f))
+            leftHull.add(LSTriple(0.0, 0.0, 1.0))
+            rightHull.add(LSTriple(0.0, 0.0, 1.0))
         }
     }
 
@@ -24,8 +24,8 @@ fun buildHullFromPolygon(ppList: List<LSTriple>): MutableList<LSTriple> {
 
         val (a, b, c) = calculateSidesOfTriangle(p0, p1)
 
-        val alfaPlus90 = calculateAlfa(a, c, b, (PI / 2.0).toFloat())
-        val alfaMinus90 = calculateAlfa(a, c, b, -(PI / 2.0).toFloat())
+        val alfaPlus90 = calculateAlfa(a, c, b, (PI / 2.0))
+        val alfaMinus90 = calculateAlfa(a, c, b, -(PI / 2.0))
 
         calculatePerpendicularPolyPoint(leftHull[i - 1], p0, p1, alfaPlus90)
         calculatePerpendicularPolyPoint(rightHull[i - 1], p0, p1, alfaMinus90)
@@ -41,26 +41,26 @@ private fun calculatePerpendicularPolyPoint(
     result: LSTriple,
     p0: LSTriple,
     p1: LSTriple,
-    alfaPlus90: Float
+    alfaPlus90: Double
 ) {
     val width = ((p0.w + p1.w) / 2.0)
     val x = (p0.x + p1.x) / 2.0 + width * sin(alfaPlus90)
     val y = (p0.y + p1.y) / 2.0 + width * cos(alfaPlus90)
-    result.x = x.toFloat()
-    result.y = y.toFloat()
+    result.x = x
+    result.y = y
 }
 
 private fun calculateSidesOfTriangle(
     p0: LSTriple,
     p1: LSTriple
-): Triple<Float, Float, Float> {
+): Triple<Double, Double, Double> {
     val a = p0.x - p1.x
     val b = p0.y - p1.y
-    val c = sqrt(a.toDouble().pow(2.0) + b.toDouble().pow(2.0)).toFloat()
+    val c = sqrt(a.pow(2.0) + b.pow(2.0))
     return Triple(a, b, c)
 }
 
-private fun calculateAlfa(a: Float, c: Float, b: Float, angle: Float): Float {
+private fun calculateAlfa(a: Double, c: Double, b: Double, angle: Double): Double {
     val alfa = asin(a / c)
     var alfaPlus90 = alfa + angle
     // Take care of special case when adjacent side is negative
@@ -72,5 +72,5 @@ fun getMidPoint(
     p0: LSTriple,
     p1: LSTriple
 ): LSTriple {
-    return LSTriple((p0.x + p1.x) / 2.0F, (p0.y + p1.y) / 2.0F, (p0.w + p1.w) / 2.0F)
+    return LSTriple((p0.x + p1.x) / 2.0, (p0.y + p1.y) / 2.0, (p0.w + p1.w) / 2.0)
 }

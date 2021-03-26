@@ -20,8 +20,8 @@ class LSTest {
         println("Init")
         val totalTime0 = System.currentTimeMillis()
 
-        var listOfSystemsToRender = emptyList<String>()
-            //listOf("Hilbert")
+        var listOfSystemsToRender = //emptyList<String>()
+            listOf("Cross")
 
         if (listOfSystemsToRender.isEmpty()) {
             listOfSystemsToRender = LSystem.systems.map { it.name }
@@ -69,9 +69,9 @@ class LSTest {
             return false
         }
 
-        val luminance = Array(brightnessImage.height) { FloatArray(brightnessImage.width) }
+        val luminance = Array(brightnessImage.height) { DoubleArray(brightnessImage.width) }
         for (y in 0 until brightnessImage.height) {
-            val lx = FloatArray(brightnessImage.width)
+            val lx = DoubleArray(brightnessImage.width)
             luminance[y] = lx
             for (x in 0 until brightnessImage.width) {
                 lx[x] = getBrightnessFromImage(y, x, brightnessImage)
@@ -92,7 +92,7 @@ class LSTest {
         return true
     }
 
-    private fun getBrightnessFromImage(x: Int, y: Int, image: BufferedImage): Float {
+    private fun getBrightnessFromImage(x: Int, y: Int, image: BufferedImage): Double {
         var color = 0x777777
         try {
             color = image.getRGB(x, y)
@@ -105,7 +105,7 @@ class LSTest {
             color and 255,
             c
         )
-        return 1f - c[2]
+        return 1.0 - c[2]
     }
 
     private fun getFirstPartOfImageName(brightnessImageName: String?): String {
@@ -126,10 +126,10 @@ class LSTest {
 
     private fun generateBitmapFromLSystem(
         line: MutableList<LSTriple>,
-        luminanceData: Array<FloatArray>,
+        luminanceData: Array<DoubleArray>,
         outputImageSize: Int,
-        minWidth: Float,
-        maxWidth: Float
+        minWidth: Double,
+        maxWidth: Double
     ): BufferedImage {
 
         val (bufferedImage, g2) = setupGraphics(outputImageSize)
