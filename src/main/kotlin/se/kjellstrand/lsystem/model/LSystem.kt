@@ -164,7 +164,7 @@ class LSystem(
                     "Y" to "+FXFX-YF-YF+FX+FXYF+FX-YFYF-FX-YF+FXYFYF-FX-YFFX+FX+YF-YF-FX+FX+YFY"),
                 forwardChars = setOf("F"),
                 axiom = "-YF",
-                lineWidthExp = 3.0,
+                lineWidthExp = 4.0,
                 lineWidthBold = 0.2,
                 minIterations = 1,
                 maxIterations = 3,
@@ -176,11 +176,11 @@ class LSystem(
                 rules = mapOf("F" to "F+FF++F+F"),
                 forwardChars = setOf("F"),
                 axiom = "F+F+F+F",
-                lineWidthExp = 2.0,
-                lineWidthBold = 0.1,
+                lineWidthExp = 3.0,
+                lineWidthBold = 0.2,
                 minIterations = 1,
                 maxIterations = 6,
-                intermediateSplines = 1
+                intermediateSplines = 0
             ),
             LSystem(
                 name = "Pentaplexity",
@@ -188,7 +188,7 @@ class LSystem(
                 rules = mapOf("F" to "F++F++F+++++F-F++F"),
                 forwardChars = setOf("F"),
                 axiom = "F++F++F++F++F",
-                lineWidthExp = 2.0,
+                lineWidthExp = 3.0,
                 lineWidthBold = 0.2,
                 minIterations = 1,
                 maxIterations = 5,
@@ -200,8 +200,8 @@ class LSystem(
                 rules = mapOf("F" to "FF+F-F+F+FF"),
                 forwardChars = setOf("F"),
                 axiom = "F+F+F+F",
-                lineWidthExp = 2.0,
-                lineWidthBold = 0.1,
+                lineWidthExp = 3.0,
+                lineWidthBold = 0.2,
                 minIterations = 1,
                 maxIterations = 5,
                 intermediateSplines = 3
@@ -213,7 +213,7 @@ class LSystem(
                 forwardChars = setOf("F"),
                 axiom = "-X--X",
                 lineWidthExp = 2.0,
-                lineWidthBold = 0.1,
+                lineWidthBold = 0.15,
                 minIterations = 1,
                 maxIterations = 7,
                 intermediateSplines = 0
