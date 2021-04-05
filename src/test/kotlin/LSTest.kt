@@ -21,12 +21,12 @@ class LSTest {
         val totalTime0 = System.currentTimeMillis()
 
         var listOfSystemsToRender = //emptyList<String>()
-            listOf("Cross")
+            listOf("Gosper")
 
         if (listOfSystemsToRender.isEmpty()) {
             listOfSystemsToRender = LSystem.systems.map { it.name }
         }
-        val imageNames = listOf("str.jpg")
+        val imageNames = listOf("arthur-wookie.jpg")
 
         for (imageName in imageNames) {
             val image = readImageFile("input/$imageName")
@@ -65,7 +65,7 @@ class LSTest {
 
         val (minWidth, maxWidth) = getRecommendedMinAndMaxWidth(iteration, lSystem)
 
-        if (minWidth < 0.001 || minWidth < outputImageSize / 5000) {
+        if (minWidth * outputImageSize < 1) {
             return false
         }
 

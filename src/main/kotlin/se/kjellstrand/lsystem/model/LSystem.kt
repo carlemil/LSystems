@@ -128,7 +128,7 @@ class LSystem(
                 forwardChars = setOf("A", "B"),
                 axiom = "A",
                 lineWidthExp = 2.5,
-                lineWidthBold = 0.20,
+                lineWidthBold = 0.35,
                 minIterations = 1,
                 maxIterations = 5,
                 intermediateSplines = 0
